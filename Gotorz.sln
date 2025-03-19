@@ -1,9 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gotorz", "Gotorz.csproj", "{781451C0-D35F-4995-A16D-1E49B967634E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gotorz.Server", "..\Gotorz.Server\Gotorz.Server.csproj", "{0AD47035-A71B-41D1-AA92-4BCF5E509C82}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gotorz.Shared", "..\Gotorz.Shared\Gotorz.Shared.csproj", "{F28EAD60-6041-4395-8EDE-5D32954E14CE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gotorz.Client", "..\Gotorz.Client\Gotorz.Client.csproj", "{30D2BE80-4AAC-49C3-A08E-B0EAF95F1993}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,12 +21,23 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{781451C0-D35F-4995-A16D-1E49B967634E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{781451C0-D35F-4995-A16D-1E49B967634E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{781451C0-D35F-4995-A16D-1E49B967634E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{781451C0-D35F-4995-A16D-1E49B967634E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AD47035-A71B-41D1-AA92-4BCF5E509C82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AD47035-A71B-41D1-AA92-4BCF5E509C82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AD47035-A71B-41D1-AA92-4BCF5E509C82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AD47035-A71B-41D1-AA92-4BCF5E509C82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F28EAD60-6041-4395-8EDE-5D32954E14CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F28EAD60-6041-4395-8EDE-5D32954E14CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F28EAD60-6041-4395-8EDE-5D32954E14CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F28EAD60-6041-4395-8EDE-5D32954E14CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30D2BE80-4AAC-49C3-A08E-B0EAF95F1993}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30D2BE80-4AAC-49C3-A08E-B0EAF95F1993}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30D2BE80-4AAC-49C3-A08E-B0EAF95F1993}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30D2BE80-4AAC-49C3-A08E-B0EAF95F1993}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {667D71ED-5C7F-4E82-BA1C-1E7F6CD081CD}
 	EndGlobalSection
 EndGlobal
