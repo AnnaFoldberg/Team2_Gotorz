@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Shared\" />
+    <ProjectReference Include="..\Gotorz.Shared\Gotorz.Shared.csproj" />
   </ItemGroup>
 
 </Project>
