@@ -1,0 +1,35 @@
+﻿@using Gotorz.Shared.Models
+@using System.ComponentModel.DataAnnotations
+@using System.Text.Json
+@using Microsoft.AspNetCore.Mvc
+
+<h3>Flights</h3>
+
+<EditForm OnValidSubmit="Search">
+    <div class="mb-3">
+        <label for="date" class="form-label">Date</label>
+        <InputDate class="form-control" id="date" @bind-Value="date" />
+    </div>
+    <div class="mb-3">
+        <label for="departureAirport" class="form-label">Departure Airport</label>
+        <InputText class="form-control" id="departureAirport" @bind-Value="departureAirport" />
+    </div>
+    <div class="mb-3">
+        <label for="arrivalAirport" class="form-label">Arrival Airport</label>
+        <InputText class="form-control" id="email" @bind-Value="arrivalAirport" />
+    </div>
+    <button type="submit" class="btn btn-outline-dark">Search</button>
+</EditForm>
+
+@code {
+    private DateOnly date = new DateOnly();
+    private string departureAirport = string.Empty;
+	private string arrivalAirport = string.Empty;
+	private List<Flight> flights = new List<Flight>();
+
+    private async Task Search()
+    {
+        // Brug controllerens metode og sæt resultatet ind i listen flights
+        return;
+    }
+}
