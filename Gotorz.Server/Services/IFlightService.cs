@@ -10,7 +10,7 @@ namespace Gotorz.Server.Services
 {
     public interface IFlightService
     {
-        Task<List<Airport>> GetAutoCompleteAsync();
-        Task<List<Flight>> GetOneWay()
+        Task<List<Airport>> GetAutoComplete(string airport);
+        Task<List<Flight>> GetOneWay(DateOnly date, Airport departureAirport, Airport arrivalAirport);
     }
 }

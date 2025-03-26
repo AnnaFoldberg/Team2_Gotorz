@@ -6,9 +6,9 @@ namespace Gotorz.Shared.Models
     {
         public int FlightID { get; set; }
         public string FlightNumber { get; set; }
-        public DateTime DepartureDateTime { get; set; }
-        public string DepartureAirport { get; set; }
-        public DateTime ArrivalDateTime { get; set; }
-        public string ArrivalAirport { get; set; }
+        public DateOnly DepartureDate { get; set; }
+        public decimal Price { get; set; }
+        public int DepartureAirportId { get; set; }
+        public int ArrivalAirportId { get; set; }
     }
 }
