@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Gotorz.Shared;
-using Gotorz.Server.Services;
 using Gotorz.Shared.Models;
-using System.Diagnostics;
+using Gotorz.Server.Services;
 
 namespace Gotorz.Server.Controllers;
 
@@ -18,48 +16,37 @@ public class FlightController : ControllerBase
         _flightService = flightService;
     }
 
-    [HttpGet("flights/auto-complete")]
-    public async Task<IActionResult> GetAutoComplete(string airport)
+    [HttpGet("airport")]
+    public async Task<Airport> GetAirport(string airport)
     {
-        var airports = await _flightService.GetAutoComplete(airport);
+        var airports = await _flightService.GetAirport(airport);
 
-        if ( airports.Count > 1 ) return BadRequest("Multiple airports were found");
-        else if ( airports.Count == 0 ) return BadRequest("No airport was found");
-        else if ( airports == null ) return BadRequest("Something went wrong");
-        
-        Trace.WriteLine($"Airports: {airports[0]}");
-        Trace.WriteLine($"Airport SkyId: {airports[0].SkyId}");
-        Trace.WriteLine($"Airport EntityId: {airports[0].EntityId}");
-        _airport = airports[0];
-        return Ok(airports);
+        if (airports == null) return null;
+        else if ( airports.Count == 0 ) return null;
+        else if ( airports.Count > 1 ) return null;
+        else return airports[0];
     }
 
-    [HttpGet("flights/one-way")]
-    public async Task<IActionResult> GetOneWay([FromQuery] string date, [FromQuery] string departureAirport, [FromQuery] string arrivalAirport)
+    [HttpGet("flights")]
+    public async Task<List<Flight>> GetFlights([FromQuery] string date, [FromQuery] string departureAirport, [FromQuery] string arrivalAirport)
     {
-        // New York J.F. Kennedy
         // Hvis den findes i databasen, hent Airport-objekt derfra, noget med airports.GetAll fra et repository
-        // Hvis ikke, brug GetAutoComplete() - Find ud af, hvad der er den korrekte måde at gøre det på
-        await GetAutoComplete(departureAirport);
-        Airport _departureAirport = _airport;
-        await GetAutoComplete(arrivalAirport);
-        Airport _arrivalAirport = _airport;
-        
+        // De Airports, der findes i vores database, er dem, der skal dukke op ved drop-down i departure- og arrivalfelterne på hjemmesiden
+        // Hvis ikke, brug GetAirport() som nedenfor
+    
+        var _departureAirport = await GetAirport(departureAirport);
+        var _arrivalAirport = await GetAirport(arrivalAirport);
+
         DateOnly _date = DateOnly.Parse(date);
 
-        if (_date != null && _departureAirport != null && _arrivalAirport != null)
+        if (_departureAirport != null && _arrivalAirport != null)
         {
-            Trace.WriteLine($"_departureAirport.SkyId: {_departureAirport.SkyId}");
-            Trace.WriteLine($"_departureAirport.EntityId: {_departureAirport.EntityId}");
-            Trace.WriteLine($"_arrivalAirport.SkyId: {_arrivalAirport.SkyId}");
-            Trace.WriteLine($"_arrivalAirport.EntityId: {_arrivalAirport.EntityId}");
-
-            List<Flight> flights = await _flightService.GetOneWay(_date, _departureAirport, _arrivalAirport);
-            if ( flights.Count == 0 ) return BadRequest("No flights were found");
-            else if (flights == null) return BadRequest("Something went wrong2");
-            else return Ok(flights);
+            List<Flight> flights = await _flightService.GetFlights(_date, _departureAirport, _arrivalAirport);
+            
+            if (flights == null) return null;
+            else if ( flights.Count == 0 ) return null;
+            else return flights;
         }
-
-        return BadRequest($"Something went wrong with the parameters"); // {_date}, {_departureAirport.LocalizedName}, {_arrivalAirport.LocalizedName}
+        return null;
     }
 }

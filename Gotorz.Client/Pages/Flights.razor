@@ -1,35 +1,75 @@
-﻿@using Gotorz.Shared.Models
+﻿@page "/flights"
+@using Gotorz.Shared.Models
 @using System.ComponentModel.DataAnnotations
 @using System.Text.Json
 @using Microsoft.AspNetCore.Mvc
+@using Gotorz.Client.Services
+@inject FlightService FlightService
 
 <h3>Flights</h3>
 
-<EditForm OnValidSubmit="Search">
+<EditForm Model="@searchForm" OnValidSubmit="Search">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
     <div class="mb-3">
         <label for="date" class="form-label">Date</label>
-        <InputDate class="form-control" id="date" @bind-Value="date" />
+        <InputText class="form-control" id="date" @bind-Value="searchForm.date" />
     </div>
     <div class="mb-3">
         <label for="departureAirport" class="form-label">Departure Airport</label>
-        <InputText class="form-control" id="departureAirport" @bind-Value="departureAirport" />
+        <InputText class="form-control" id="departureAirport" @bind-Value="searchForm.departureAirport" />
     </div>
     <div class="mb-3">
         <label for="arrivalAirport" class="form-label">Arrival Airport</label>
-        <InputText class="form-control" id="email" @bind-Value="arrivalAirport" />
+        <InputText class="form-control" id="arrivalAirport" @bind-Value="searchForm.arrivalAirport" />
     </div>
     <button type="submit" class="btn btn-outline-dark">Search</button>
 </EditForm>
 
+@if (flights != null && flights.Any())
+{
+    <h4>Results:</h4>
+    <ul>
+        @foreach (var flight in flights)
+        {
+            <li>Hello @flight.FlightNumber - @flight.Price</li>
+        }
+    </ul>
+}
+
+@if (searchPerformed)
+{
+    <h4>Results: @flights</h4>
+}
+
 @code {
-    private DateOnly date = new DateOnly();
-    private string departureAirport = string.Empty;
-    private string arrivalAirport = string.Empty;
-    private List<Flight> flights = new List<Flight>();
+    private SearchForm searchForm = new SearchForm();
+    private List<Flight>? flights = new List<Flight>();
+    private bool searchPerformed = false;
+
+    public class SearchForm
+    {
+        [Required(ErrorMessage = "Date is required.")]
+        [DateFormat("yyyy-MM-dd")]
+        public string date = string.Empty;
+
+        [Required(ErrorMessage = "Departure airport is required.")]
+        public string departureAirport = string.Empty;
+
+        [Required(ErrorMessage = "Arrival airport is required.")]
+        public string arrivalAirport = string.Empty;
+    }
 
     private async Task Search()
     {
-        // Brug controllerens metode og sæt resultatet ind i listen flights
-        return;
+        searchPerformed = true;
+        try
+        {
+            flights = await FlightService.GetFlights(searchForm.date, searchForm.departureAirport, searchForm.arrivalAirport);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching flights: {ex.Message}");
+        }
     }
 }
