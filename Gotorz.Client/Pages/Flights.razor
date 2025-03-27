@@ -32,24 +32,18 @@
     <ul>
         @foreach (var flight in flights)
         {
-            <li>Hello @flight.FlightNumber - @flight.Price</li>
+            <li>@flight.FlightNumber: @flight.Price</li>
         }
     </ul>
-}
-
-@if (searchPerformed)
-{
-    <h4>Results: @flights</h4>
 }
 
 @code {
     private SearchForm searchForm = new SearchForm();
     private List<Flight>? flights = new List<Flight>();
-    private bool searchPerformed = false;
 
     public class SearchForm
     {
-        [Required(ErrorMessage = "Date is required.")]
+        [Required(ErrorMessage = "Departure date is required.")]
         [DateFormat("yyyy-MM-dd")]
         public string date = string.Empty;
 
@@ -62,7 +56,6 @@
 
     private async Task Search()
     {
-        searchPerformed = true;
         try
         {
             flights = await FlightService.GetFlights(searchForm.date, searchForm.departureAirport, searchForm.arrivalAirport);
