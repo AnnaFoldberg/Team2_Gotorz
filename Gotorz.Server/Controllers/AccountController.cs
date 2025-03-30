@@ -39,11 +39,12 @@ public class AccountController : ControllerBase
         return Ok("Logged in");
     }
 
-    // debug endpoint
-    [HttpGet("ping")]
-    public IActionResult Ping()
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout()
     {
-        return Ok("pong");
+        await _signInManager.SignOutAsync();
+        return Ok("Logged out");
     }
+
 
 }

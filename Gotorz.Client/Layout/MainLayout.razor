@@ -5,8 +5,20 @@
     </div>
 
     <main>
-        <div class="top-row px-4">
+        <div class="top-row px-4 d-flex justify-content-between align-items-center">
             <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+
+            <AuthorizeView>
+                <Authorized>
+                    <span class="me-2">Hello</span>
+                    <button @onclick="Logout" class="btn btn-link">Logout</button>
+                </Authorized>
+                <NotAuthorized>
+                    <NavLink href="/login" class="nav-link">Login</NavLink>
+                    <NavLink href="/register" class="nav-link">Register</NavLink>
+                    <button @onclick="Logout" class="btn btn-link">Logout</button> @*fjern når auth er sat rigtigt op*@
+                </NotAuthorized>
+            </AuthorizeView>
         </div>
 
         <article class="content px-4">
@@ -14,3 +26,17 @@
         </article>
     </main>
 </div>
+
+@code {
+    [Inject] HttpClient Http { get; set; }
+    [Inject] NavigationManager Navigation { get; set; }
+
+    private async Task Logout()
+    {
+        var response = await Http.PostAsync("api/account/logout", null);
+        if (response.IsSuccessStatusCode)
+        {
+            Navigation.NavigateTo("/", forceLoad: true);
+        }
+    }
+}
