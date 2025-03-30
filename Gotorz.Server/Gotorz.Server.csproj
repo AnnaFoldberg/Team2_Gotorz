@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Gotorz.Client\Gotorz.Client.csproj" />
     <ProjectReference Include="..\Gotorz.Shared\Gotorz.Shared.csproj" />
   </ItemGroup>
 

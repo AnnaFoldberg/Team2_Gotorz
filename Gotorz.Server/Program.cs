@@ -1,4 +1,8 @@
 using Gotorz.Server.Services;
+using Gotorz.Server.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,15 +13,23 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+
 builder.Services.AddCors(options =>
 {
-options.AddPolicy("MyAllowedOrigins",
-    policy =>
-    {
-        policy.WithOrigins("https://localhost:7159", "http://localhost:5092") // note the port is included 
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
+    options.AddPolicy("MyAllowedOrigins",
+        policy =>
+        {
+            policy.WithOrigins("https://localhost:7159", "http://localhost:5092") // note the port is included 
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
 });
 
 builder.Services.AddHttpClient<IFlightService, FlightService>();
@@ -32,12 +44,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseBlazorFrameworkFiles();
+app.UseStaticFiles();
 
+app.UseHttpsRedirection();
+app.UseCors("MyAllowedOrigins");
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.UseCors("MyAllowedOrigins");
+app.MapFallbackToFile("index.html");
 
 app.Run();
