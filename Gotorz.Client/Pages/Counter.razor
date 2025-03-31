@@ -4,9 +4,29 @@
 
 <h1>Counter</h1>
 
-<p role="status">Current count: @currentCount</p>
+@*Eksempel til at se hvordan man kan vise forskelligt indhold baseret på login status*@
+<AuthorizeView Roles="admin">
+    <Authorized>
+        <p><strong>admin detected</strong></p>
+    </Authorized>
+</AuthorizeView>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<AuthorizeView>
+    <Authorized Context="auth">
+        @if (auth.User.IsInRole("salesRep"))
+        {
+            <p><strong>Sales representive detected</strong></p>
+        }
+
+        <p>Hello, @auth.User.Identity.Name!</p>
+        <p role="status">Current count: @currentCount</p>
+
+        <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+    </Authorized>
+    <NotAuthorized>
+        <p>The Counter is only for registered users. Please log in.</p>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     private int currentCount = 0;

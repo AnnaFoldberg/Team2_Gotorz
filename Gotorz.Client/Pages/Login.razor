@@ -36,8 +36,7 @@
 
         if (response.IsSuccessStatusCode)
         {
-            // You can redirect to home or dashboard here
-            Navigation.NavigateTo("/");
+            Navigation.NavigateTo("/", forceLoad: true);
         }
         else
         {

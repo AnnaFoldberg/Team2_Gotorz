@@ -10,13 +10,12 @@
 
             <AuthorizeView>
                 <Authorized>
-                    <span class="me-2">Hello</span>
+                    <span class="me-2">Hello @context.User.Identity.Name!</span>
                     <button @onclick="Logout" class="btn btn-link">Logout</button>
                 </Authorized>
                 <NotAuthorized>
                     <NavLink href="/login" class="nav-link">Login</NavLink>
                     <NavLink href="/register" class="nav-link">Register</NavLink>
-                    <button @onclick="Logout" class="btn btn-link">Logout</button> @*fjern når auth er sat rigtigt op*@
                 </NotAuthorized>
             </AuthorizeView>
         </div>

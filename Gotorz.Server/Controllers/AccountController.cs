@@ -46,5 +46,16 @@ public class AccountController : ControllerBase
         return Ok("Logged out");
     }
 
+    [HttpGet("currentuser")]
+    public IActionResult GetCurrentUser()
+    {
+        var userDto = new CurrentUserDto
+        {
+            Name = User.Identity?.Name,
+            IsAuthenticated = User.Identity?.IsAuthenticated ?? false
+        };
+
+        return Ok(userDto);
+    }
 
 }
