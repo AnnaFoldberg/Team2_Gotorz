@@ -10,5 +10,6 @@ public class CurrentUserDto
 {
     public string? Name { get; set; }
     public bool IsAuthenticated { get; set; }
+    public List<ClaimDto> Claims { get; set; } = new();
 }
 

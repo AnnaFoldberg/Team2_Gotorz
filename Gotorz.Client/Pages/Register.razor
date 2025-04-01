@@ -11,21 +11,6 @@
     <p style="color:red">@ErrorMessage</p>
 }
 
-@* <EditForm Model="registerModel" OnValidSubmit="HandleRegister">
-    <InputText @bind-Value="registerModel.Email" />
-    <InputText @bind-Value="registerModel.Password" type="password"/>
-
-    @if (isAdmin)
-    {
-        <label>Role:</label>
-        <InputSelect @bind-Value="registerModel.Role">
-            <option value="customer">Customer</option>
-            <option value="admin">Admin</option>
-            <option value="Sales">Sales</option>
-        </InputSelect>
-    }
-</EditForm> *@
-
 <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
     <EditForm Model="registerModel" OnValidSubmit="HandleRegister" class="p-4 rounded border shadow-sm" style="min-width: 300px;">
         <div class="mb-3">
@@ -36,11 +21,15 @@
             <InputText @bind-Value="registerModel.Password" class="form-control" placeholder="Kodeord" type="password" />
         </div>
 
+        <div class="mb-3">
+            <InputText @bind-Value="registerModel.Password" class="form-control" placeholder="Kodeord" type="password" />
+        </div>
+
         @if (isAdmin)
         {
             <div class="mb-3">
                 <InputSelect @bind-Value="registerModel.Role" class="form-control">
-                    <option value="">-- Vælg rolle --</option>
+                    <option value="">Vælg rolle</option>
                     <option value="customer">Customer</option>
                     <option value="admin">Admin</option>
                     <option value="sales">Sales</option>

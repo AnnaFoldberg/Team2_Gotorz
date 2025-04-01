@@ -2,25 +2,27 @@
 using Microsoft.AspNetCore.Mvc;
 using Gotorz.Shared.Models;
 using Gotorz.Server.Models;
+using Gotorz.Server.Repositories;
 
 [ApiController]
 [Route("api/[controller]")]
 public class AccountController : ControllerBase
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly IUserRepository _userRepository;
 
-    public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+    public AccountController(IUserRepository userRepository)
     {
-        _userManager = userManager;
-        _signInManager = signInManager;
+        _userRepository = userRepository;
     }
+
 
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterDto dto)
     {
         var user = new ApplicationUser { UserName = dto.Email, Email = dto.Email };
-        var result = await _userManager.CreateAsync(user, dto.Password);
+        var role = string.IsNullOrWhiteSpace(dto.Role) ? "customer" : dto.Role;
+
+        var result = await _userRepository.RegisterAsync(user, dto.Password, role);
 
         if (!result.Succeeded)
             return BadRequest(result.Errors);
@@ -31,7 +33,7 @@ public class AccountController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDto dto)
     {
-        var result = await _signInManager.PasswordSignInAsync(dto.Email, dto.Password, false, false);
+        var result = await _userRepository.LoginAsync(dto.Email, dto.Password);
 
         if (!result.Succeeded)
             return Unauthorized("Invalid login");
@@ -42,20 +44,24 @@ public class AccountController : ControllerBase
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
-        await _signInManager.SignOutAsync();
+        await _userRepository.LogoutAsync();
         return Ok("Logged out");
     }
 
     [HttpGet("currentuser")]
-    public IActionResult GetCurrentUser()
+    public async Task<IActionResult> GetCurrentUser()
     {
+        var user = await _userRepository.GetCurrentUserAsync(User);
+
         var userDto = new CurrentUserDto
         {
-            Name = User.Identity?.Name,
-            IsAuthenticated = User.Identity?.IsAuthenticated ?? false
+            Name = user?.UserName,
+            IsAuthenticated = User.Identity?.IsAuthenticated ?? false,
+            Claims = User.Claims.Select(c => new ClaimDto { Type = c.Type, Value = c.Value }).ToList()
         };
 
         return Ok(userDto);
     }
+
 
 }

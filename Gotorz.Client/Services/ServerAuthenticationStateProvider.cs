@@ -20,11 +20,17 @@ public class ServerAuthenticationStateProvider : AuthenticationStateProvider
 
             if (user is { IsAuthenticated: true, Name: not null })
             {
-                var identity = new ClaimsIdentity(new[]
-                {
-                    new Claim(ClaimTypes.Name, user.Name)
-                }, "serverauth");
+                var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Name)
+            };
 
+                foreach (var claim in user.Claims)
+                {
+                    claims.Add(new Claim(claim.Type, claim.Value));
+                }
+
+                var identity = new ClaimsIdentity(claims, "serverauth");
                 var principal = new ClaimsPrincipal(identity);
                 return new AuthenticationState(principal);
             }
