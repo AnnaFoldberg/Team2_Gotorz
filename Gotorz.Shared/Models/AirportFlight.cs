@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Gotorz.Shared.Models
 {
+    /// <summary>
+    /// Represents the data structure for an <see cref="AirportFlight"/> entity.
+    /// </summary>
     public class AirportFlight
     {
 
