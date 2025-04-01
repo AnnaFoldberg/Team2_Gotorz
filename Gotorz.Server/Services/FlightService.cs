@@ -3,17 +3,24 @@ using Gotorz.Shared.Models;
 
 namespace Gotorz.Server.Services
 {
+    /// <inheritdoc />
     public class FlightService : IFlightService
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FlightService"/> class.
+        /// </summary>
+        /// <param name="httpClient">The HTTP client used for API requests.</param>
+        /// <param name="config">The configuration object for accessing API keys.</param>
         public FlightService(HttpClient httpClient, IConfiguration config)
         {
             _httpClient = httpClient;
             _config = config;
         }
 
+        /// <inheritdoc />
         public async Task<List<Airport>> GetAirport(string airport)
         {
             var request = new HttpRequestMessage
@@ -47,7 +54,8 @@ namespace Gotorz.Server.Services
             }
         }
 
-        public async Task<List<Flight>> GetFlights(DateOnly date, Airport departureAirport, Airport arrivalAirport)
+        /// <inheritdoc />
+        public async Task<List<Flight>> GetFlights(DateOnly? date, Airport departureAirport, Airport arrivalAirport)
         {
             var request = new HttpRequestMessage
             {
@@ -78,11 +86,7 @@ namespace Gotorz.Server.Services
                         // Define departure date
                         string departureDate = content?["outboundLeg"]?["localDepartureDate"].ToString();
                         DateOnly _departureDate = DateOnly.Parse(departureDate);
-                        if (_departureDate != date)
-                        {
-                            Console.WriteLine($"{_departureDate} != {date}");
-                            continue;
-                        }
+                        if (date != null && _departureDate != date) continue;
 
                         // Define departure airport
                         Airport _departureAirport = departureAirport;
@@ -106,13 +110,11 @@ namespace Gotorz.Server.Services
                             if (entityId != arrivalAirport.EntityId || skyId != arrivalAirport.SkyId) continue;
                         }
                         
-                        // Define price
-                        decimal _price = content["rawPrice"].GetValue<decimal>();
-
                         // Define id
                         string _flightNumber = result?["id"]?.ToString();
 
-                        flights.Add(new Flight { FlightNumber = _flightNumber, DepartureDate = _departureDate, Price = _price, DepartureAirportId = _departureAirport.AirportId, ArrivalAirportId = _arrivalAirport.AirportId });
+                        // Define flight and add to flights
+                        flights.Add(new Flight { FlightNumber = _flightNumber, DepartureDate = _departureDate, DepartureAirportId = _departureAirport.AirportId, ArrivalAirportId = _arrivalAirport.AirportId });
                     }
                 }
                 return flights;

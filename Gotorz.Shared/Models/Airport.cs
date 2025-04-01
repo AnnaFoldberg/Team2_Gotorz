@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace Gotorz.Shared.Models
 {
+    /// <summary>
+    /// Represents the data structure for an <see cref="Airport"/> entity.
+    /// </summary>
     public class Airport
     {
         public int AirportId { get; set; }
-        [JsonPropertyName("id")]
         public string EntityId { get; set; }
-        [JsonPropertyName("name")]
         public string LocalizedName { get; set; }
-        [JsonPropertyName("skyCode")]
         public string SkyId { get; set; }
     }
 }
