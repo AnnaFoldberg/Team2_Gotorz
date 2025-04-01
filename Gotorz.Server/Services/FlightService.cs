@@ -83,11 +83,7 @@ namespace Gotorz.Server.Services
                         // Define departure date
                         string departureDate = content?["outboundLeg"]?["localDepartureDate"].ToString();
                         DateOnly _departureDate = DateOnly.Parse(departureDate);
-                        if (date != null && _departureDate != date)
-                        {
-                            Console.WriteLine($"{_departureDate} != {date}");
-                            continue;
-                        }
+                        if (date != null && _departureDate != date) continue;
 
                         // Define departure airport
                         Airport _departureAirport = departureAirport;

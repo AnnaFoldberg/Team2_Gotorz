@@ -36,7 +36,7 @@
             </div>
             <div class="form-group flex-grow-1">
                 <label for="date" class="form-label">Date (optional)</label>
-                <InputText class="form-control" id="date" @bind-Value="searchForm.date" placeholder="dd/MM/yyyy"/>
+                <InputText class="form-control" id="date" @bind-Value="searchForm.date" placeholder="dd-MM-yyyy"/>
             </div>
             <div class="form-group flex-grow-1">
                 <button type="submit" class="btn icon-white h-100 custom-background text-white bi bi-search"></button>
@@ -47,30 +47,37 @@
 
 <br><br>
 
-@if (flights != null && flights.Any())
+@if (flights != null && searchPerformed)
 {
-    <ul class="list-group">
-        <li class="list-group-item d-flex justify-content-between align-items-center text-white custom-background">
-            <span class="col">Date</span>
-            <span class="col">Departure</span>
-            <span class="col">Arrival</span>
-            @* <span class="col">Price</span> *@
-        </li>
-
-        @foreach (var flight in flights)
-        {
-            var departureAirport = airports.FirstOrDefault(a => a.AirportId == flight.DepartureAirportId);
-            var arrivalAirport = airports.FirstOrDefault(a => a.AirportId == flight.ArrivalAirportId);
-
-            <li class="list-group-item d-flex justify-content-between align-items-center" >
-                @* @onclick="() => SelectFlight(flight)"> *@
-                <span class="col">@flight.DepartureDate.ToString("dd-MM-yyyy")</span>
-                <span class="col">@departureAirport.LocalizedName</span>
-                <span class="col">@arrivalAirport.LocalizedName</span>
-                @* <span class="col">@flight.Price.ToString("C")</span> *@
+    if (flights.Any())
+    {
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center text-white custom-background">
+                <span class="col">Date</span>
+                <span class="col">Departure</span>
+                <span class="col">Arrival</span>
+                @* <span class="col">Price</span> *@
             </li>
-        }
-    </ul>
+
+            @foreach (var flight in flights)
+            {
+                var departureAirport = airports.FirstOrDefault(a => a.AirportId == flight.DepartureAirportId);
+                var arrivalAirport = airports.FirstOrDefault(a => a.AirportId == flight.ArrivalAirportId);
+
+                <li class="list-group-item d-flex justify-content-between align-items-center" >
+                    @* @onclick="() => SelectFlight(flight)"> *@
+                    <span class="col">@flight.DepartureDate.ToString("dd-MM-yyyy")</span>
+                    <span class="col">@departureAirport.LocalizedName</span>
+                    <span class="col">@arrivalAirport.LocalizedName</span>
+                    @* <span class="col">@flight.Price.ToString("C")</span> *@
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <h6>No flights were found</h6>
+    }
 }
 
 @* @if (flightSelected && selectedFlight != null)
@@ -79,26 +86,24 @@
 } *@
 
 @code {
+    private bool searchPerformed = false;
     private SearchForm searchForm = new SearchForm();
-
-    // Brug GetAll(); i stedet, når database på
     private IEnumerable<Airport> airports = Enumerable.Empty<Airport>();
     private IEnumerable<string> airportNames = Enumerable.Empty<string>();
-    
     private List<Flight>? flights = new List<Flight>();
     @* private Flight? selectedFlight;
     private bool flightSelected = false; *@
 
     public class SearchForm
     {
-        [DateFormat("dd-MM-YY")]
-        public string? date;
+        [DateFormat("dd-MM-yyyy")]
+        public string? date { get; set; }
 
         [Required(ErrorMessage = "Departure airport is required.")]
-        public string departureAirport = string.Empty;
+        public string departureAirport { get; set; }= string.Empty;
 
         [Required(ErrorMessage = "Arrival airport is required.")]
-        public string arrivalAirport = string.Empty;
+        public string arrivalAirport { get; set; }= string.Empty;
     }
 
     protected override async Task OnInitializedAsync()
@@ -111,9 +116,22 @@
     {
         try
         {
-            flights = await FlightService.GetFlights(searchForm.date, searchForm.departureAirport, searchForm.arrivalAirport);
+            var result = await FlightService.GetFlights(searchForm.date, searchForm.departureAirport, searchForm.arrivalAirport);
+
+            if (result == null)
+            {
+                flights = new List<Flight>();
+                return;
+            }
+
+            flights = result;
+
             airports = await FlightService.GetAllAirports();
             airportNames = airports.Select(a => a.LocalizedName);
+
+            searchPerformed = true;
+
+            @* StateHasChanged(); *@
         }
         catch (Exception ex)
         {

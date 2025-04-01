@@ -12,16 +12,9 @@ namespace Gotorz.Shared.Models
     /// </summary>
     public class Airport
     {
-        // private static int _nextId = 1;
         public int AirportId { get; set; }
         public string EntityId { get; set; }
         public string LocalizedName { get; set; }
         public string SkyId { get; set; }
-
-        // public Airport()
-        // {
-        //     AirportId = _nextId++;
-        //     Console.WriteLine($"Airport {LocalizedName} created with AirportId {AirportId}");
-        // }
     }
 }

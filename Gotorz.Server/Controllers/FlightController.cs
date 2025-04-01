@@ -18,8 +18,13 @@ public class FlightController : ControllerBase
 {
     private IFlightService _flightService;
     private readonly ISimpleKeyRepository<Airport> _airportRepository;
-    private Airport _airport;
     
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FlightController"/> class.
+    /// </summary>
+    /// <param name="flightService">The <see cref="IFlightService"/> used for fetching flight-related data.</param>
+    /// <param name="airportRepository">The <see cref="ISimpleKeyRepository<Airport>"/> used to access
+    /// <see cref="Airport"/> data in the database</param>
     public FlightController(IFlightService flightService, ISimpleKeyRepository<Airport> airportRepository)
     {
         _flightService = flightService;
@@ -77,7 +82,7 @@ public class FlightController : ControllerBase
             {
                 _departureAirport = _airportRepository.GetAll().FirstOrDefault(a => a.LocalizedName == departureAirport);
             }
-            else return null;
+            else return new List<Flight>();
         }
 
         // Ensure arrival airport exists in database. If not, add to database with GetAirport.
@@ -89,7 +94,7 @@ public class FlightController : ControllerBase
             {
                 _arrivalAirport = _airportRepository.GetAll().FirstOrDefault(a => a.LocalizedName == arrivalAirport);
             }
-            else return null;
+            else return new List<Flight>();
         }
 
         // Define date
@@ -101,10 +106,10 @@ public class FlightController : ControllerBase
         {
             List<Flight> flights = await _flightService.GetFlights(_date, _departureAirport, _arrivalAirport);
             
-            if (flights == null) return null;
-            else if ( flights.Count == 0 ) return null;
+            if (flights == null) return new List<Flight>();
+            else if ( flights.Count == 0 ) return new List<Flight>();
             else return flights;
         }
-        return null;
+        return new List<Flight>();
     }
 }
