@@ -1,0 +1,32 @@
+@page "/hotels"
+@using Gotorz.Shared.Models
+@using System.ComponentModel.DataAnnotations
+@using System.Text.Json
+@using Microsoft.AspNetCore.Mvc
+@using Gotorz.Client.Services
+@inject Gotorz.Client.Services.IHotelService HotelService
+
+<h3>Hotels</h3>
+
+@if (hotels == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <ul>
+        @foreach (var hotel in hotels)
+        {
+            <li>@hotel.Name - @hotel.Address - @hotel.Rating stars</li>
+        }
+    </ul>
+}
+
+@code {
+    private List<Hotel> hotels;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hotels = await HotelService.GetHotelsAsync();
+    }
+}

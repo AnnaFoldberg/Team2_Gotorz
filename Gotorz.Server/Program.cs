@@ -21,6 +21,8 @@ options.AddPolicy("MyAllowedOrigins",
 });
 
 builder.Services.AddHttpClient<IFlightService, FlightService>();
+builder.Services.AddScoped<IHotelService, HotelService>(); 
+builder.Services.AddHttpClient<IHotelService, HotelService>();
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
 var app = builder.Build();
