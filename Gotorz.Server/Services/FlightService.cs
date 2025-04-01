@@ -3,6 +3,7 @@ using Gotorz.Shared.Models;
 
 namespace Gotorz.Server.Services
 {
+    /// <inheritdoc />
     public class FlightService : IFlightService
     {
         private readonly HttpClient _httpClient;
@@ -19,6 +20,7 @@ namespace Gotorz.Server.Services
             _config = config;
         }
 
+        /// <inheritdoc />
         public async Task<List<Airport>> GetAirport(string airport)
         {
             var request = new HttpRequestMessage
@@ -52,6 +54,7 @@ namespace Gotorz.Server.Services
             }
         }
 
+        /// <inheritdoc />
         public async Task<List<Flight>> GetFlights(DateOnly? date, Airport departureAirport, Airport arrivalAirport)
         {
             var request = new HttpRequestMessage
