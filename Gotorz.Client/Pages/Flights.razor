@@ -6,63 +6,142 @@
 @using Gotorz.Client.Services
 @inject FlightService FlightService
 
-<h3>Flights</h3>
-
 <EditForm Model="@searchForm" OnValidSubmit="Search">
     <DataAnnotationsValidator />
     <ValidationSummary />
-    <div class="mb-3">
-        <label for="date" class="form-label">Date</label>
-        <InputText class="form-control" id="date" @bind-Value="searchForm.date" />
+
+    <div class="container">
+        <div class="d-flex gap-2 align-items-end">
+            <div class="form-group flex-grow-1">
+                <label for="departureAirport" class="form-label">Departure Airport</label>
+                @* <InputText class="form-control" id="departureAirport" @bind-Value="searchForm.departureAirport" /> *@
+                <InputText class="form-control" id="departureAirport" @bind-Value="searchForm.departureAirport" list="departure-options" />
+                <datalist id="departure-options">
+                    @foreach (var name in airportNames)
+                    {
+                        <option value="@name"></option>
+                    }
+                </datalist>
+            </div>
+            <div class="form-group flex-grow-1">
+                <label for="arrivalAirport" class="form-label">Arrival Airport</label>
+                @* <InputText class="form-control" id="arrivalAirport" @bind-Value="searchForm.arrivalAirport" /> *@
+                <InputText class="form-control" id="arrivalAirport" @bind-Value="searchForm.arrivalAirport" list="departure-options" />
+                <datalist id="departure-options">
+                    @foreach (var name in airportNames)
+                    {
+                        <option value="@name"></option>
+                    }
+                </datalist>
+            </div>
+            <div class="form-group flex-grow-1">
+                <label for="date" class="form-label">Date (optional)</label>
+                <InputText class="form-control" id="date" @bind-Value="searchForm.date" placeholder="dd-MM-yyyy"/>
+            </div>
+            <div class="form-group flex-grow-1">
+                <button type="submit" class="btn icon-white h-100 custom-background text-white bi bi-search"></button>
+            </div>
+        </div>
     </div>
-    <div class="mb-3">
-        <label for="departureAirport" class="form-label">Departure Airport</label>
-        <InputText class="form-control" id="departureAirport" @bind-Value="searchForm.departureAirport" />
-    </div>
-    <div class="mb-3">
-        <label for="arrivalAirport" class="form-label">Arrival Airport</label>
-        <InputText class="form-control" id="arrivalAirport" @bind-Value="searchForm.arrivalAirport" />
-    </div>
-    <button type="submit" class="btn btn-outline-dark">Search</button>
 </EditForm>
 
-@if (flights != null && flights.Any())
+<br><br>
+
+@if (flights != null && searchPerformed)
 {
-    <h4>Results:</h4>
-    <ul>
-        @foreach (var flight in flights)
-        {
-            <li>@flight.FlightNumber: @flight.Price</li>
-        }
-    </ul>
+    if (flights.Any())
+    {
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center text-white custom-background">
+                <span class="col">Date</span>
+                <span class="col">Departure</span>
+                <span class="col">Arrival</span>
+                @* <span class="col">Price</span> *@
+            </li>
+
+            @foreach (var flight in flights)
+            {
+                var departureAirport = airports.FirstOrDefault(a => a.AirportId == flight.DepartureAirportId);
+                var arrivalAirport = airports.FirstOrDefault(a => a.AirportId == flight.ArrivalAirportId);
+
+                <li class="list-group-item d-flex justify-content-between align-items-center" >
+                    @* @onclick="() => SelectFlight(flight)"> *@
+                    <span class="col">@flight.DepartureDate.ToString("dd-MM-yyyy")</span>
+                    <span class="col">@departureAirport.LocalizedName</span>
+                    <span class="col">@arrivalAirport.LocalizedName</span>
+                    @* <span class="col">@flight.Price.ToString("C")</span> *@
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <h6>No flights were found</h6>
+    }
 }
 
+@* @if (flightSelected && selectedFlight != null)
+{
+    <p>You selected flight @selectedFlight.FlightNumber</p>
+} *@
+
 @code {
+    private bool searchPerformed = false;
     private SearchForm searchForm = new SearchForm();
+    private IEnumerable<Airport> airports = Enumerable.Empty<Airport>();
+    private IEnumerable<string> airportNames = Enumerable.Empty<string>();
     private List<Flight>? flights = new List<Flight>();
+    @* private Flight? selectedFlight;
+    private bool flightSelected = false; *@
 
     public class SearchForm
     {
-        [Required(ErrorMessage = "Departure date is required.")]
-        [DateFormat("yyyy-MM-dd")]
-        public string date = string.Empty;
+        [DateFormat("dd-MM-yyyy")]
+        public string? date { get; set; }
 
         [Required(ErrorMessage = "Departure airport is required.")]
-        public string departureAirport = string.Empty;
+        public string departureAirport { get; set; }= string.Empty;
 
         [Required(ErrorMessage = "Arrival airport is required.")]
-        public string arrivalAirport = string.Empty;
+        public string arrivalAirport { get; set; }= string.Empty;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        airports = await FlightService.GetAllAirports();
+        airportNames = airports.Select(a => a.LocalizedName);
     }
 
     private async Task Search()
     {
         try
         {
-            flights = await FlightService.GetFlights(searchForm.date, searchForm.departureAirport, searchForm.arrivalAirport);
+            var result = await FlightService.GetFlights(searchForm.date, searchForm.departureAirport, searchForm.arrivalAirport);
+
+            if (result == null)
+            {
+                flights = new List<Flight>();
+                return;
+            }
+
+            flights = result;
+
+            airports = await FlightService.GetAllAirports();
+            airportNames = airports.Select(a => a.LocalizedName);
+
+            searchPerformed = true;
+
+            @* StateHasChanged(); *@
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error fetching flights: {ex.Message}");
         }
     }
+
+    @* private async Task SelectFlight(Flight flight)
+    {
+        selectedFlight = flight;
+        flightSelected = true;
+    } *@
 }

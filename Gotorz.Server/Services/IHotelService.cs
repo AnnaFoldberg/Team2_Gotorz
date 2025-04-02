@@ -4,6 +4,5 @@ namespace Gotorz.Server.Services
 {
     public interface IHotelService
     {
-        Task<List<Hotel>> GetHotelsByCityName(string city, DateTime arrival, DateTime departure);
-    }
+Task<List<Hotel>> GetHotelsByCityName(string city, string country, DateTime arrival, DateTime departure);    }
 }

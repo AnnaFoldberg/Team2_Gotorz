@@ -1,8 +1,19 @@
+using Gotorz.Server.Contexts;
+using Gotorz.Server.DataAccess;
 using Gotorz.Server.Services;
+using Gotorz.Shared.Models;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddDbContext<GotorzDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetSection
+    ("ConnectionStrings:AnnaConnection").Value);
+});
+
+builder.Services.AddScoped<ISimpleKeyRepository<Airport>, AirportRepository>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

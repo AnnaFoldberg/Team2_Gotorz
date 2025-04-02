@@ -15,11 +15,15 @@ namespace Gotorz.Server.Controllers
             _hotelService = hotelService;
         }
 
-[HttpGet("search")]
-public async Task<IActionResult> GetHotelsByCity([FromQuery] string city, [FromQuery] DateTime arrival, [FromQuery] DateTime departure)
-{
-    var result = await _hotelService.GetHotelsByCityName(city, arrival, departure);
-    return Ok(result);
-}
+        [HttpGet("search")]
+        public async Task<IActionResult> GetHotelsByCity(
+            [FromQuery] string city,
+            [FromQuery] string country,
+            [FromQuery] DateTime arrival,
+            [FromQuery] DateTime departure)
+        {
+            var result = await _hotelService.GetHotelsByCityName(city, country, arrival, departure);
+            return Ok(result);
+        }
     }
 }
