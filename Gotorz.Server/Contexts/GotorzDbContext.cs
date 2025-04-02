@@ -1,4 +1,4 @@
-using Gotorz.Shared.Models;
+using Gotorz.Server.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gotorz.Server.Contexts

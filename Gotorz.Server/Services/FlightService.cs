@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Nodes;
-using Gotorz.Shared.Models;
+using Gotorz.Shared.DTO;
 
 namespace Gotorz.Server.Services
 {
@@ -21,12 +21,12 @@ namespace Gotorz.Server.Services
         }
 
         /// <inheritdoc />
-        public async Task<List<Airport>> GetAirport(string airport)
+        public async Task<List<AirportDto>> GetAirport(string airportName)
         {
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri($"https://skyscanner89.p.rapidapi.com/flights/auto-complete?query={airport}"),
+                RequestUri = new Uri($"https://skyscanner89.p.rapidapi.com/flights/auto-complete?query={airportName}"),
                 Headers =
                 {
                     { "x-rapidapi-key", _config.GetSection("RapidAPI:Key").Value },
@@ -36,7 +36,7 @@ namespace Gotorz.Server.Services
 
             using (var response = await _httpClient.SendAsync(request))
             {
-                var airports = new List<Airport>();
+                var airports = new List<AirportDto>();
 
                 var body = await response.Content.ReadAsStringAsync();
                 JsonNode? root = JsonNode.Parse(body);
@@ -48,14 +48,14 @@ namespace Gotorz.Server.Services
                     string? localizedName = airportData?["localizedName"]?.ToString();
                     string? skyId = airportData?["skyId"]?.ToString();
 
-                    airports.Add(new Airport { EntityId = entityId, LocalizedName = localizedName, SkyId = skyId });
+                    airports.Add(new AirportDto { EntityId = entityId, LocalizedName = localizedName, SkyId = skyId });
                 }                    
                 return airports;
             }
         }
 
         /// <inheritdoc />
-        public async Task<List<Flight>> GetFlights(DateOnly? date, Airport departureAirport, Airport arrivalAirport)
+        public async Task<List<FlightDto>> GetFlights(DateOnly? date, AirportDto departureAirport, AirportDto arrivalAirport)
         {
             var request = new HttpRequestMessage
             {
@@ -70,7 +70,7 @@ namespace Gotorz.Server.Services
 
             using (var response = await _httpClient.SendAsync(request))
             {
-                var flights = new List<Flight>();
+                var flights = new List<FlightDto>();
 
                 var body = await response.Content.ReadAsStringAsync();
                 JsonNode root = JsonNode.Parse(body);
@@ -89,7 +89,7 @@ namespace Gotorz.Server.Services
                         if (date != null && _departureDate != date) continue;
 
                         // Define departure airport
-                        Airport _departureAirport = departureAirport;
+                        AirportDto _departureAirport = departureAirport;
                         JsonNode originAirport = content?["outboundLeg"]?["originAirport"];
                         if (originAirport != null)
                         {
@@ -100,7 +100,7 @@ namespace Gotorz.Server.Services
                         }
 
                         // Define arrival airport
-                        Airport _arrivalAirport = arrivalAirport;
+                        AirportDto _arrivalAirport = arrivalAirport;
                         JsonNode destinationAirport = content?["outboundLeg"]?["destinationAirport"];
                         if (destinationAirport != null)
                         {
@@ -114,7 +114,7 @@ namespace Gotorz.Server.Services
                         string _flightNumber = result?["id"]?.ToString();
 
                         // Define flight and add to flights
-                        flights.Add(new Flight { FlightNumber = _flightNumber, DepartureDate = _departureDate, DepartureAirportId = _departureAirport.AirportId, ArrivalAirportId = _arrivalAirport.AirportId });
+                        flights.Add(new FlightDto { FlightNumber = _flightNumber, DepartureDate = _departureDate, DepartureAirport = _departureAirport, ArrivalAirport = _arrivalAirport });
                     }
                 }
                 return flights;

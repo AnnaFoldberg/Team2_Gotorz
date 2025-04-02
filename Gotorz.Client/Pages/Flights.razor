@@ -1,9 +1,10 @@
 ﻿@page "/flights"
-@using Gotorz.Shared.Models
+@using Gotorz.Shared.DTO
 @using System.ComponentModel.DataAnnotations
 @using System.Text.Json
 @using Microsoft.AspNetCore.Mvc
 @using Gotorz.Client.Services
+@using Gotorz.Client.ViewModels
 @inject FlightService FlightService
 @inject ILogger<Flights> Logger
 
@@ -60,14 +61,11 @@
 
             @foreach (var flight in flights)
             {
-                var departureAirport = airports.FirstOrDefault(a => a.AirportId == flight.DepartureAirportId);
-                var arrivalAirport = airports.FirstOrDefault(a => a.AirportId == flight.ArrivalAirportId);
-
                 <li class="list-group-item d-flex justify-content-between align-items-center" >
                     @* @onclick="() => SelectFlight(flight)"> *@
                     <span class="col">@flight.DepartureDate.ToString("dd-MM-yyyy")</span>
-                    <span class="col">@departureAirport.LocalizedName</span>
-                    <span class="col">@arrivalAirport.LocalizedName</span>
+                    <span class="col">@flight.DepartureAirport.LocalizedName</span>
+                    <span class="col">@flight.ArrivalAirport.LocalizedName</span>
                     @* <span class="col">@flight.Price.ToString("C")</span> *@
                 </li>
             }
@@ -87,23 +85,11 @@
 @code {
     private bool searchPerformed = false;
     private SearchForm searchForm = new SearchForm();
-    private IEnumerable<Airport> airports = Enumerable.Empty<Airport>();
+    private IEnumerable<AirportDto> airports = Enumerable.Empty<AirportDto>();
     private IEnumerable<string> airportNames = Enumerable.Empty<string>();
-    private List<Flight>? flights = new List<Flight>();
+    private List<FlightDto>? flights = new List<FlightDto>();
     @* private Flight? selectedFlight;
     private bool flightSelected = false; *@
-
-    public class SearchForm
-    {
-        [DateFormat("dd-MM-yyyy")]
-        public string? date { get; set; }
-
-        [Required(ErrorMessage = "Departure airport is required.")]
-        public string departureAirport { get; set; }= string.Empty;
-
-        [Required(ErrorMessage = "Arrival airport is required.")]
-        public string arrivalAirport { get; set; }= string.Empty;
-    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -119,7 +105,7 @@
 
             if (result == null)
             {
-                flights = new List<Flight>();
+                flights = new List<FlightDto>();
                 return;
             }
 

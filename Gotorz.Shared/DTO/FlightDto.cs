@@ -8,11 +8,13 @@ using System.Threading.Tasks;
 namespace Gotorz.Shared.DTO
 {
     /// <summary>
-    /// Represents the data structure for a <see cref="FlightDto"/> entity.
+    /// Represents a flight used for data transfer between the client and server.
     /// </summary>
     public class FlightDto
     {
-        public string LocalizedName { get; set; }
-        public string SkyId { get; set; }
+        public string FlightNumber { get; set; }
+        public DateOnly DepartureDate { get; set; }
+        public AirportDto DepartureAirport { get; set; }
+        public AirportDto ArrivalAirport { get; set; }
     }
 }

@@ -2,8 +2,10 @@ using Moq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Gotorz.Server.Controllers;
 using Gotorz.Server.DataAccess;
-using Gotorz.Shared.Models;
+using Gotorz.Server.Models;
+using Gotorz.Shared.DTO;
 using Gotorz.Server.Services;
+using AutoMapper;
 
 namespace Gotorz.Server.UnitTests.Controllers
 {
@@ -11,16 +13,18 @@ namespace Gotorz.Server.UnitTests.Controllers
     public class FlightControllerTests
     {
         private FlightController _flightController;
-        private Mock<ISimpleKeyRepository<Airport>> _mockAirportRepository;
         private Mock<IFlightService> _mockFlightService;
+        private Mock<ISimpleKeyRepository<Airport>> _mockAirportRepository;
+        private Mock<IMapper> _mapper;
 
         [TestInitialize]
         public void TestInitialize()
         {
-            _mockAirportRepository = new Mock<ISimpleKeyRepository<Airport>>();
             _mockFlightService = new Mock<IFlightService>();
+            _mockAirportRepository = new Mock<ISimpleKeyRepository<Airport>>();
+            _mapper = new Mock<IMapper>();
 
-            _flightController = new FlightController(_mockFlightService.Object, _mockAirportRepository.Object);
+            _flightController = new FlightController(_mockFlightService.Object, _mockAirportRepository.Object, _mapper.Object);
         }
 
         // -------------------- GetAllAirports --------------------
