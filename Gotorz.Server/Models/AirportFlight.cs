@@ -4,7 +4,7 @@
 // using System.Text;
 // using System.Threading.Tasks;
 
-// namespace Gotorz.Shared.Models
+// namespace Gotorz.Server.Models
 // {
 //     /// <summary>
 //     /// Represents the data structure for an <see cref="AirportFlight"/> entity.

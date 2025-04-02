@@ -1,4 +1,4 @@
-// namespace Gotorz.Shared.Models
+// namespace Gotorz.Server.Models
 // {
 //     /// <summary>
 //     /// Represents the data structure for a <see cref="FlightTicket"/> entity.

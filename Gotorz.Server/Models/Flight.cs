@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Gotorz.Shared.Models
+namespace Gotorz.Server.Models
 {
     /// <summary>
     /// Represents the data structure for a <see cref="Flight"/> entity.
@@ -10,7 +10,11 @@ namespace Gotorz.Shared.Models
         public int FlightId { get; set; }
         public string FlightNumber { get; set; }
         public DateOnly DepartureDate { get; set; }
-        public int DepartureAirportId { get; set; }
-        public int ArrivalAirportId { get; set; }
+
+        // Objekter i stedet, som en liste
+        // public int DepartureAirportId { get; set; }
+        // public int ArrivalAirportId { get; set; }
+
+        public List<Airport> Airports { get; set; }
     }
 }

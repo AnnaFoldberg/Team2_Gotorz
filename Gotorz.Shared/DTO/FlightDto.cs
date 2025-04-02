@@ -1,19 +1,17 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Gotorz.Shared.Models
+namespace Gotorz.Shared.DTO
 {
     /// <summary>
-    /// Represents the data structure for an <see cref="Airport"/> entity.
+    /// Represents the data structure for a <see cref="FlightDto"/> entity.
     /// </summary>
-    public class Airport
+    public class FlightDto
     {
-        public int AirportId { get; set; }
-        public string EntityId { get; set; }
         public string LocalizedName { get; set; }
         public string SkyId { get; set; }
     }
