@@ -12,7 +12,7 @@ namespace Gotorz.Server.Services
         /// </summary>
         /// <param name="airportName">The search term to match airport names against.</param>
         /// <returns>A list of <see cref="AirportDto"/> entities matching the specified <paramref name="airportName"/>.</returns>
-        Task<List<AirportDto>> GetAirport(string airportName);
+        Task<List<AirportDto>> GetAirportAsync(string airportName);
 
         /// <summary>
         /// Retrieves a list of <see cref="FlightDto"/> entities flying from the specified <paramref name="departureAirport"/> to 
@@ -22,6 +22,6 @@ namespace Gotorz.Server.Services
         /// <param name="departureAirport">The departure airport to match the flight against.</param>
         /// <param name="arrivalAirport">The arrival airport to match the flight against.</param>
         /// <returns>A list of <see cref="FlightDto"/> entities matching the specified parameters.</returns>
-        Task<List<FlightDto>> GetFlights(DateOnly? date, AirportDto departureAirport, AirportDto arrivalAirport);
+        Task<List<FlightDto>> GetFlightsAsync(DateOnly? date, AirportDto departureAirport, AirportDto arrivalAirport);
     }
 }

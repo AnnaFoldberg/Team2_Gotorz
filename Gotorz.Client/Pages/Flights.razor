@@ -93,7 +93,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        airports = await FlightService.GetAllAirports();
+        airports = await FlightService.GetAllAirportsAsync();
         airportNames = airports.Select(a => a.LocalizedName);
     }
 
@@ -101,7 +101,7 @@
     {
         try
         {
-            var result = await FlightService.GetFlights(searchForm.date, searchForm.departureAirport, searchForm.arrivalAirport);
+            var result = await FlightService.GetFlightsAsync(searchForm.date, searchForm.departureAirport, searchForm.arrivalAirport);
 
             if (result == null)
             {
@@ -111,7 +111,7 @@
 
             flights = result;
 
-            airports = await FlightService.GetAllAirports();
+            airports = await FlightService.GetAllAirportsAsync();
             airportNames = airports.Select(a => a.LocalizedName);
 
             searchPerformed = true;

@@ -21,7 +21,7 @@ namespace Gotorz.Server.Services
         }
 
         /// <inheritdoc />
-        public async Task<List<AirportDto>> GetAirport(string airportName)
+        public async Task<List<AirportDto>> GetAirportAsync(string airportName)
         {
             var request = new HttpRequestMessage
             {
@@ -55,7 +55,7 @@ namespace Gotorz.Server.Services
         }
 
         /// <inheritdoc />
-        public async Task<List<FlightDto>> GetFlights(DateOnly? date, AirportDto departureAirport, AirportDto arrivalAirport)
+        public async Task<List<FlightDto>> GetFlightsAsync(DateOnly? date, AirportDto departureAirport, AirportDto arrivalAirport)
         {
             var request = new HttpRequestMessage
             {

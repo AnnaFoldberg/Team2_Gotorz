@@ -18,13 +18,13 @@ namespace Gotorz.Client.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<AirportDto>> GetAllAirports()
+        public async Task<IEnumerable<AirportDto>> GetAllAirportsAsync()
         {
             return await _httpClient.GetFromJsonAsync<IEnumerable<AirportDto>>($"http://localhost:5181/Flight/airports");
         }
 
         /// <inheritdoc />
-        public async Task<List<FlightDto>> GetFlights(string? date, string departureAirport, string arrivalAirport)
+        public async Task<List<FlightDto>> GetFlightsAsync(string? date, string departureAirport, string arrivalAirport)
         {
 			return await _httpClient.GetFromJsonAsync<List<FlightDto>>($"http://localhost:5181/Flight/flights?date={date}&departureAirport={Uri.EscapeDataString(departureAirport)}&arrivalAirport={Uri.EscapeDataString(arrivalAirport)}");
         }

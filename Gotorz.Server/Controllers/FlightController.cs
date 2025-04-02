@@ -52,9 +52,9 @@ public class FlightController : ControllerBase
     /// <param name="airport">The search term to match airport names against in <see cref="FlightService.GetAirport(string)"/>.</param>
     /// <returns>An <see cref="Airport"/> entity if exactly one match is found, otherwise <c>null</c>.</returns>
     [HttpGet("airport")]
-    public async Task<IActionResult> GetAirport(string airportName)
+    public async Task<IActionResult> GetAirportAsync(string airportName)
     {
-        var airports = await _flightService.GetAirport(airportName);
+        var airports = await _flightService.GetAirportAsync(airportName);
 
         if (airports == null) return BadRequest("Something went wrong");
         else if ( airports.Count == 0 ) return BadRequest("No airports were found");
@@ -76,13 +76,13 @@ public class FlightController : ControllerBase
     /// <param name="arrivalAirport">The arrival airport to match the flight against in <see cref="FlightService.GetFlights(string, string, string)"/>.</param>
     /// <returns>A list of <see cref="FlightDto"/> entities matching the specified parameters.</returns>
     [HttpGet("flights")]
-    public async Task<List<FlightDto>> GetFlights([FromQuery] string? date, [FromQuery] string departureAirport, [FromQuery] string arrivalAirport)
+    public async Task<List<FlightDto>> GetFlightsAsync([FromQuery] string? date, [FromQuery] string departureAirport, [FromQuery] string arrivalAirport)
     {        
         // Ensure departure airport exists in database. If not, add to database with GetAirport.
         var _departureAirport = _airportRepository.GetAll().FirstOrDefault(a => a.LocalizedName == departureAirport);
         if (_departureAirport == null)
         {
-            var result = await GetAirport(departureAirport);
+            var result = await GetAirportAsync(departureAirport);
             if (result is OkObjectResult okResult)
             {
                 _departureAirport = _airportRepository.GetAll().FirstOrDefault(a => a.LocalizedName == departureAirport);
@@ -94,7 +94,7 @@ public class FlightController : ControllerBase
         var _arrivalAirport = _airportRepository.GetAll().FirstOrDefault(a => a.LocalizedName == arrivalAirport);
         if (_arrivalAirport == null)
         {
-            var result = await GetAirport(arrivalAirport);
+            var result = await GetAirportAsync(arrivalAirport);
             if (result is OkObjectResult okResult)
             {
                 _arrivalAirport = _airportRepository.GetAll().FirstOrDefault(a => a.LocalizedName == arrivalAirport);
@@ -111,7 +111,7 @@ public class FlightController : ControllerBase
         {
             AirportDto _departureAirportDto = _mapper.Map<AirportDto>(_departureAirport);
             AirportDto _arrivalAirportDto = _mapper.Map<AirportDto>(_arrivalAirport);
-            List<FlightDto> flights = await _flightService.GetFlights(_date, _departureAirportDto, _arrivalAirportDto);
+            List<FlightDto> flights = await _flightService.GetFlightsAsync(_date, _departureAirportDto, _arrivalAirportDto);
             
             if (flights == null) return new List<FlightDto>();
             else if ( flights.Count == 0 ) return new List<FlightDto>();

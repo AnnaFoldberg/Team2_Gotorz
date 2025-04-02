@@ -12,7 +12,7 @@ namespace Gotorz.Client.Services
         /// by calling the Server project's API endpoint, <c>airports</c>.
         /// </summary>
         /// <returns>A collection of <see cref="AirportDto"/> entities.</returns>
-        Task<IEnumerable<AirportDto>> GetAllAirports();
+        Task<IEnumerable<AirportDto>> GetAllAirportsAsync();
 
         /// <summary>
         /// Retrieves a list of <see cref="FlightDto"/> entities
@@ -22,6 +22,6 @@ namespace Gotorz.Client.Services
         /// <param name="departureAirport">The departure airport to match the flight against.</param>
         /// <param name="arrivalAirport">The arrival airport to match the flight against.</param>
         /// <returns>A list of <see cref="FlightDto"/> entities matching the specified parameters.</returns>
-        Task<List<FlightDto>> GetFlights(string? date, string departureAirport, string arrivalAirport);
+        Task<List<FlightDto>> GetFlightsAsync(string? date, string departureAirport, string arrivalAirport);
     }
 }

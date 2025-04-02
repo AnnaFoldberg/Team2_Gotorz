@@ -13,6 +13,8 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<Airport, AirportDto>().ReverseMap();
+
+        // Structure from ChatGPT. Customized for this project.
         CreateMap<Flight, FlightDto>()
             .ForMember(dest => dest.DepartureAirport, opt => opt.MapFrom(src => src.DepartureAirport))
             .ForMember(dest => dest.ArrivalAirport, opt => opt.MapFrom(src => src.ArrivalAirport))
