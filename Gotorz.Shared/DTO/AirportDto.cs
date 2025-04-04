@@ -10,6 +10,7 @@ namespace Gotorz.Shared.DTO
     /// <summary>
     /// Represents an airport used for data transfer between the client and server.
     /// </summary>
+    /// <author>Anna</author>
     public class AirportDto
     {
         // AirportId needed internally for mapping flights.

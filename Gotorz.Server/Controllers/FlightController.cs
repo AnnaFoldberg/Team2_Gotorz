@@ -14,21 +14,22 @@ namespace Gotorz.Server.Controllers;
 /// Handles incoming HTTP requests related to flight searches.
 /// Delegates data retrieval to <see cref="IFlightService"/>.
 /// </remarks>
+/// <author>Anna</author>
 [ApiController]
 [Route("[controller]")]
 public class FlightController : ControllerBase
 {
     private IFlightService _flightService;
-    private readonly ISimpleKeyRepository<Airport> _airportRepository;
+    private readonly IRepository<Airport> _airportRepository;
     private readonly IMapper _mapper;
     
     /// <summary>
     /// Initializes a new instance of the <see cref="FlightController"/> class.
     /// </summary>
     /// <param name="flightService">The <see cref="IFlightService"/> used for fetching flight-related data.</param>
-    /// <param name="airportRepository">The <see cref="ISimpleKeyRepository<Airport>"/> used to access
+    /// <param name="airportRepository">The <see cref="IRepository<Airport>"/> used to access
     /// <see cref="Airport"/> data in the database</param>
-    public FlightController(IFlightService flightService, ISimpleKeyRepository<Airport> airportRepository, IMapper mapper)
+    public FlightController(IFlightService flightService, IRepository<Airport> airportRepository, IMapper mapper)
     {
         _flightService = flightService;
         _airportRepository = airportRepository;
@@ -63,7 +64,7 @@ public class FlightController : ControllerBase
         {
             Airport airport = _mapper.Map<Airport>(airports[0]);
             _airportRepository.Add(airport);
-            return Ok($"Successfully added {airports[0].LocalizedName} to database");
+            return Ok($"Successfully added {airport.LocalizedName} to database");
         }
     }
 

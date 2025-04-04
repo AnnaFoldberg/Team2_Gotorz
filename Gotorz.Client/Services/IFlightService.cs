@@ -5,6 +5,7 @@ namespace Gotorz.Client.Services
     /// <summary>
     /// Retrieves flight data from the <c>FlightController</c> in the Server project.
     /// </summary>
+    /// <author>Anna</author>
     public interface IFlightService
     {
         /// <summary>

@@ -5,6 +5,7 @@ namespace Gotorz.Server.Models
     /// <summary>
     /// Represents a flight stored in the database.
     /// </summary>
+    /// <author>Anna</author>
     public class Flight
     {
         public int FlightId { get; set; }

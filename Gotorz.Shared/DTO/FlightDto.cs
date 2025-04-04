@@ -10,6 +10,7 @@ namespace Gotorz.Shared.DTO
     /// <summary>
     /// Represents a flight used for data transfer between the client and server.
     /// </summary>
+    /// <author>Anna</author>
     public class FlightDto
     {
         public string FlightNumber { get; set; }

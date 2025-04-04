@@ -3,6 +3,7 @@
     /// <summary>
     /// Represents an airport stored in the database.
     /// </summary>
+    /// <author>Anna</author>
     public class Airport
     {
         public int AirportId { get; set; }

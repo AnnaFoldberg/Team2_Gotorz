@@ -5,6 +5,7 @@ namespace Gotorz.Server.Services
     /// <summary>
     /// Handles flight-related API requests to Skyscanner using RapidAPI.
     /// </summary>
+    /// <author>Anna</author>
     public interface IFlightService
     {
         /// <summary>

@@ -15,7 +15,7 @@ builder.Services.AddDbContext<GotorzDbContext>(options =>
 });
 
 
-builder.Services.AddScoped<ISimpleKeyRepository<Airport>, AirportRepository>();
+builder.Services.AddScoped<IRepository<Airport>, AirportRepository>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
