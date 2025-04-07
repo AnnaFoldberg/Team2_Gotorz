@@ -7,10 +7,14 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+// builder.Services.AddDbContext<GotorzDbContext>(options =>
+// {
+//     options.UseSqlServer(builder.Configuration.GetConnectionString("AnnaConnection"));
+// });
+
 builder.Services.AddDbContext<GotorzDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetSection
-    ("ConnectionStrings:AnnaConnection").Value);
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SayeConnection"));
 });
 
 builder.Services.AddScoped<ISimpleKeyRepository<Airport>, AirportRepository>();
@@ -33,6 +37,7 @@ options.AddPolicy("MyAllowedOrigins",
 
 builder.Services.AddHttpClient<IFlightService, FlightService>();
 builder.Services.AddScoped<IHotelService, HotelService>(); 
+builder.Services.AddScoped<IHotelBookingService, HotelBookingService>();
 builder.Services.AddHttpClient<IHotelService, HotelService>();
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 

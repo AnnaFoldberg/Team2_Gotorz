@@ -1,5 +1,7 @@
 using System.Text.Json.Nodes;
 using Gotorz.Shared.Models;
+using Gotorz.Server.Contexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace Gotorz.Server.Services
 {
@@ -7,15 +9,25 @@ namespace Gotorz.Server.Services
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
+        private readonly GotorzDbContext _dbContext;
 
-        public HotelService(HttpClient httpClient, IConfiguration config)
+        public HotelService(HttpClient httpClient, IConfiguration config, GotorzDbContext dbContext)
         {
             _httpClient = httpClient;
             _config = config;
+            _dbContext = dbContext;
         }
 
         public async Task<List<Hotel>> GetHotelsByCityName(string city, string country, DateTime arrival, DateTime departure)
         {
+            // Database Check Before API Use
+            var existingHotels = await _dbContext.Hotels
+                .Where(h => h.Address.ToLower().Contains(city.ToLower()))
+                .ToListAsync();
+
+            if (existingHotels.Any())
+                return existingHotels;
+
             var hotels = new List<Hotel>();
 
             var locationRequest = new HttpRequestMessage
@@ -71,35 +83,67 @@ namespace Gotorz.Server.Services
             {
                 foreach (var h in hotelArray)
                 {
-                   var address = h?["address"]?.ToString();
+                    var address = h?["address"]?.ToString();
 
-if (string.IsNullOrWhiteSpace(address))
-{
-    var cityVal = h?["city"]?.ToString();
-    var zip = h?["zip"]?.ToString();
-    var district = h?["district"]?.ToString();
+                    if (string.IsNullOrWhiteSpace(address))
+                    {
+                        var cityVal = h?["city"]?.ToString();
+                        var zip = h?["zip"]?.ToString();
+                        var district = h?["district"]?.ToString();
 
-    address = $"{(district ?? "")} {(zip ?? "")} {(cityVal ?? "")}".Trim();
+                        address = $"{(district ?? "")} {(zip ?? "")} {(cityVal ?? "")}".Trim();
 
-    if (string.IsNullOrWhiteSpace(address))
-    {
-        address = "Unknown";
-    }
-}
+                        if (string.IsNullOrWhiteSpace(address))
+                        {
+                            address = "Unknown";
+                        }
+                    }
 
-hotels.Add(new Hotel
-{
-    HotelId = hotels.Count + 1,
-    Name = h?["hotel_name"]?.ToString() ?? "Unknown",
-    Address = address,
-    Rating = (int)(h?["review_score"]?.GetValue<double>() ?? 0),
-    Latitude = h?["latitude"]?.GetValue<double>() ?? 0,
-    Longitude = h?["longitude"]?.GetValue<double>() ?? 0
-});
+                    hotels.Add(new Hotel
+                    {
+                        //HotelId = hotels.Count + 1,
+                        Name = h?["hotel_name"]?.ToString() ?? "Unknown",
+                        Address = address,
+                        Rating = (int)(h?["review_score"]?.GetValue<double>() ?? 0),
+                        Latitude = h?["latitude"]?.GetValue<double>() ?? 0,
+                        Longitude = h?["longitude"]?.GetValue<double>() ?? 0
+                    });
                 }
             }
 
+            if (hotels.Any())
+            {
+                _dbContext.Hotels.AddRange(hotels);
+                await _dbContext.SaveChangesAsync();
+            }
+            await SaveSearchHistory(city, country, arrival, departure);
             return hotels;
         }
-    }
+        private async Task SaveSearchHistory(string city, string country, DateTime arrival, DateTime departure)
+{
+    var history = new HotelSearchHistory
+    {
+        City = city,
+        Country = country,
+        ArrivalDate = arrival,
+        DepartureDate = departure,
+        SearchTimestamp  = DateTime.Now
+    };
+
+    _dbContext.HotelSearchHistories.Add(history);
+    await _dbContext.SaveChangesAsync();
+}
+
+public async Task<List<HotelSearchHistory>> GetSearchHistory()
+{
+    return await _dbContext.HotelSearchHistories
+        .OrderByDescending(h => h.SearchTimestamp)
+        .ToListAsync();
+}
+public async Task BookHotelAsync(HotelBooking booking)
+{
+    _dbContext.HotelBookings.Add(booking);
+    await _dbContext.SaveChangesAsync();
+}
+}
 }

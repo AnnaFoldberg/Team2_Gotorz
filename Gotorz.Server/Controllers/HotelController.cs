@@ -25,5 +25,12 @@ namespace Gotorz.Server.Controllers
             var result = await _hotelService.GetHotelsByCityName(city, country, arrival, departure);
             return Ok(result);
         }
+
+        [HttpGet("history")]
+        public async Task<IActionResult> GetSearchHistory()
+        {
+            var history = await _hotelService.GetSearchHistory();
+            return Ok(history);
+        }
     }
 }
