@@ -5,7 +5,7 @@
 @using Microsoft.AspNetCore.Mvc
 @using Gotorz.Client.Services
 @using Gotorz.Client.ViewModels
-@inject FlightService FlightService
+@inject IFlightService FlightService
 @inject ILogger<Flights> Logger
 
 <EditForm Model="@searchForm" OnValidSubmit="Search">
@@ -26,8 +26,8 @@
             </div>
             <div class="form-group flex-grow-1">
                 <label for="arrivalAirport" class="form-label">Arrival Airport</label>
-                <InputText class="form-control" id="arrivalAirport" @bind-Value="searchForm.arrivalAirport" list="departure-options" />
-                <datalist id="departure-options">
+                <InputText class="form-control" id="arrivalAirport" @bind-Value="searchForm.arrivalAirport" list="arrival-options" />
+                <datalist id="arrival-options">
                     @foreach (var name in airportNames)
                     {
                         <option value="@name"></option>
@@ -73,7 +73,7 @@
     }
     else
     {
-        <h6>No flights were found</h6>
+        <p>No flights were found</p>
     }
 }
 

@@ -79,7 +79,8 @@ namespace Gotorz.Client.UnitTests.Validation
             var result = _attribute.GetValidationResult(invalidDate, _context);
 
             // Assert
-            Assert.AreEqual(ValidationResult.Success, result);
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Date must be in the format dd-MM-yyyy", result!.ErrorMessage);
         }
 
         [TestMethod]
@@ -92,7 +93,8 @@ namespace Gotorz.Client.UnitTests.Validation
             var result = _attribute.GetValidationResult(invalidDate, _context);
 
             // Assert
-            Assert.AreEqual(ValidationResult.Success, result);
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Date must be in the format dd-MM-yyyy", result!.ErrorMessage);
         }
 
         [TestMethod]
@@ -105,8 +107,8 @@ namespace Gotorz.Client.UnitTests.Validation
             var result = _attribute.GetValidationResult(invalidDate, _context);
 
             // Assert
-            Assert.AreEqual(ValidationResult.Success, result);
-
+            Assert.IsNotNull(result);
+            Assert.AreEqual("Date must be in the format dd-MM-yyyy", result!.ErrorMessage);
         }
     }
 }

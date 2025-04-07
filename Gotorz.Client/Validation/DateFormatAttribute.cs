@@ -27,11 +27,11 @@ public sealed class DateFormatAttribute : ValidationAttribute
     {
         if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
         {
-            return ValidationResult.Success;
+            return ValidationResult.Success!;
         }
         if (value is string str && DateTime.TryParseExact(str, _expectedFormat, null, System.Globalization.DateTimeStyles.None, out _))
         {
-            return ValidationResult.Success;
+            return ValidationResult.Success!;
         }
         return new ValidationResult($"Date must be in the format {_expectedFormat}");
     }
