@@ -50,6 +50,7 @@ else if (hotels.Any())
             <span class="col">Hotel</span>
             <span class="col">City</span>
             <span class="col">Rating</span>
+            <span class="col">Book</span>
             <span class="col">Map</span>
         </li>
 
@@ -59,6 +60,14 @@ else if (hotels.Any())
                 <span class="col">@hotel.Name</span>
                 <span class="col">@hotel.Address</span>
                 <span class="col">@hotel.Rating</span>
+
+                <span class="col">
+                    <button class="btn btn-sm btn-outline-primary"
+                            @onclick="() => ShowBookingForm(hotel.HotelId)">
+                        Book
+                    </button>
+                </span>
+
                 <span class="col">
                     <a href="@hotel.GoogleMapsUrl" target="_blank">📍 View</a>
                 </span>
@@ -66,15 +75,67 @@ else if (hotels.Any())
         }
     </ul>
 }
-else
+
+@if (selectedHotelId != null && hotels is not null && hotels.Any(h => h.HotelId == selectedHotelId))
+{
+    <EditForm Model="@bookingForm" OnValidSubmit="SubmitBooking">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="card p-3 mt-3">
+            <h5>Booking Hotel: @hotels.First(h => h.HotelId == selectedHotelId).Name</h5>
+
+            <InputDate class="form-control mb-2" @bind-Value="bookingForm.CheckIn" />
+            <InputDate class="form-control mb-2" @bind-Value="bookingForm.CheckOut" />
+            <InputNumber class="form-control mb-2" @bind-Value="bookingForm.RoomCapacity" placeholder="Room Capacity" />
+            <InputNumber class="form-control mb-2" @bind-Value="bookingForm.Price" placeholder="Price" />
+
+            <button type="submit" class="btn btn-success">Confirm Booking</button>
+        </div>
+    </EditForm>
+}
+
+@if (hotels is not null && !hotels.Any())
 {
     <h6>No hotels found.</h6>
+}
+
+@if (history is not null && history.Any())
+{
+    <h5 class="mt-4">Search History</h5>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>City</th>
+                <th>Country</th>
+                <th>Arrival</th>
+                <th>Departure</th>
+                <th>Searched On</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in history)
+            {
+                <tr>
+                    <td>@item.City</td>
+                    <td>@item.Country</td>
+                    <td>@item.ArrivalDate.ToShortDateString()</td>
+                    <td>@item.DepartureDate.ToShortDateString()</td>
+                    <td>@item.SearchTimestamp.ToString("g")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }
 
 @code {
     private SearchForm searchForm = new();
     private List<Hotel>? hotels;
+    private List<HotelSearchHistory>? history;
     private bool searchPerformed = false;
+    private BookingForm bookingForm = new();
+    private int? selectedHotelId = null;
+    private bool bookingSuccess = false;
 
     public class SearchForm
     {
@@ -84,11 +145,30 @@ else
         [Required(ErrorMessage = "City is required.")]
         public string City { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Arrival date is required.")]
+        [Required]
         public DateTime ArrivalDate { get; set; } = DateTime.Today;
 
-        [Required(ErrorMessage = "Departure date is required.")]
+        [Required]
         public DateTime DepartureDate { get; set; } = DateTime.Today.AddDays(1);
+    }
+
+    public class BookingForm
+    {
+        [Required]
+        public DateTime CheckIn { get; set; } = DateTime.Today.AddDays(1);
+
+        [Required]
+        public DateTime CheckOut { get; set; } = DateTime.Today.AddDays(2);
+
+        [Required]
+        [Range(1, 10)]
+        public int RoomCapacity { get; set; }
+
+        [Required]
+        [Range(1, 10000)]
+        public decimal Price { get; set; }
+
+        public int HotelId { get; set; }
     }
 
     private async Task Search()
@@ -96,17 +176,57 @@ else
         try
         {
             searchPerformed = true;
-            hotels = null; // Set to null to trigger "Loading..." state
+            hotels = null;
             hotels = await HotelService.GetHotelsByCityName(
                 searchForm.City,
                 searchForm.Country,
                 searchForm.ArrivalDate,
                 searchForm.DepartureDate
             );
+            history = await HotelService.GetSearchHistory();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"🔥 Error: {ex.Message}");
         }
+    }
+
+    private void ShowBookingForm(int hotelId)
+    {
+        selectedHotelId = hotelId;
+        bookingForm = new BookingForm { HotelId = hotelId };
+        bookingSuccess = false;
+        Console.WriteLine($"Hotel ID: {hotelId}");
+        StateHasChanged(); // 🔁 فورس رندر
+    }
+
+    private async Task SubmitBooking()
+    {
+        try
+        {
+            var booking = new HotelBooking
+            {
+                CheckIn = bookingForm.CheckIn,
+                CheckOut = bookingForm.CheckOut,
+                RoomCapacity = bookingForm.RoomCapacity,
+                Price = bookingForm.Price,
+                HotelId = bookingForm.HotelId
+            };
+
+            await HotelService.BookHotelAsync(booking);
+            bookingSuccess = true;
+            selectedHotelId = null;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Booking failed: {ex.Message}");
+        }
+
+        Console.WriteLine("✅ Submit clicked");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        history = await HotelService.GetSearchHistory();
     }
 }

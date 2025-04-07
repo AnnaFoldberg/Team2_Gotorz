@@ -29,5 +29,14 @@ namespace Gotorz.Client.Services
             var response = await _httpClient.GetFromJsonAsync<List<Hotel>>(query);
             return response ?? new List<Hotel>();
         }
+        public async Task<List<HotelSearchHistory>> GetSearchHistory()
+        {
+            var result = await _httpClient.GetFromJsonAsync<List<HotelSearchHistory>>("http://localhost:5181/api/hotel/history");
+            return result ?? new List<HotelSearchHistory>();
+        }
+        public async Task BookHotelAsync(HotelBooking booking)
+        {
+            await _httpClient.PostAsJsonAsync("http://localhost:5181/api/hotelbooking", booking);
+        }
     }
 }
