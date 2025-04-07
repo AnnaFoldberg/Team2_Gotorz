@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 /// <summary>
 /// Validates that a string represents a date in a specified format.
 /// </summary>
+/// <author>Anna</author>
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
 public sealed class DateFormatAttribute : ValidationAttribute
 {

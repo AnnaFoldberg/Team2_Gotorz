@@ -56,17 +56,14 @@
                 <span class="col">Date</span>
                 <span class="col">Departure</span>
                 <span class="col">Arrival</span>
-                @* <span class="col">Price</span> *@
             </li>
 
             @foreach (var flight in flights)
             {
                 <li class="list-group-item d-flex justify-content-between align-items-center" >
-                    @* @onclick="() => SelectFlight(flight)"> *@
                     <span class="col">@flight.DepartureDate.ToString("dd-MM-yyyy")</span>
                     <span class="col">@flight.DepartureAirport.LocalizedName</span>
                     <span class="col">@flight.ArrivalAirport.LocalizedName</span>
-                    @* <span class="col">@flight.Price.ToString("C")</span> *@
                 </li>
             }
         </ul>
@@ -77,19 +74,12 @@
     }
 }
 
-@* @if (flightSelected && selectedFlight != null)
-{
-    <p>You selected flight @selectedFlight.FlightNumber</p>
-} *@
-
 @code {
     private bool searchPerformed = false;
     private SearchForm searchForm = new SearchForm();
     private IEnumerable<AirportDto> airports = Enumerable.Empty<AirportDto>();
     private IEnumerable<string> airportNames = Enumerable.Empty<string>();
     private List<FlightDto>? flights = new List<FlightDto>();
-    @* private Flight? selectedFlight;
-    private bool flightSelected = false; *@
 
     protected override async Task OnInitializedAsync()
     {
@@ -121,10 +111,4 @@
             Logger.LogError(ex, "Error fetching flights");
         }
     }
-
-    @* private async Task SelectFlight(Flight flight)
-    {
-        selectedFlight = flight;
-        flightSelected = true;
-    } *@
 }
