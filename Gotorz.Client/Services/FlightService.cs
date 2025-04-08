@@ -1,6 +1,5 @@
-﻿using System.Net.Http.Json;
-using System.Text.Json.Nodes;
-using Gotorz.Shared.Models;
+using System.Net.Http.Json;
+using Gotorz.Shared.DTO;
 
 namespace Gotorz.Client.Services
 {
@@ -19,15 +18,15 @@ namespace Gotorz.Client.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<Airport>> GetAllAirports()
+        public async Task<IEnumerable<AirportDto>> GetAllAirportsAsync()
         {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<Airport>>($"http://localhost:5181/Flight/airports");
+            return await _httpClient.GetFromJsonAsync<IEnumerable<AirportDto>>($"http://localhost:5181/Flight/airports");
         }
 
         /// <inheritdoc />
-        public async Task<List<Flight>> GetFlights(string? date, string departureAirport, string arrivalAirport)
+        public async Task<List<FlightDto>> GetFlightsAsync(string? date, string departureAirport, string arrivalAirport)
         {
-			return await _httpClient.GetFromJsonAsync<List<Flight>>($"http://localhost:5181/Flight/flights?date={date}&departureAirport={Uri.EscapeDataString(departureAirport)}&arrivalAirport={Uri.EscapeDataString(arrivalAirport)}");
+			return await _httpClient.GetFromJsonAsync<List<FlightDto>>($"http://localhost:5181/Flight/flights?date={date}&departureAirport={Uri.EscapeDataString(departureAirport)}&arrivalAirport={Uri.EscapeDataString(arrivalAirport)}");
         }
     }
 }

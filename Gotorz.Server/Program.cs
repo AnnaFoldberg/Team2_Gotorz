@@ -1,26 +1,25 @@
 using Gotorz.Server.Contexts;
 using Gotorz.Server.DataAccess;
 using Gotorz.Server.Services;
-using Gotorz.Shared.Models;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Gotorz.Server.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// builder.Services.AddDbContext<GotorzDbContext>(options =>
-// {
-//     options.UseSqlServer(builder.Configuration.GetConnectionString("AnnaConnection"));
-// });
-
-builder.Services.AddDbContext<GotorzDbContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SayeConnection"));
-});
 
 builder.Services.AddScoped<ISimpleKeyRepository<Airport>, AirportRepository>();
 
+});
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SayeConnection"));
+{
+builder.Services.AddDbContext<GotorzDbContext>(options =>
+builder.Services.AddScoped<IRepository<Airport>, AirportRepository>();
+
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -43,7 +42,6 @@ builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

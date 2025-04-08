@@ -8,10 +8,6 @@ namespace Gotorz.Server.Contexts
         public GotorzDbContext(DbContextOptions<GotorzDbContext> options) : base(options) {}
 
         public DbSet<Airport> Airports { get; set; }
-
-        // public DbSet<Flight> Flights { get; set; }
-
-        // public DbSet<AirportFlight> AirportFlights { get; set; }
         public DbSet<Hotel> Hotels { get; set; }
         public DbSet<HotelBooking> HotelBookings { get; set; }
         public DbSet<HotelSearchHistory> HotelSearchHistories { get; set; }
