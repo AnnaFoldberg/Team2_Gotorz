@@ -1,6 +1,5 @@
 using Gotorz.Server.Contexts;
-using Gotorz.Shared.Models;
-using Microsoft.EntityFrameworkCore;
+using Gotorz.Server.Models;
 
 namespace Gotorz.Server.DataAccess
 {
@@ -8,6 +7,7 @@ namespace Gotorz.Server.DataAccess
     /// A repository class for managing <see cref="Airport"/> entities using Entity Framework Core.
     /// </summary>
     /// <remarks>Based on a ChatGPT-generated template. Customized for this project.</remarks>
+    /// <author>Anna</author>
     public class AirportRepository : ISimpleKeyRepository<Airport>
     {
         private readonly GotorzDbContext _context;

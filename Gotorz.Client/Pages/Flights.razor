@@ -1,12 +1,14 @@
 ﻿@page "/flights"
-@using Gotorz.Shared.Models
+@using Gotorz.Shared.DTO
 @using System.ComponentModel.DataAnnotations
 @using System.Text.Json
 @using Microsoft.AspNetCore.Mvc
 @using Gotorz.Client.Services
-@inject FlightService FlightService
+@using Gotorz.Client.ViewModels
+@inject IFlightService FlightService
+@inject ILogger<Flights> Logger
 
-<EditForm Model="@searchForm" OnValidSubmit="Search">
+<EditForm Model="@searchForm" OnValidSubmit="SearchAsync">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
@@ -14,29 +16,27 @@
         <div class="d-flex gap-2 align-items-end">
             <div class="form-group flex-grow-1">
                 <label for="departureAirport" class="form-label">Departure Airport</label>
-                @* <InputText class="form-control" id="departureAirport" @bind-Value="searchForm.departureAirport" /> *@
-                <InputText class="form-control" id="departureAirport" @bind-Value="searchForm.departureAirport" list="departure-options" />
+                <InputText class="form-control" id="departureAirport" @bind-Value="searchForm.DepartureAirport" list="departure-options" />
                 <datalist id="departure-options">
-                    @foreach (var name in airportNames)
+                    @foreach (var airport in airports)
                     {
-                        <option value="@name"></option>
+                        <option value="@airport.LocalizedName"></option>
                     }
                 </datalist>
             </div>
             <div class="form-group flex-grow-1">
                 <label for="arrivalAirport" class="form-label">Arrival Airport</label>
-                @* <InputText class="form-control" id="arrivalAirport" @bind-Value="searchForm.arrivalAirport" /> *@
-                <InputText class="form-control" id="arrivalAirport" @bind-Value="searchForm.arrivalAirport" list="departure-options" />
-                <datalist id="departure-options">
-                    @foreach (var name in airportNames)
+                <InputText class="form-control" id="arrivalAirport" @bind-Value="searchForm.ArrivalAirport" list="arrival-options" />
+                <datalist id="arrival-options">
+                    @foreach (var airport in airports)
                     {
-                        <option value="@name"></option>
+                        <option value="@airport.LocalizedName"></option>
                     }
                 </datalist>
             </div>
             <div class="form-group flex-grow-1">
                 <label for="date" class="form-label">Date (optional)</label>
-                <InputText class="form-control" id="date" @bind-Value="searchForm.date" placeholder="dd-MM-yyyy"/>
+                <InputText class="form-control" id="date" @bind-Value="searchForm.Date" placeholder="dd-MM-yyyy" />
             </div>
             <div class="form-group flex-grow-1">
                 <button type="submit" class="btn icon-white h-100 custom-background text-white bi bi-search"></button>
@@ -56,92 +56,56 @@
                 <span class="col">Date</span>
                 <span class="col">Departure</span>
                 <span class="col">Arrival</span>
-                @* <span class="col">Price</span> *@
             </li>
 
             @foreach (var flight in flights)
             {
-                var departureAirport = airports.FirstOrDefault(a => a.AirportId == flight.DepartureAirportId);
-                var arrivalAirport = airports.FirstOrDefault(a => a.AirportId == flight.ArrivalAirportId);
-
                 <li class="list-group-item d-flex justify-content-between align-items-center" >
-                    @* @onclick="() => SelectFlight(flight)"> *@
                     <span class="col">@flight.DepartureDate.ToString("dd-MM-yyyy")</span>
-                    <span class="col">@departureAirport.LocalizedName</span>
-                    <span class="col">@arrivalAirport.LocalizedName</span>
-                    @* <span class="col">@flight.Price.ToString("C")</span> *@
+                    <span class="col">@flight.DepartureAirport.LocalizedName</span>
+                    <span class="col">@flight.ArrivalAirport.LocalizedName</span>
                 </li>
             }
         </ul>
     }
     else
     {
-        <h6>No flights were found</h6>
+        <p>No flights were found</p>
     }
 }
-
-@* @if (flightSelected && selectedFlight != null)
-{
-    <p>You selected flight @selectedFlight.FlightNumber</p>
-} *@
 
 @code {
     private bool searchPerformed = false;
     private SearchForm searchForm = new SearchForm();
-    private IEnumerable<Airport> airports = Enumerable.Empty<Airport>();
-    private IEnumerable<string> airportNames = Enumerable.Empty<string>();
-    private List<Flight>? flights = new List<Flight>();
-    @* private Flight? selectedFlight;
-    private bool flightSelected = false; *@
-
-    public class SearchForm
-    {
-        [DateFormat("dd-MM-yyyy")]
-        public string? date { get; set; }
-
-        [Required(ErrorMessage = "Departure airport is required.")]
-        public string departureAirport { get; set; }= string.Empty;
-
-        [Required(ErrorMessage = "Arrival airport is required.")]
-        public string arrivalAirport { get; set; }= string.Empty;
-    }
+    private IEnumerable<AirportDto> airports = Enumerable.Empty<AirportDto>();
+    private List<FlightDto>? flights = new List<FlightDto>();
 
     protected override async Task OnInitializedAsync()
     {
-        airports = await FlightService.GetAllAirports();
-        airportNames = airports.Select(a => a.LocalizedName);
+        airports = await FlightService.GetAllAirportsAsync();
     }
 
-    private async Task Search()
+    private async Task SearchAsync()
     {
         try
         {
-            var result = await FlightService.GetFlights(searchForm.date, searchForm.departureAirport, searchForm.arrivalAirport);
+            var result = await FlightService.GetFlightsAsync(searchForm.Date, searchForm.DepartureAirport, searchForm.ArrivalAirport);
 
             if (result == null)
             {
-                flights = new List<Flight>();
+                flights = new List<FlightDto>();
                 return;
             }
 
             flights = result;
 
-            airports = await FlightService.GetAllAirports();
-            airportNames = airports.Select(a => a.LocalizedName);
+            airports = await FlightService.GetAllAirportsAsync();
 
             searchPerformed = true;
-
-            @* StateHasChanged(); *@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error fetching flights: {ex.Message}");
+            Logger.LogError(ex, "Error fetching flights");
         }
     }
-
-    @* private async Task SelectFlight(Flight flight)
-    {
-        selectedFlight = flight;
-        flightSelected = true;
-    } *@
 }
