@@ -1,25 +1,32 @@
 ﻿using System.Text.Json.Nodes;
-using Gotorz.Shared.Models;
+using Gotorz.Shared.DTO;
 
 namespace Gotorz.Server.Services
 {
+    /// <inheritdoc />
     public class FlightService : IFlightService
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FlightService"/> class.
+        /// </summary>
+        /// <param name="httpClient">The HTTP client used for API requests.</param>
+        /// <param name="config">The configuration object for accessing API keys.</param>
         public FlightService(HttpClient httpClient, IConfiguration config)
         {
             _httpClient = httpClient;
             _config = config;
         }
 
-        public async Task<List<Airport>> GetAirport(string airport)
+        /// <inheritdoc />
+        public async Task<List<AirportDto>> GetAirportAsync(string airportName)
         {
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri($"https://skyscanner89.p.rapidapi.com/flights/auto-complete?query={airport}"),
+                RequestUri = new Uri($"https://skyscanner89.p.rapidapi.com/flights/auto-complete?query={airportName}"),
                 Headers =
                 {
                     { "x-rapidapi-key", _config.GetSection("RapidAPI:Key").Value },
@@ -29,25 +36,36 @@ namespace Gotorz.Server.Services
 
             using (var response = await _httpClient.SendAsync(request))
             {
-                var airports = new List<Airport>();
+                var airports = new List<AirportDto>();
 
                 var body = await response.Content.ReadAsStringAsync();
                 JsonNode? root = JsonNode.Parse(body);
-                JsonObject? airportData = root?["inputSuggest"]?[0]?["navigation"]?["relevantFlightParams"]?.AsObject();
+                JsonArray? inputSuggest = root?["inputSuggest"]?.AsArray();
 
-                if (airportData != null)
+                if (inputSuggest != null)
                 {
-                    string? entityId = airportData?["entityId"]?.ToString();
-                    string? localizedName = airportData?["localizedName"]?.ToString();
-                    string? skyId = airportData?["skyId"]?.ToString();
+                    foreach (var suggest in inputSuggest)
+                    {
+                        JsonObject? airportData = suggest?["navigation"]?["relevantFlightParams"]?.AsObject();
 
-                    airports.Add(new Airport { EntityId = entityId, LocalizedName = localizedName, SkyId = skyId });
-                }                    
+                        if (airportData == null
+                            || airportData?["flightPlaceType"]?.ToString() != "AIRPORT"
+                            || airportData?["localizedName"]?.ToString().Contains(airportName) == false)
+                            continue;
+
+                        string? entityId = airportData?["entityId"]?.ToString();
+                        string? localizedName = airportData?["localizedName"]?.ToString();
+                        string? skyId = airportData?["skyId"]?.ToString();
+                        
+                        airports.Add(new AirportDto { EntityId = entityId, LocalizedName = localizedName, SkyId = skyId });      
+                    }
+                }
                 return airports;
             }
         }
 
-        public async Task<List<Flight>> GetFlights(DateOnly date, Airport departureAirport, Airport arrivalAirport)
+        /// <inheritdoc />
+        public async Task<List<FlightDto>> GetFlightsAsync(DateOnly? date, AirportDto departureAirport, AirportDto arrivalAirport)
         {
             var request = new HttpRequestMessage
             {
@@ -62,7 +80,7 @@ namespace Gotorz.Server.Services
 
             using (var response = await _httpClient.SendAsync(request))
             {
-                var flights = new List<Flight>();
+                var flights = new List<FlightDto>();
 
                 var body = await response.Content.ReadAsStringAsync();
                 JsonNode root = JsonNode.Parse(body);
@@ -73,46 +91,40 @@ namespace Gotorz.Server.Services
                     foreach (var result in results)
                     {
                         JsonNode? content = result?["content"];
-                        if (content == null || content?["direct"]?.GetValue<bool>() == false) continue;
+                        if (content == null) continue;
+
+                        bool? isDirect = content?["direct"]?.GetValue<bool>();
+                        if (isDirect == null || isDirect == false) continue;
                                                 
                         // Define departure date
-                        string departureDate = content?["outboundLeg"]?["localDepartureDate"].ToString();
+                        string? departureDate = content?["outboundLeg"]?["localDepartureDate"]?.ToString();
+                        if (departureDate == null) continue;
                         DateOnly _departureDate = DateOnly.Parse(departureDate);
-                        if (_departureDate != date)
-                        {
-                            Console.WriteLine($"{_departureDate} != {date}");
-                            continue;
-                        }
+                        if (date != null && _departureDate != date) continue;
 
                         // Define departure airport
-                        Airport _departureAirport = departureAirport;
-                        JsonNode originAirport = content?["outboundLeg"]?["originAirport"];
-                        if (originAirport != null)
-                        {
-                            string? entityId = originAirport?["id"]?.ToString();
-                            string? skyId = originAirport?["skyCode"]?.ToString();
-
-                            if (entityId != departureAirport.EntityId || skyId != departureAirport.SkyId) continue;
-                        }
+                        AirportDto _departureAirport = departureAirport;
+                        JsonNode? originAirport = content?["outboundLeg"]?["originAirport"];
+                        if (originAirport == null) continue;
+                        string? originEntityId = originAirport?["id"]?.ToString();
+                        string? originSkyId = originAirport?["skyCode"]?.ToString();
+                        if (originEntityId != departureAirport.EntityId || originSkyId != departureAirport.SkyId) continue;
 
                         // Define arrival airport
-                        Airport _arrivalAirport = arrivalAirport;
-                        JsonNode destinationAirport = content?["outboundLeg"]?["destinationAirport"];
-                        if (destinationAirport != null)
-                        {
-                            string? entityId = destinationAirport?["id"]?.ToString();
-                            string? skyId = destinationAirport?["skyCode"]?.ToString();
+                        AirportDto _arrivalAirport = arrivalAirport;
+                        JsonNode? destinationAirport = content?["outboundLeg"]?["destinationAirport"];
+                        if (destinationAirport == null) continue;
+                        string? destinationEntityId = destinationAirport?["id"]?.ToString();
+                        string? destinationSkyId = destinationAirport?["skyCode"]?.ToString();
 
-                            if (entityId != arrivalAirport.EntityId || skyId != arrivalAirport.SkyId) continue;
-                        }
+                        if (destinationEntityId != arrivalAirport.EntityId || destinationSkyId != arrivalAirport.SkyId) continue;
                         
-                        // Define price
-                        decimal _price = content["rawPrice"].GetValue<decimal>();
-
                         // Define id
                         string _flightNumber = result?["id"]?.ToString();
+                        if (_flightNumber == null) continue;
 
-                        flights.Add(new Flight { FlightNumber = _flightNumber, DepartureDate = _departureDate, Price = _price, DepartureAirportId = _departureAirport.AirportId, ArrivalAirportId = _arrivalAirport.AirportId });
+                        // Define flight and add to flights
+                        flights.Add(new FlightDto { FlightNumber = _flightNumber, DepartureDate = _departureDate, DepartureAirport = _departureAirport, ArrivalAirport = _arrivalAirport });
                     }
                 }
                 return flights;
