@@ -44,7 +44,15 @@ namespace Gotorz.Server.UnitTests.Controllers
                 new Airport { AirportId = 2, EntityId = "95565058", LocalizedName = "New York John F. Kennedy", SkyId = "JFK" }
             };
 
+            var mockAirportDtos = new List<AirportDto>
+            {
+                new AirportDto { AirportId = 1, EntityId = "95673765", LocalizedName = "Sacramento International", SkyId = "SMF" },
+                new AirportDto { AirportId = 2, EntityId = "95673499", LocalizedName = "Dallas Fort Worth International", SkyId = "DFW" },
+                new AirportDto { AirportId = 2, EntityId = "95565058", LocalizedName = "New York John F. Kennedy", SkyId = "JFK" }
+            };
+
             _mockAirportRepository.Setup(repo => repo.GetAll()).Returns(mockAirports);
+            _mapper.Setup(m => m.Map<IEnumerable<AirportDto>>(mockAirports)).Returns(mockAirportDtos);
 
             // Act
             var airports = _flightController.GetAllAirports();
@@ -52,7 +60,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             // Assert
             Assert.IsNotNull(airports);
             Assert.AreEqual(3, airports.Count());
-            CollectionAssert.AreEqual(mockAirports, airports.ToList());
+            CollectionAssert.AreEqual(mockAirportDtos, airports.ToList());
         }
 
         [TestMethod]
@@ -63,8 +71,13 @@ namespace Gotorz.Server.UnitTests.Controllers
             {
                 new Airport { AirportId = 1, EntityId = "95673765", LocalizedName = "Sacramento International", SkyId = "SMF" }
             };
+            var mockAirportDtos = new List<AirportDto>
+            {
+                new AirportDto { AirportId = 1, EntityId = "95673765", LocalizedName = "Sacramento International", SkyId = "SMF" }
+            };
 
             _mockAirportRepository.Setup(repo => repo.GetAll()).Returns(mockAirports);
+            _mapper.Setup(m => m.Map<IEnumerable<AirportDto>>(mockAirports)).Returns(mockAirportDtos);
 
             // Act
             var airports = _flightController.GetAllAirports();
@@ -72,7 +85,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             // Assert
             Assert.IsNotNull(airports);
             Assert.AreEqual(1, airports.Count());
-            CollectionAssert.AreEqual(mockAirports, airports.ToList());
+            CollectionAssert.AreEqual(mockAirportDtos, airports.ToList());
         }
 
         [TestMethod]
@@ -80,8 +93,10 @@ namespace Gotorz.Server.UnitTests.Controllers
         {
             // Arrange
             var mockAirports = new List<Airport>();
+            var mockAirportDtos = new List<AirportDto>();
 
             _mockAirportRepository.Setup(repo => repo.GetAll()).Returns(mockAirports);
+            _mapper.Setup(m => m.Map<IEnumerable<AirportDto>>(mockAirports)).Returns(mockAirportDtos);
 
             // Act
             var airports = _flightController.GetAllAirports();
@@ -89,7 +104,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             // Assert
             Assert.IsNotNull(airports);
             Assert.AreEqual(0, airports.Count());
-            CollectionAssert.AreEqual(mockAirports, airports.ToList());
+            CollectionAssert.AreEqual(mockAirportDtos, airports.ToList());
         }
 
         // -------------------- GetAirportAsync --------------------

@@ -37,13 +37,15 @@ public class FlightController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves names of all <see cref="Airport"/> entities in the database
+    /// Retrieves all <see cref="Airport"/> entities from the database.
     /// </summary>
-    /// <returns>A collection of <see cref="Airport"/> names.</returns>
+    /// <returns>A collection of <see cref="AirportDto"/> entities.</returns>
     [HttpGet("airports")]
-    public IEnumerable<Airport>? GetAllAirports()
+    public IEnumerable<AirportDto>? GetAllAirports()
     {
-        return _airportRepository.GetAll();
+        var airports = _airportRepository.GetAll();
+        var airportDtos = _mapper.Map<IEnumerable<AirportDto>>(airports);
+        return airportDtos;
     }
 
     /// <summary>

@@ -9,12 +9,12 @@ namespace Gotorz.Client.ViewModels
     public class SearchForm
     {
         [DateFormat("dd-MM-yyyy")]
-        public string? date { get; set; }
+        public string? Date { get; set; }
 
         [Required(ErrorMessage = "Departure airport is required.")]
-        public string departureAirport { get; set; }= string.Empty;
+        public string DepartureAirport { get; set; }= string.Empty;
 
         [Required(ErrorMessage = "Arrival airport is required.")]
-        public string arrivalAirport { get; set; }= string.Empty;
+        public string ArrivalAirport { get; set; }= string.Empty;
     }
 }

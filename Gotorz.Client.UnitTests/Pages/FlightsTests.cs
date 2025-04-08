@@ -137,9 +137,9 @@ namespace Gotorz.Client.UnitTests.Pages
             Assert.AreEqual(0, datalistOptions.Count);
         }
 
-        // -------------------- Search --------------------
+        // -------------------- SearchAsync --------------------
         [TestMethod]
-        public void Search_ValidInput_CallsGetFlights()
+        public void SearchAsync_ValidInput_CallsGetFlights()
         {
             // Arrange
             var (mockFlights, component) = RenderFlightsWithFlights();
@@ -156,7 +156,7 @@ namespace Gotorz.Client.UnitTests.Pages
         }
 
         [TestMethod]
-        public void Search_ValidInput_LoadsFlights()
+        public void SearchAsync_ValidInput_LoadsFlights()
         {
             // Arrange
             var (mockFlights, component) = RenderFlightsWithFlights();
@@ -177,7 +177,7 @@ namespace Gotorz.Client.UnitTests.Pages
         }
 
         [TestMethod]
-        public void Search_ValidInput_CallsGetAllAirports()
+        public void SearchAsync_ValidInput_CallsGetAllAirports()
         {
             // Arrange
             var (mockFlights, component) = RenderFlightsWithFlights();
@@ -193,7 +193,7 @@ namespace Gotorz.Client.UnitTests.Pages
         }
 
         [TestMethod]
-        public void Search_ServiceReturnsEmptyFlightList_ShowsNoFlightsFoundMessage()
+        public void SearchAsync_ServiceReturnsEmptyFlightList_ShowsNoFlightsFoundMessage()
         {
             // Arrange
             _mockFlightService.Setup(s => s.GetFlightsAsync(null, "New York John F. Kennedy", "London Heathrow"))
@@ -212,7 +212,7 @@ namespace Gotorz.Client.UnitTests.Pages
         }
 
         [TestMethod]
-        public void Search_ThrowException_LogsError()
+        public void SearchAsync_ThrowException_LogsError()
         {
             // Arrange
             _mockFlightService.Setup(s => s.GetFlightsAsync(null, "New York John F. Kennedy", "London Heathrow"))

@@ -8,7 +8,7 @@
 @inject IFlightService FlightService
 @inject ILogger<Flights> Logger
 
-<EditForm Model="@searchForm" OnValidSubmit="Search">
+<EditForm Model="@searchForm" OnValidSubmit="SearchAsync">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
@@ -16,27 +16,27 @@
         <div class="d-flex gap-2 align-items-end">
             <div class="form-group flex-grow-1">
                 <label for="departureAirport" class="form-label">Departure Airport</label>
-                <InputText class="form-control" id="departureAirport" @bind-Value="searchForm.departureAirport" list="departure-options" />
+                <InputText class="form-control" id="departureAirport" @bind-Value="searchForm.DepartureAirport" list="departure-options" />
                 <datalist id="departure-options">
-                    @foreach (var name in airportNames)
+                    @foreach (var airport in airports)
                     {
-                        <option value="@name"></option>
+                        <option value="@airport.LocalizedName"></option>
                     }
                 </datalist>
             </div>
             <div class="form-group flex-grow-1">
                 <label for="arrivalAirport" class="form-label">Arrival Airport</label>
-                <InputText class="form-control" id="arrivalAirport" @bind-Value="searchForm.arrivalAirport" list="arrival-options" />
+                <InputText class="form-control" id="arrivalAirport" @bind-Value="searchForm.ArrivalAirport" list="arrival-options" />
                 <datalist id="arrival-options">
-                    @foreach (var name in airportNames)
+                    @foreach (var airport in airports)
                     {
-                        <option value="@name"></option>
+                        <option value="@airport.LocalizedName"></option>
                     }
                 </datalist>
             </div>
             <div class="form-group flex-grow-1">
                 <label for="date" class="form-label">Date (optional)</label>
-                <InputText class="form-control" id="date" @bind-Value="searchForm.date" placeholder="dd-MM-yyyy" />
+                <InputText class="form-control" id="date" @bind-Value="searchForm.Date" placeholder="dd-MM-yyyy" />
             </div>
             <div class="form-group flex-grow-1">
                 <button type="submit" class="btn icon-white h-100 custom-background text-white bi bi-search"></button>
@@ -78,20 +78,18 @@
     private bool searchPerformed = false;
     private SearchForm searchForm = new SearchForm();
     private IEnumerable<AirportDto> airports = Enumerable.Empty<AirportDto>();
-    private IEnumerable<string> airportNames = Enumerable.Empty<string>();
     private List<FlightDto>? flights = new List<FlightDto>();
 
     protected override async Task OnInitializedAsync()
     {
         airports = await FlightService.GetAllAirportsAsync();
-        airportNames = airports.Select(a => a.LocalizedName);
     }
 
-    private async Task Search()
+    private async Task SearchAsync()
     {
         try
         {
-            var result = await FlightService.GetFlightsAsync(searchForm.date, searchForm.departureAirport, searchForm.arrivalAirport);
+            var result = await FlightService.GetFlightsAsync(searchForm.Date, searchForm.DepartureAirport, searchForm.ArrivalAirport);
 
             if (result == null)
             {
@@ -102,7 +100,6 @@
             flights = result;
 
             airports = await FlightService.GetAllAirportsAsync();
-            airportNames = airports.Select(a => a.LocalizedName);
 
             searchPerformed = true;
         }
