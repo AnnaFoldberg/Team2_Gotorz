@@ -18,11 +18,11 @@ public class ServerAuthenticationStateProvider : AuthenticationStateProvider
         {
             var user = await _http.GetFromJsonAsync<CurrentUserDto>("api/account/currentuser");
 
-            if (user is { IsAuthenticated: true, Name: not null })
+            if (user is { IsAuthenticated: true, Email: not null })
             {
                 var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.Name)
+                new Claim(ClaimTypes.Email, user.Email)
             };
 
                 foreach (var claim in user.Claims)

@@ -4,47 +4,93 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @using Gotorz.Shared.Models
 
-<h3>Register</h3>
-
-@if (!string.IsNullOrEmpty(ErrorMessage))
+@if (isCheckingAccess) {}
+else
 {
-    <p style="color:red">@ErrorMessage</p>
+    <h3 class="text-center mb-4">Opret bruger</h3>
+
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger text-center">@ErrorMessage</div>
+    }
+
+    <div class="d-flex justify-content-center mt-5">
+        <EditForm Model="@registerModel" OnValidSubmit="HandleRegister" class="p-4 rounded border shadow" style="min-width: 350px;">
+            <DataAnnotationsValidator />
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <InputText id="email" @bind-Value="registerModel.Email" class="form-control" placeholder="Email" />
+                <ValidationMessage For="@(() => registerModel.Email)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Adgangskode</label>
+                <div class="input-group">
+                    <InputText id="password"
+                               @bind-Value="registerModel.Password"
+                               class="form-control"
+                               placeholder="Kodeord"
+                               type="@(_showPassword ? "text" : "password")" />
+
+                    <button type="button"
+                            class="btn btn-outline-secondary"
+                            @onclick="TogglePasswordVisibility"
+                            tabindex="-1">
+                        <i class="bi @( _showPassword ? "bi-eye-slash" : "bi-eye")"></i>
+                    </button>
+                </div>
+                <ValidationMessage For="@(() => registerModel.Password)" />
+                <div class="form-text text-muted">
+                    Adgangskoden skal være mindst 6 tegn og indeholde både store og små bogstaver.
+                </div>
+            </div>
+
+
+            <div class="mb-3">
+                <label for="firstName" class="form-label">Fornavn</label>
+                <InputText id="firstName" @bind-Value="registerModel.FirstName" class="form-control" placeholder="Fornavn" />
+                <ValidationMessage For="@(() => registerModel.FirstName)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="lastName" class="form-label">Efternavn</label>
+                <InputText id="lastName" @bind-Value="registerModel.LastName" class="form-control" placeholder="Efternavn" />
+                <ValidationMessage For="@(() => registerModel.LastName)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="phone" class="form-label">Telefonnummer</label>
+                <InputText id="phone" @bind-Value="registerModel.PhoneNumber" class="form-control" placeholder="Telefonnummer" />
+                <ValidationMessage For="@(() => registerModel.PhoneNumber)" />
+            </div>
+
+            @if (isAdmin)
+            {
+                <div class="mb-3">
+                    <label for="role" class="form-label">Rolle</label>
+                    <InputSelect id="role" @bind-Value="registerModel.Role" class="form-select">
+                        <option value="">- Vælg rolle -</option>
+                        <option value="customer">Customer</option>
+                        <option value="admin">Admin</option>
+                        <option value="sales">Sales</option>
+                    </InputSelect>
+                    <ValidationMessage For="@(() => registerModel.Role)" />
+                </div>
+            }
+
+            <button type="submit" class="btn btn-primary w-100">Registrér</button>
+        </EditForm>
+    </div>
 }
 
-<div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
-    <EditForm Model="registerModel" OnValidSubmit="HandleRegister" class="p-4 rounded border shadow-sm" style="min-width: 300px;">
-        <div class="mb-3">
-            <InputText @bind-Value="registerModel.Email" class="form-control" placeholder="Brugernavn" />
-        </div>
-
-        <div class="mb-3">
-            <InputText @bind-Value="registerModel.Password" class="form-control" placeholder="Kodeord" type="password" />
-        </div>
-
-        <div class="mb-3">
-            <InputText @bind-Value="registerModel.Password" class="form-control" placeholder="Kodeord" type="password" />
-        </div>
-
-        @if (isAdmin)
-        {
-            <div class="mb-3">
-                <InputSelect @bind-Value="registerModel.Role" class="form-control">
-                    <option value="">Vælg rolle</option>
-                    <option value="customer">Customer</option>
-                    <option value="admin">Admin</option>
-                    <option value="sales">Sales</option>
-                </InputSelect>
-            </div>
-        }
-
-        <button type="submit" class="btn btn-primary w-100">Registrér</button>
-    </EditForm>
-</div>
-
 @code {
+	private bool isCheckingAccess = true;
     private RegisterDto registerModel = new();
     private string? ErrorMessage;
     private bool isAdmin;
+	private bool _showPassword = false;
+
+	private void TogglePasswordVisibility() => _showPassword = !_showPassword;
 
     protected override async Task OnInitializedAsync()
     {
@@ -52,20 +98,39 @@
         var user = authState.User;
 
         isAdmin = user.IsInRole("admin");
+
+        if (!isAdmin && user.Identity?.IsAuthenticated == true)
+        {
+            Navigation.NavigateTo("/");
+            return;
+        }
+
+        isCheckingAccess = false;
     }
 
     private async Task HandleRegister()
     {
+        if (isAdmin && string.IsNullOrWhiteSpace(registerModel.Role))
+        {
+			ErrorMessage = "Vælg venligst en rolle";
+            return;
+        }
+
         var response = await Http.PostAsJsonAsync("api/account/register", registerModel);
+        var errorJson = await response.Content.ReadAsStringAsync();
 
         if (response.IsSuccessStatusCode)
         {
             Navigation.NavigateTo("/login");
         }
+        else if (errorJson.Contains("DuplicateEmail") || errorJson.Contains("DuplicateUserName"))
+        {
+            ErrorMessage = "Den angivne email er allerede i brug";
+        }
         else
         {
-            var error = await response.Content.ReadAsStringAsync();
-            ErrorMessage = error;
+            ErrorMessage = "Noget uventet gik galt";
         }
+
     }
 }

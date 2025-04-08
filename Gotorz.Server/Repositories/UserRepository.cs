@@ -17,6 +17,18 @@ namespace Gotorz.Server.Repositories
 
         public async Task<IdentityResult> RegisterAsync(ApplicationUser user, string password, string role)
         {
+            var existingUser = await _userManager.FindByEmailAsync(user.Email);
+            if (existingUser is not null)
+            {
+                var error = IdentityResult.Failed(new IdentityError
+                {
+                    Code = "DuplicateEmail",
+                    Description = "A user with that email already exists."
+                });
+
+                return error;
+            }
+
             var result = await _userManager.CreateAsync(user, password);
 
             if (result.Succeeded)

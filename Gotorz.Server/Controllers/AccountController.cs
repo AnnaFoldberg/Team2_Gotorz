@@ -15,17 +15,20 @@ public class AccountController : ControllerBase
         _userRepository = userRepository;
     }
 
-
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterDto dto)
     {
-        var user = new ApplicationUser { UserName = dto.Email, Email = dto.Email };
+        var user = new ApplicationUser { 
+            UserName = dto.Email, 
+            Email = dto.Email, 
+            FirstName = dto.FirstName, 
+            LastName = dto.LastName, 
+            PhoneNumber = dto.PhoneNumber };
         var role = string.IsNullOrWhiteSpace(dto.Role) ? "customer" : dto.Role;
 
         var result = await _userRepository.RegisterAsync(user, dto.Password, role);
 
-        if (!result.Succeeded)
-            return BadRequest(result.Errors);
+        if (!result.Succeeded) return BadRequest(result.Errors);
 
         return Ok("User registered");
     }
@@ -55,8 +58,9 @@ public class AccountController : ControllerBase
 
         var userDto = new CurrentUserDto
         {
-            Name = user?.UserName,
+            Email = user?.UserName,
             IsAuthenticated = User.Identity?.IsAuthenticated ?? false,
+            FirstName = user?.FirstName,
             Claims = User.Claims.Select(c => new ClaimDto { Type = c.Type, Value = c.Value }).ToList()
         };
 

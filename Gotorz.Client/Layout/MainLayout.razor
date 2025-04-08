@@ -1,4 +1,8 @@
-﻿@inherits LayoutComponentBase
+﻿@using Gotorz.Shared.Models
+@inherits LayoutComponentBase
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -6,16 +10,40 @@
 
     <main>
         <div class="top-row px-4 d-flex justify-content-between align-items-center">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-
             <AuthorizeView>
-                <Authorized>
-                    <span class="me-2">Hello @context.User.Identity.Name!</span>
-                    <button @onclick="Logout" class="btn btn-link">Logout</button>
+                <Authorized Context="auth">
+                    @if (auth.User.IsInRole("admin"))
+                    {
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="me-2 p-0">Hej @_firstName</span>
+                            <span class="badge bg-secondary p-1">Admin</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <NavLink href="/register" class="nav-link p-0">Opret Bruger</NavLink>
+                            <button @onclick="Logout" class="btn btn-link p-0">Logout</button>
+                        </div>
+                    }
+
+                    @if (auth.User.IsInRole("sales"))
+                    {
+                        <div>
+                            <span class="me-2 p-0">Hej @_firstName</span>
+                            <span class="badge bg-secondary p-1">Salgsmedarbejder</span>
+                        </div>
+                        <button @onclick="Logout" class="btn btn-link p-0">Logout</button>
+                    }
+
+					@if (auth.User.IsInRole("customer"))
+					{
+					    <span class="me-2">Hej @_firstName</span>
+                        <button @onclick="Logout" class="btn btn-link p-0">Logout</button>
+					}
                 </Authorized>
                 <NotAuthorized>
-                    <NavLink href="/login" class="nav-link">Login</NavLink>
-                    <NavLink href="/register" class="nav-link">Register</NavLink>
+                    <div class="ms-auto d-flex align-items-center gap-2">
+                        <NavLink href="/login" class="nav-link p-0">Login</NavLink>
+                        <NavLink href="/register" class="nav-link p-0">Register</NavLink>
+                    </div>
                 </NotAuthorized>
             </AuthorizeView>
         </div>
@@ -27,8 +55,18 @@
 </div>
 
 @code {
-    [Inject] HttpClient Http { get; set; }
-    [Inject] NavigationManager Navigation { get; set; }
+	private string _firstName = "User";
+    private bool isAdmin;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await Http.GetFromJsonAsync<CurrentUserDto>("api/account/currentuser");
+
+        if (user?.IsAuthenticated == true)
+        {
+            _firstName = user.FirstName ?? user.Email;
+        }
+    }
 
     private async Task Logout()
     {

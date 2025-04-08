@@ -1,4 +1,6 @@
 ﻿@page "/counter"
+@using Gotorz.Client.Services
+@inject IUserService UserService
 
 <PageTitle>Counter</PageTitle>
 
@@ -13,12 +15,12 @@
 
 <AuthorizeView>
     <Authorized Context="auth">
-        @if (auth.User.IsInRole("salesRep"))
+        @if (auth.User.IsInRole("sales"))
         {
             <p><strong>Sales representive detected</strong></p>
         }
 
-        <p>Hello, @auth.User.Identity.Name!</p>
+        <p>Hello, @auth.User.</p>
         <p role="status">Current count: @currentCount</p>
 
         <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
