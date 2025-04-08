@@ -1,0 +1,65 @@
+﻿@page "/login"
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@using Gotorz.Shared.Models
+
+<h3 class="text-center mb-4">Login</h3>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger text-center">@ErrorMessage</div>
+}
+<div class="d-flex justify-content-center mt-5">
+    <EditForm Model="loginModel" OnValidSubmit="HandleLogin" class="p-4 rounded border shadow" style="min-width: 350px;">
+        <DataAnnotationsValidator />
+        <div class="mb-3">
+            <label for="email" class="form-label">Email:</label>
+            <InputText id="email" @bind-Value="loginModel.Email" class="form-control" />
+            <ValidationMessage For="@(() => loginModel.Email)" />
+        </div>
+
+        <div class="mb-3">
+            <label for="password" class="form-label">Adgangskode:</label>
+            <div class="input-group">
+                <InputText id="password" 
+                    @bind-Value="loginModel.Password" 
+                    class="form-control" 
+                    type="@(_showPassword ? "text" : "password")" />
+                <button type="button" 
+                    class="btn btn-outline-secondary" 
+                    @onclick="TogglePasswordVisibility"
+                    tabindex="-1">
+                    <i class="bi @( _showPassword ? "bi-eye" : "bi-eye-slash")"></i>
+                </button>
+            </div>
+            <ValidationMessage For="@(() => loginModel.Password)" />
+        </div>
+
+
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+    </EditForm>
+</div>
+
+@code {
+    private LoginDto loginModel = new();
+    private string? ErrorMessage;
+    private bool _showPassword = false;
+
+    private void TogglePasswordVisibility() => _showPassword = !_showPassword;
+
+
+    private async Task HandleLogin()
+    {
+        var response = await Http.PostAsJsonAsync("api/account/login", loginModel);
+
+        if (response.IsSuccessStatusCode)
+        {
+            Navigation.NavigateTo("/", forceLoad: true);
+        }
+        else
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            ErrorMessage = error;
+        }
+    }
+}
