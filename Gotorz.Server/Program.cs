@@ -9,13 +9,6 @@ using Gotorz.Server.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<GotorzDbContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetSection
-    ("ConnectionStrings:AnnaConnection").Value);
-});
-
-
 builder.Services.AddScoped<IRepository<Airport>, AirportRepository>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
@@ -25,8 +18,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+var connectionString = builder.Configuration.GetConnectionString("EskeConnection"); // <--- Change connectionstring here
+
+builder.Services.AddDbContext<GotorzDbContext>(options =>
+{
+    options.UseSqlServer(connectionString);
+});
+
+builder.Services.AddDbContext<AuthDbContext>(options =>
+    options.UseSqlServer(connectionString));
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
@@ -37,14 +37,14 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.Password.RequiredLength = 6;
     options.User.RequireUniqueEmail = true;
 })
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+    .AddEntityFrameworkStores<AuthDbContext>();
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("MyAllowedOrigins",
         policy =>
         {
-            policy.WithOrigins("https://localhost:7159", "http://localhost:5092") // note the port is included 
+            policy.WithOrigins("https://localhost:7159", "http://localhost:5092", "http://localhost:7166") 
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();
@@ -61,8 +61,12 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.Migrate();
+
+    var authDb = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+    authDb.Database.Migrate();
+
+    var generalDb = scope.ServiceProvider.GetRequiredService<GotorzDbContext>();
+    generalDb.Database.Migrate();
 
     // Seed roles
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
@@ -86,7 +90,7 @@ using (var scope = app.Services.CreateScope())
     if (adminUser == null)
     {
         adminUser = new ApplicationUser { UserName = adminEmail, Email = adminEmail };
-        var result = await userManager.CreateAsync(adminUser, "Admin123!");
+        var result = await userManager.CreateAsync(adminUser, "Admin123");
 
         if (result.Succeeded)
         {

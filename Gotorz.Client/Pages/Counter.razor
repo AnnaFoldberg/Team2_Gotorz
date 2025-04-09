@@ -1,37 +1,53 @@
 ﻿@page "/counter"
 @using Gotorz.Client.Services
+@using Gotorz.Shared.DTO
 @inject IUserService UserService
+@inject HttpClient Http
 
 <PageTitle>Counter</PageTitle>
 
 <h1>Counter</h1>
 
-@*Eksempel til at se hvordan man kan vise forskelligt indhold baseret på login status*@
-<AuthorizeView Roles="admin">
-    <Authorized>
+@*Eksempel til at se hvordan man kan vise forskelligt indhold baseret på login status 
+(AuthorizeView kan også bruges, men det er lidt mere besværligt; se MainLayout.razor)*@
+@if (!isLoggedIn)
+{
+    <p>The Counter is only for registered users. Please log in.</p>
+}
+else
+{
+    @if (isAdmin)
+    {
         <p><strong>admin detected</strong></p>
-    </Authorized>
-</AuthorizeView>
+    }
 
-<AuthorizeView>
-    <Authorized Context="auth">
-        @if (auth.User.IsInRole("sales"))
-        {
-            <p><strong>Sales representive detected</strong></p>
-        }
+    @if (isSales)
+    {
+        <p><strong>Sales representative detected</strong></p>
+    }
 
-        <p>Hello, @auth.User.</p>
-        <p role="status">Current count: @currentCount</p>
+    <p>Hello, @firstName @lastName!</p>
+    <p role="status">Current count: @currentCount</p>
 
-        <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
-    </Authorized>
-    <NotAuthorized>
-        <p>The Counter is only for registered users. Please log in.</p>
-    </NotAuthorized>
-</AuthorizeView>
+    <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+}
 
 @code {
     private int currentCount = 0;
+    private bool isAdmin;
+    private bool isSales;
+    private bool isLoggedIn;
+    private string? firstName;
+    private string? lastName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoggedIn = await UserService.IsLoggedInAsync();
+        isAdmin = await UserService.IsUserInRoleAsync("admin");
+        isSales = await UserService.IsUserInRoleAsync("sales");
+        firstName = await UserService.GetFirstNameAsync();
+		lastName = await UserService.GetLastNameAsync();
+    }
 
     private void IncrementCount()
     {

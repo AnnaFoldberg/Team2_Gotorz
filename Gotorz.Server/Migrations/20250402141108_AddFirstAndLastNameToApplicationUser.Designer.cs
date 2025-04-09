@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Gotorz.Server.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(AuthDbContext))]
     [Migration("20250402141108_AddFirstAndLastNameToApplicationUser")]
     partial class AddFirstAndLastNameToApplicationUser
     {

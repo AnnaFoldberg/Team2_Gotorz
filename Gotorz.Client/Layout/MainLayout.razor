@@ -1,6 +1,8 @@
-﻿@using Gotorz.Shared.Models
+﻿@using Gotorz.Client.Services
+@using Gotorz.Shared.DTO
 @inherits LayoutComponentBase
 @inject HttpClient Http
+@inject IUserService UserService
 @inject NavigationManager Navigation
 
 <div class="page">
@@ -55,12 +57,12 @@
 </div>
 
 @code {
-	private string _firstName = "User";
+	private string _firstName = "";
     private bool isAdmin;
 
     protected override async Task OnInitializedAsync()
     {
-        var user = await Http.GetFromJsonAsync<CurrentUserDto>("api/account/currentuser");
+        var user = await UserService.GetCurrentUserAsync();
 
         if (user?.IsAuthenticated == true)
         {

@@ -1,17 +1,36 @@
 ﻿using System.Net.Http.Json;
 using Microsoft.AspNetCore.Components.Authorization;
-using Gotorz.Shared.Models;
 using System.Security.Claims;
+using Gotorz.Shared.DTO;
+
+/// <summary>
+/// Provides the authentication state for the Blazor WebAssembly client by retrieving user data from the backend server.
+/// </summary>
+/// <remarks>
+/// This implementation fetches the current user via an HTTP call to the server's identity endpoint and builds a ClaimsPrincipal for the Blazor authentication system.
+/// </remarks>
+/// <author>Eske</author>
 
 public class ServerAuthenticationStateProvider : AuthenticationStateProvider
 {
     private readonly HttpClient _http;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ServerAuthenticationStateProvider"/> class.
+    /// </summary>
+    /// <param name="http"></param>
     public ServerAuthenticationStateProvider(HttpClient http)
     {
         _http = http;
     }
 
+    /// <summary>
+    /// Retrieves the current authentication state of the user.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="Task{AuthenticationState}"/> representing the asynchronous operation. 
+    /// Returns a populated <see cref="ClaimsPrincipal"/> if the user is authenticated; otherwise, an empty identity.
+    /// </returns>
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         try

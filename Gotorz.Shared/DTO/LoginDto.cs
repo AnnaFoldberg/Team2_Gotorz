@@ -5,9 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Gotorz.Shared.Models
+namespace Gotorz.Shared.DTO
 {
-    public class LoginDto // Data Transfer Object
+    /// <summary>
+    /// Represents a login request used for data transfer between the client and server.
+    /// </summary>
+    /// <author>Eske</author>
+    public class LoginDto
     {
         [Required(ErrorMessage = "Email er påkrævet")]
         [EmailAddress(ErrorMessage = "Ugyldig email")]

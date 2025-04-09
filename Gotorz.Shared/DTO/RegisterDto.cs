@@ -5,8 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Gotorz.Shared.Models
+namespace Gotorz.Shared.DTO
 {
+    /// <summary>
+    /// Represents a registration request used for data transfer between the client and server.
+    /// </summary>
+    /// <author>Eske</author>
     public class RegisterDto
     {
         [Required(ErrorMessage = "Email er påkrævet")]
