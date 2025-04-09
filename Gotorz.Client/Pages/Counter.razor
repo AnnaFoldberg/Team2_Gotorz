@@ -8,9 +8,13 @@
 
 <h1>Counter</h1>
 
+@if (isLoading)
+{
+}
+
 @*Eksempel til at se hvordan man kan vise forskelligt indhold baseret på login status 
 (AuthorizeView kan også bruges, men det er lidt mere besværligt; se MainLayout.razor)*@
-@if (!isLoggedIn)
+else if (!isLoggedIn)
 {
     <p>The Counter is only for registered users. Please log in.</p>
 }
@@ -34,6 +38,7 @@ else
 
 @code {
     private int currentCount = 0;
+	private bool isLoading = true;
     private bool isAdmin;
     private bool isSales;
     private bool isLoggedIn;
@@ -43,10 +48,16 @@ else
     protected override async Task OnInitializedAsync()
     {
         isLoggedIn = await UserService.IsLoggedInAsync();
+
+		if (isLoggedIn)
+		{
         isAdmin = await UserService.IsUserInRoleAsync("admin");
         isSales = await UserService.IsUserInRoleAsync("sales");
         firstName = await UserService.GetFirstNameAsync();
 		lastName = await UserService.GetLastNameAsync();
+		}
+
+		isLoading = false;
     }
 
     private void IncrementCount()

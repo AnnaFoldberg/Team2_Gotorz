@@ -20,5 +20,4 @@ namespace Gotorz.Shared.DTO
         [Required(ErrorMessage = "Adgangskode er påkrævet")]
         public string Password { get; set; } = string.Empty;
     }
-
 }

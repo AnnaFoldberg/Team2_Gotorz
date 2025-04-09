@@ -27,7 +27,14 @@ namespace Gotorz.Client.Services
         /// <returns>A <see cref="CurrentUserDto"/> containing user details and claims, or <c>null</c> if unauthenticated.</returns>
         public async Task<CurrentUserDto?> GetCurrentUserAsync()
         {
-            return await _http.GetFromJsonAsync<CurrentUserDto>("api/account/currentuser");
+            try
+            {
+                return await _http.GetFromJsonAsync<CurrentUserDto>("api/account/currentuser");
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         /// <summary>
