@@ -123,8 +123,13 @@ namespace Gotorz.Server.Services
                         string _flightNumber = result?["id"]?.ToString();
                         if (_flightNumber == null) continue;
 
+                        // Define price for a ticket
+                        double _ticketPrice = double.Parse(result?["price"]?);
+                        if (_ticketPrice == null) continue;
+
                         // Define flight and add to flights
-                        flights.Add(new FlightDto { FlightNumber = _flightNumber, DepartureDate = _departureDate, DepartureAirport = _departureAirport, ArrivalAirport = _arrivalAirport });
+                        flights.Add(new FlightDto { FlightNumber = _flightNumber, DepartureDate = _departureDate,
+                            DepartureAirport = _departureAirport, ArrivalAirport = _arrivalAirport, TicketPrice = _ticketPrice });
                     }
                 }
                 return flights;
