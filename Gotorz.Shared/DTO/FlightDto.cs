@@ -17,5 +17,6 @@ namespace Gotorz.Shared.DTO
         public DateOnly DepartureDate { get; set; }
         public AirportDto DepartureAirport { get; set; }
         public AirportDto ArrivalAirport { get; set; }
+        public double TicketPrice { get; set; }
     }
 }

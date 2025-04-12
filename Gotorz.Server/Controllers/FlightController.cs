@@ -110,16 +110,12 @@ public class FlightController : ControllerBase
         if (date != null) _date = DateOnly.Parse(date);
 
         // Retrieve flights
-        if (_departureAirport != null && _arrivalAirport != null)
-        {
-            AirportDto _departureAirportDto = _mapper.Map<AirportDto>(_departureAirport);
-            AirportDto _arrivalAirportDto = _mapper.Map<AirportDto>(_arrivalAirport);
-            List<FlightDto> flights = await _flightService.GetFlightsAsync(_date, _departureAirportDto, _arrivalAirportDto);
-            
-            if (flights == null) return new List<FlightDto>();
-            else if ( flights.Count == 0 ) return new List<FlightDto>();
-            else return flights;
-        }
-        return new List<FlightDto>();
+        AirportDto _departureAirportDto = _mapper.Map<AirportDto>(_departureAirport);
+        AirportDto _arrivalAirportDto = _mapper.Map<AirportDto>(_arrivalAirport);
+        List<FlightDto> flights = await _flightService.GetFlightsAsync(_date, _departureAirportDto, _arrivalAirportDto);
+        
+        if (flights == null) return new List<FlightDto>();
+        else if ( flights.Count == 0 ) return new List<FlightDto>();
+        else return flights;
     }
 }
