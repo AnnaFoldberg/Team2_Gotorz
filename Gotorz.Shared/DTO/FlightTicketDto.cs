@@ -6,9 +6,9 @@ namespace Gotorz.Shared.DTO
     /// Represents a flight ticket used for data transfer between the client and server.
     /// </summary>
     /// <author>Anna</author>
-    public class FlightTicket
+    public class FlightTicketDto
     {
         public double Price { get; set; }
-        public Flight Flight { get; set; };
+        public FlightDto Flight { get; set; }
     }
 }

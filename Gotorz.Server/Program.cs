@@ -10,6 +10,8 @@ using Gotorz.Server.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IRepository<Airport>, AirportRepository>();
+builder.Services.AddScoped<IFlightRepository, FlightRepository>();
+builder.Services.AddScoped<IRepository<FlightTicket>, FlightTicketRepository>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
@@ -18,7 +20,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connectionString = builder.Configuration.GetConnectionString("EskeConnection"); // <--- Change connectionstring here
+var connectionString = builder.Configuration.GetConnectionString("AnnaConnection"); // <--- Change connectionstring here
 
 builder.Services.AddDbContext<GotorzDbContext>(options =>
 {

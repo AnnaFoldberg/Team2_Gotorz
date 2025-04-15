@@ -12,14 +12,19 @@ public class MappingProfile : Profile
     /// </summary>
     public MappingProfile()
     {
-        CreateMap<Airport, AirportDto>().ReverseMap();
+        CreateMap<AirportDto, Airport>().ReverseMap();
 
         // Structure from ChatGPT. Customized for this project.
-        CreateMap<Flight, FlightDto>()
-            .ForMember(dest => dest.DepartureAirport, opt => opt.MapFrom(src => src.DepartureAirport))
-            .ForMember(dest => dest.ArrivalAirport, opt => opt.MapFrom(src => src.ArrivalAirport))
-            .ReverseMap()
+        CreateMap<FlightDto, Flight>()
             .ForMember(dest => dest.DepartureAirportId, opt => opt.MapFrom(src => src.DepartureAirport.AirportId))
-            .ForMember(dest => dest.ArrivalAirportId, opt => opt.MapFrom(src => src.ArrivalAirport.AirportId));
+            .ForMember(dest => dest.ArrivalAirportId, opt => opt.MapFrom(src => src.ArrivalAirport.AirportId))
+            .ForMember(dest => dest.DepartureAirport, opt => opt.Ignore())
+            .ForMember(dest => dest.ArrivalAirport, opt => opt.Ignore())
+            .ReverseMap()
+            .ForMember(dest => dest.DepartureAirport, opt => opt.MapFrom(src => src.DepartureAirport))
+            .ForMember(dest => dest.ArrivalAirport, opt => opt.MapFrom(src => src.ArrivalAirport));
+
+        CreateMap<FlightTicketDto, FlightTicket>()
+            .ForMember(dest => dest.Flight, opt => opt.Ignore()).ReverseMap();
     }
 }

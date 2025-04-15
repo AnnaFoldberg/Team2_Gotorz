@@ -8,78 +8,119 @@
 @inject IFlightService FlightService
 @inject ILogger<Flights> Logger
 
-<EditForm Model="@searchForm" OnValidSubmit="SearchAsync">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<AuthorizeView>
+    <Authorized Context="auth">
+        @if (auth.User.IsInRole("sales"))
+        {
+            <div class="container d-flex flex-column flights-page-wrapper">
+                <EditForm Model="@searchForm" OnValidSubmit="SearchAsync">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
 
-    <div class="container">
-        <div class="d-flex gap-2 align-items-end">
-            <div class="form-group flex-grow-1">
-                <label for="departureAirport" class="form-label">Departure Airport</label>
-                <InputText class="form-control" id="departureAirport" @bind-Value="searchForm.DepartureAirport" list="departure-options" />
-                <datalist id="departure-options">
-                    @foreach (var airport in airports)
+                    <div class="container">
+                        <div class="d-flex gap-2 align-items-end">
+                            <div class="form-group flex-grow-1">
+                                <label for="departureAirport" class="form-label">Departure Airport</label>
+                                <InputText class="form-control" id="departureAirport" @bind-Value="searchForm.DepartureAirport" list="departure-options" />
+                                <datalist id="departure-options">
+                                    @foreach (var airport in airports)
+                                    {
+                                        <option value="@airport.LocalizedName"></option>
+                                    }
+                                </datalist>
+                            </div>
+                            <div class="form-group flex-grow-1">
+                                <label for="arrivalAirport" class="form-label">Arrival Airport</label>
+                                <InputText class="form-control" id="arrivalAirport" @bind-Value="searchForm.ArrivalAirport" list="arrival-options" />
+                                <datalist id="arrival-options">
+                                    @foreach (var airport in airports)
+                                    {
+                                        <option value="@airport.LocalizedName"></option>
+                                    }
+                                </datalist>
+                            </div>
+                            <div class="form-group flex-grow-1">
+                                <label for="date" class="form-label">Date (optional)</label>
+                                <InputText class="form-control" id="date" @bind-Value="searchForm.Date" placeholder="dd-MM-yyyy" />
+                            </div>
+                            <div class="form-group flex-grow-1">
+                                <button type="submit" class="btn icon-white h-100 custom-background text-white bi bi-search"></button>
+                            </div>
+                        </div>
+                    </div>
+                </EditForm>
+
+                <br><br>
+
+                @if (flights != null && searchPerformed)
+                {
+                    if (flights.Any())
                     {
-                        <option value="@airport.LocalizedName"></option>
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex align-items-center text-white custom-background">
+                                <span style="flex: 0 0 15%; text-align: left;">Departure Date</span>
+                                <span style="flex: 0 0 25%; text-align: left;">Departure Airport</span>
+                                <span style="flex: 0 0 25%; text-align: left;">Arrival Airport</span>
+                                <span style="flex: 0 0 10%; text-align: right; padding-right: 10px;">Ticket Price</span>
+                                <div class="d-flex align-items-center ms-auto">
+                                    <span class="text-center" style="width: 10px;"></span>
+                                    <span class="text-center" style="width: 70px;">Quantity</span>
+                                    <span class="text-center" style="width: 10px;"></span>
+                                </div>
+                            </li>
+
+                            @foreach (var flight in flights)
+                            {
+                                <li class="list-group-item d-flex align-items-center" >
+                                    <span style="flex: 0 0 15%; text-align: left;">@flight.DepartureDate.ToString("dd-MM-yyyy")</span>
+                                    <span style="flex: 0 0 25%; text-align: left;">@flight.DepartureAirport.LocalizedName</span>
+                                    <span style="flex: 0 0 25%; text-align: left;">@flight.ArrivalAirport.LocalizedName</span>
+                                    <span style="flex: 0 0 10%; text-align: right; padding-right: 10px;">@flight.TicketPrice USD</span>
+                                    <div class="d-flex align-items-center ms-auto">
+                                        <span class="d-flex justify-content-center align-items-center" style="width: 40px;">
+                                            <button class="btn btn-icon" @onclick="() => RemoveFlightTicket(flight)" disabled="@(GetFlightTicketCount(flight) == 0)">
+                                                <i class="bi bi-dash-square-fill bg-purple fs-4"></i>
+                                            </button>
+                                        </span>
+                                        <span class="d-flex justify-content-center align-items-center" style="width: 30px;">@GetFlightTicketCount(flight)</span>
+                                        <span class="d-flex justify-content-center align-items-center" style="width: 40px;">
+                                            <button class="btn btn-icon" @onclick="() => AddFlightTicket(flight)">
+                                                <i class="bi bi-plus-square-fill bg-purple fs-4"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
                     }
-                </datalist>
-            </div>
-            <div class="form-group flex-grow-1">
-                <label for="arrivalAirport" class="form-label">Arrival Airport</label>
-                <InputText class="form-control" id="arrivalAirport" @bind-Value="searchForm.ArrivalAirport" list="arrival-options" />
-                <datalist id="arrival-options">
-                    @foreach (var airport in airports)
+                    else
                     {
-                        <option value="@airport.LocalizedName"></option>
+                        <p>No flights were found</p>
                     }
-                </datalist>
+                }
+
+                <div class="container mt-auto mb-4">
+                    <div class="selected-flight-tickets-bar d-flex justify-content-between align-items-center p-3 border rounded bg-white shadow">
+                        <p class="mb-0 flex-grow-1">@($"{flightTickets.Count} ticket(s) selected")</p>
+                        <button class="btn btn-light custom-background text-white" @onclick="ConfirmAndPostFlightTicketsAsync">Confirm</button>
+                    </div>
+                </div>
             </div>
-            <div class="form-group flex-grow-1">
-                <label for="date" class="form-label">Date (optional)</label>
-                <InputText class="form-control" id="date" @bind-Value="searchForm.Date" placeholder="dd-MM-yyyy" />
-            </div>
-            <div class="form-group flex-grow-1">
-                <button type="submit" class="btn icon-white h-100 custom-background text-white bi bi-search"></button>
-            </div>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <div class="mt-5 flights-page-wrapper">
+            <Login/>
         </div>
-    </div>
-</EditForm>
-
-<br><br>
-
-@if (flights != null && searchPerformed)
-{
-    if (flights.Any())
-    {
-        <ul class="list-group">
-            <li class="list-group-item d-flex justify-content-between align-items-center text-white custom-background">
-                <span class="col">Date</span>
-                <span class="col">Departure</span>
-                <span class="col">Arrival</span>
-            </li>
-
-            @foreach (var flight in flights)
-            {
-                <li class="list-group-item d-flex justify-content-between align-items-center" >
-                    <span class="col">@flight.DepartureDate.ToString("dd-MM-yyyy")</span>
-                    <span class="col">@flight.DepartureAirport.LocalizedName</span>
-                    <span class="col">@flight.ArrivalAirport.LocalizedName</span>
-                </li>
-            }
-        </ul>
-    }
-    else
-    {
-        <p>No flights were found</p>
-    }
-}
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     private bool searchPerformed = false;
     private SearchForm searchForm = new SearchForm();
     private IEnumerable<AirportDto> airports = Enumerable.Empty<AirportDto>();
-    private List<FlightDto>? flights = new List<FlightDto>();
-
+    private List<FlightDto> flights = new List<FlightDto>();
+    private List<FlightTicketDto> flightTickets = new List<FlightTicketDto>();
     protected override async Task OnInitializedAsync()
     {
         airports = await FlightService.GetAllAirportsAsync();
@@ -98,14 +139,44 @@
             }
 
             flights = result;
-
             airports = await FlightService.GetAllAirportsAsync();
-
             searchPerformed = true;
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error fetching flights");
+        }
+    }
+
+    private int GetFlightTicketCount(FlightDto flight)
+    {
+        return flightTickets.Count(f => f.Flight == flight);
+    }
+
+    private void AddFlightTicket(FlightDto flight)
+    {
+        flightTickets.Add(new FlightTicketDto { Price = flight.TicketPrice, Flight = flight });
+    }
+
+    private void RemoveFlightTicket(FlightDto flight)
+    {
+        var flightTicket = flightTickets.FirstOrDefault(f => f.Flight == flight);
+        flightTickets.Remove(flightTicket);
+    }
+
+    private async Task ConfirmAndPostFlightTicketsAsync()
+    {
+        try
+        {
+            if (flightTickets != null && flightTickets.Any())
+            {
+                await FlightService.PostFlightTicketsAsync(flightTickets);
+                flightTickets.Clear();
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error committing tickets");
         }
     }
 }

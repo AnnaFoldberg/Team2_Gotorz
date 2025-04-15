@@ -12,7 +12,7 @@ namespace Gotorz.Server.Models
         public double Price { get; set; }
         public int FlightId { get; set; }
 
-        // Navigation properties that EF Core uses to join and
+        // Navigation property that EF Core uses to join and
         // materialize related data.
         public Flight Flight { get; set; } = null!;
     }
