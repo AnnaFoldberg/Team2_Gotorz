@@ -1,5 +1,6 @@
 using Gotorz.Shared.Models;
 using Microsoft.EntityFrameworkCore;
+using Gotorz.Server.Models;
 
 namespace Gotorz.Server.Contexts
 {

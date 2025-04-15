@@ -9,13 +9,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddScoped<ISimpleKeyRepository<Airport>, AirportRepository>();
 
-});
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SayeConnection"));
-{
 builder.Services.AddDbContext<GotorzDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SayeConnection"));
+});
 builder.Services.AddScoped<IRepository<Airport>, AirportRepository>();
+
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddControllers();
