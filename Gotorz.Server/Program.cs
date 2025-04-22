@@ -14,6 +14,7 @@ builder.Services.AddScoped<IFlightRepository, FlightRepository>();
 builder.Services.AddScoped<IRepository<FlightTicket>, FlightTicketRepository>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddAutoMapper(typeof(HolidayPackageProfile));
 
 builder.Services.AddControllers();
 
@@ -56,6 +57,9 @@ builder.Services.AddCors(options =>
 builder.Services.AddHttpClient<IFlightService, FlightService>();
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddControllersWithViews(); // Til Web API + MVC
+builder.Services.AddRazorPages(); // Blazor Pages support
 
 var app = builder.Build();
 
@@ -115,8 +119,11 @@ app.UseHttpsRedirection();
 app.UseCors("MyAllowedOrigins");
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRouting(); //Bruges tiL??
 
 app.MapControllers();
-app.MapFallbackToFile("index.html");
+
+
+app.MapFallbackToFile("index.html"); // <-- Sørg for Blazor fallback virker
 
 app.Run();

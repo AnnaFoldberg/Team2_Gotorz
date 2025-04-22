@@ -1,0 +1,97 @@
+﻿@page "/holidaypackage"
+@using Gotorz.Shared.DTO
+@using System.ComponentModel.DataAnnotations
+@using System.Text.Json
+@using Microsoft.AspNetCore.Mvc
+@using Gotorz.Client.Services
+@using Gotorz.Client.ViewModels
+@inject HolidayPackageService PackageService
+
+<h2 class="text-2xl font-bold mb-4">Holiday packages</h2>
+
+@if (packages is null)
+{
+    <p>Loading holidays...</p>
+}
+else if (!packages.Any())
+{
+    <p>No holidays created yet.</p>
+}
+else
+{
+    <ul class="space-y-2 mb-6">
+        @foreach (var package in packages)
+        {
+            <li class="p-4 border rounded shadow-sm flex justify-between items-center">
+                <div>
+                    <strong>@package.Title</strong><br />
+                    @package.Description
+                </div>
+                <button class="bg-red-600 text-white px-3 py-1 rounded ml-4"
+                        @onclick="() => DeletePackage(package.Id)">
+                    Delete
+                </button>
+            </li>
+        }
+    </ul>
+}
+
+<hr class="my-6" />
+
+<h3 class="text-xl font-semibold mb-2">Create a new holiday package</h3>
+
+<EditForm Model="newPackage" OnValidSubmit="CreatePackage">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label>Title:</label><br />
+        <InputText @bind-Value="newPackage.Title" class="border p-1 w-full" />
+    </div>
+
+    <div class="mb-3">
+        <label>Description:</label><br />
+        <InputTextArea @bind-Value="newPackage.Description" class="border p-1 w-full" />
+    </div>
+
+    <button type="submit" class="btn icon-white h-100 custom-background text-white">
+        Create
+    </button>
+</EditForm>
+
+@code {
+    private List<HolidayPackageDto> packages = new();
+    private CreateHolidayPackageDto newPackage = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPackages();
+    }
+
+    private async Task LoadPackages()
+    {
+        packages = await PackageService.GetAllAsync();
+    }
+
+    private async Task CreatePackage()
+    {
+        var created = await PackageService.CreateAsync(newPackage);
+
+        if (created is not null)
+        {
+            packages.Add(created);
+            newPackage = new(); // nulstil formular
+        }
+    }
+
+    private async Task DeletePackage(int id)
+    {
+        await PackageService.DeleteAsync(id);
+        var toRemove = packages.FirstOrDefault(p => p.Id == id);
+        if (toRemove is not null)
+        {
+            packages.Remove(toRemove);
+        }
+    }
+}
+
