@@ -20,30 +20,40 @@ namespace Gotorz.Server.Controllers;
 public class FlightController : ControllerBase
 {
     private IFlightService _flightService;
-    private readonly IRepository<Airport> _airportRepository;
     private readonly IMapper _mapper;
+    private readonly IRepository<Airport> _airportRepository;
+    private readonly IFlightRepository _flightRepository;
+    private readonly IRepository<FlightTicket> _flightTicketRepository;
     
     /// <summary>
     /// Initializes a new instance of the <see cref="FlightController"/> class.
     /// </summary>
     /// <param name="flightService">The <see cref="IFlightService"/> used for fetching flight-related data.</param>
     /// <param name="airportRepository">The <see cref="IRepository<Airport>"/> used to access
-    /// <see cref="Airport"/> data in the database</param>
-    public FlightController(IFlightService flightService, IRepository<Airport> airportRepository, IMapper mapper)
+    /// <see cref="Airport"/> data in the database.</param>
+    /// /// <param name="flightRepository">The <see cref="IFlightRepository"/> used to access
+    /// <see cref="Flight"/> data in the database.</param>
+    /// /// <param name="flightTicketRepository">The <see cref="IRepository<FlightTicket>"/> used to access
+    /// <see cref="FlightTicket"/> data in the database.</param>
+    public FlightController(IFlightService flightService, IMapper mapper,
+        IRepository<Airport> airportRepository, IFlightRepository flightRepository, IRepository<FlightTicket> flightTicketRepository)
     {
         _flightService = flightService;
-        _airportRepository = airportRepository;
         _mapper = mapper;
+        _airportRepository = airportRepository;
+        _flightRepository = flightRepository;
+        _flightTicketRepository = flightTicketRepository;
     }
 
     /// <summary>
-    /// Retrieves all <see cref="Airport"/> entities from the database.
+    /// Defines an API endpoint for HTTP GET that retrieves all 
+    /// <see cref="Airport"/> entities from the database.
     /// </summary>
     /// <returns>A collection of <see cref="AirportDto"/> entities.</returns>
     [HttpGet("airports")]
-    public IEnumerable<AirportDto>? GetAllAirports()
+    public async Task<IEnumerable<AirportDto>?> GetAllAirportsAsync()
     {
-        var airports = _airportRepository.GetAll();
+        var airports = await _airportRepository.GetAllAsync();
         var airportDtos = _mapper.Map<IEnumerable<AirportDto>>(airports);
         return airportDtos;
     }
@@ -53,7 +63,7 @@ public class FlightController : ControllerBase
     /// to retrieve a single matching <see cref="Airport"/>.
     /// </summary>
     /// <param name="airport">The search term to match airport names against in <see cref="FlightService.GetAirport(string)"/>.</param>
-    /// <returns>An <see cref="Airport"/> entity if exactly one match is found, otherwise <c>null</c>.</returns>
+    /// <returns>An <see cref="IActionResult"/> that contains <c>Ok</c> if exactly one airport was found, otherwise <c>BadRequest</c>.</returns>
     [HttpGet("airport")]
     public async Task<IActionResult> GetAirportAsync(string airportName)
     {
@@ -65,7 +75,7 @@ public class FlightController : ControllerBase
         else
         {
             Airport airport = _mapper.Map<Airport>(airports[0]);
-            _airportRepository.Add(airport);
+            await _airportRepository.AddAsync(airport);
             return Ok($"Successfully added {airport.LocalizedName} to database");
         }
     }
@@ -80,27 +90,32 @@ public class FlightController : ControllerBase
     /// <returns>A list of <see cref="FlightDto"/> entities matching the specified parameters.</returns>
     [HttpGet("flights")]
     public async Task<List<FlightDto>> GetFlightsAsync([FromQuery] string? date, [FromQuery] string departureAirport, [FromQuery] string arrivalAirport)
-    {        
+    {
+        // Get all airports from database
+        var airports = await _airportRepository.GetAllAsync();
+
         // Ensure departure airport exists in database. If not, add to database with GetAirport.
-        var _departureAirport = _airportRepository.GetAll().FirstOrDefault(a => a.LocalizedName == departureAirport);
+        var _departureAirport = airports.FirstOrDefault(a => a.LocalizedName == departureAirport);
         if (_departureAirport == null)
         {
             var result = await GetAirportAsync(departureAirport);
             if (result is OkObjectResult okResult)
             {
-                _departureAirport = _airportRepository.GetAll().FirstOrDefault(a => a.LocalizedName == departureAirport);
+                airports = await _airportRepository.GetAllAsync();
+                _departureAirport = airports.FirstOrDefault(a => a.LocalizedName == departureAirport);
             }
             else return new List<FlightDto>();
         }
 
         // Ensure arrival airport exists in database. If not, add to database with GetAirport.
-        var _arrivalAirport = _airportRepository.GetAll().FirstOrDefault(a => a.LocalizedName == arrivalAirport);
+        var _arrivalAirport = airports.FirstOrDefault(a => a.LocalizedName == arrivalAirport);
         if (_arrivalAirport == null)
         {
             var result = await GetAirportAsync(arrivalAirport);
             if (result is OkObjectResult okResult)
             {
-                _arrivalAirport = _airportRepository.GetAll().FirstOrDefault(a => a.LocalizedName == arrivalAirport);
+                airports = await _airportRepository.GetAllAsync();
+                _arrivalAirport = airports.FirstOrDefault(a => a.LocalizedName == arrivalAirport);
             }
             else return new List<FlightDto>();
         }
@@ -110,16 +125,57 @@ public class FlightController : ControllerBase
         if (date != null) _date = DateOnly.Parse(date);
 
         // Retrieve flights
-        if (_departureAirport != null && _arrivalAirport != null)
+        AirportDto _departureAirportDto = _mapper.Map<AirportDto>(_departureAirport);
+        AirportDto _arrivalAirportDto = _mapper.Map<AirportDto>(_arrivalAirport);
+        List<FlightDto> flights = await _flightService.GetFlightsAsync(_date, _departureAirportDto, _arrivalAirportDto);
+        
+        if (flights == null) return new List<FlightDto>();
+        else if ( flights.Count == 0 ) return new List<FlightDto>();
+        else return flights;
+    }
+
+    /// <summary>
+    /// Defines an API endpoint for HTTP POST that adds <see cref="FlightTicket"/> entities to the database.
+    /// </summary>
+    /// <param name="flightTicketsDtos">The <see cref="FlightTicketDto"/> objects representing the flight tickets to be added.</param>
+    /// <returns>An <see cref="IActionResult"/> that contains <c>Ok</c> if the <see cref="FlightTicket"/> entities were
+    /// added to the database successfully, otherwise <c>BadRequest</c>.</returns>
+    [HttpPost("flight-tickets")]
+    public async Task<IActionResult> PostFlightTicketsAsync(List<FlightTicketDto> flightTickets)
+    {
+        if (flightTickets == null || flightTickets.Count == 0)
         {
-            AirportDto _departureAirportDto = _mapper.Map<AirportDto>(_departureAirport);
-            AirportDto _arrivalAirportDto = _mapper.Map<AirportDto>(_arrivalAirport);
-            List<FlightDto> flights = await _flightService.GetFlightsAsync(_date, _departureAirportDto, _arrivalAirportDto);
-            
-            if (flights == null) return new List<FlightDto>();
-            else if ( flights.Count == 0 ) return new List<FlightDto>();
-            else return flights;
+            return BadRequest("No flight tickets were provided");
         }
-        return new List<FlightDto>();
+
+        foreach (var flightTicket in flightTickets)
+        {
+            // Ensure flight exists in database. If not, add to database.
+            var flight = await _flightRepository.GetByFlightNumberAsync(flightTicket.Flight.FlightNumber);
+            if (flight == null)
+            {
+                // Ensure flight contains the correct AirportIds
+                var airports = await _airportRepository.GetAllAsync();
+                var departureAirport = airports.FirstOrDefault(a => a.LocalizedName == flightTicket.Flight.DepartureAirport.LocalizedName);
+                var arrivalAirport = airports.FirstOrDefault(a => a.LocalizedName == flightTicket.Flight.ArrivalAirport.LocalizedName);
+
+                if (departureAirport == null || arrivalAirport == null)
+                {
+                    return BadRequest("One or more airports linked to flight do not exist");
+                }
+
+                flightTicket.Flight.DepartureAirport.AirportId = departureAirport.AirportId;
+                flightTicket.Flight.ArrivalAirport.AirportId = arrivalAirport.AirportId;
+
+                flight = _mapper.Map<Flight>(flightTicket.Flight);
+                await _flightRepository.AddAsync(flight);
+            }
+
+            // Add flight ticket to the database
+            var _flightTicket = _mapper.Map<FlightTicket>(flightTicket);
+            _flightTicket.FlightId = flight.FlightId;
+            await _flightTicketRepository.AddAsync(_flightTicket);
+        }
+        return Ok($"Successfully added {flightTickets.Count()} flight ticket(s) to database");
     }
 }
