@@ -12,16 +12,22 @@ namespace Gotorz.Server.DataAccess
         /// <returns>A collection of entities of type <typeparamref name="T"/>.</returns>
         IEnumerable<T> GetAll();
 
+        Task<IEnumerable<T>> GetAllAsync();
+
         /// <summary>
         /// Adds a new entity of type <typeparamref name="T"/> to the database.
         /// </summary>
         /// <param name="entity">The entity to add.</param>
         void Add(T entity);
 
+        Task<T> AddAsync(T entity);
+
         /// <summary>
         /// Updates an existing entity of type <typeparamref name="T"/> in the database.
         /// </summary>
         /// <param name="entity">The entity to update.</param>
         void Update(T entity);
+
+        Task UpdateAsync(T entity);
     }
 }

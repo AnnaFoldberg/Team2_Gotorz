@@ -35,7 +35,7 @@ namespace Gotorz.Server.DataAccess
         /// </summary>
         /// <param name="key">The <c>AirportId</c> of the <see cref="Airport"/> entity to retrieve.</param>
         /// <returns>The matching <see cref="Airport"/> or <c>null</c> if not found.</returns>
-        public Airport? GetByKey(int key)
+        public Airport? GetByKeyAsync(int key)
         {
             return _context.Airports.FirstOrDefault(a => a.AirportId == key);
         }
@@ -66,7 +66,7 @@ namespace Gotorz.Server.DataAccess
         /// <param name="key">The <c>AirportId</c> of the <see cref="Airport"/> entity to delete.</param>
         public void Delete(int key)
         {
-            var airport = GetByKey(key);
+            var airport = GetByKeyAsync(key);
             if (airport != null)
             {
                 _context.Airports.Remove(airport);

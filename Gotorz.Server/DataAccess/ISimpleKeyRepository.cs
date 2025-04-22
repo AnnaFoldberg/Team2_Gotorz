@@ -11,13 +11,16 @@ namespace Gotorz.Server.DataAccess
         /// Retrieves an entity of type <typeparamref name="T"/> by its primary key.
         /// </summary>
         /// <param name="key">The primary key of the entity to retrieve.</param>
-        /// <returns>The entity of type <typeparamref name="T"/> that matches the specified <paramref name="key"/>.</returns>
-        T GetByKey(int key);
+        /// <returns>The entity of type <typeparamref name="T"/> that matches the specified <paramref name="key"/>.</returns
+
+        Task<T?> GetByKeyAsync(int key);
 
         /// <summary>
         /// Deletes an entity of type <typeparamref name="T"/>, identified by its primary key.
         /// </summary>
         /// <param name="key">The primary key of the entity to delete.</param>
         void Delete(int key);
+
+        Task DeleteAsync(int key);
     }
 }

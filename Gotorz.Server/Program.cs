@@ -4,19 +4,21 @@ using Gotorz.Server.Services;
 using Gotorz.Server.Models;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
+using Gotorz.Server.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<GotorzDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetSection
-    ("ConnectionStrings:AnnaConnection").Value);
+    ("ConnectionStrings:FrederikConnection").Value);
 });
 
 
 builder.Services.AddScoped<IRepository<Airport>, AirportRepository>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddAutoMapper(typeof(HolidayPackageProfile));
 
 builder.Services.AddControllers();
 
@@ -37,6 +39,9 @@ options.AddPolicy("MyAllowedOrigins",
 builder.Services.AddHttpClient<IFlightService, FlightService>();
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
+builder.Services.AddControllersWithViews(); // Til Web API + MVC
+builder.Services.AddRazorPages(); // Blazor Pages support
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -49,8 +54,14 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseStaticFiles(); // <-- Gør det muligt at servere Blazor-filerne
+
+app.UseRouting();
 
 app.UseCors("MyAllowedOrigins");
+
+app.MapControllers();
+
+app.MapFallbackToFile("index.html"); // <-- Sørg for Blazor fallback virker
 
 app.Run();
