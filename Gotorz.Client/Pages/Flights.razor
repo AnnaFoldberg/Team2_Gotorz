@@ -121,6 +121,7 @@
     private IEnumerable<AirportDto> airports = Enumerable.Empty<AirportDto>();
     private List<FlightDto> flights = new List<FlightDto>();
     private List<FlightTicketDto> flightTickets = new List<FlightTicketDto>();
+    
     protected override async Task OnInitializedAsync()
     {
         airports = await FlightService.GetAllAirportsAsync();
