@@ -1,5 +1,6 @@
 using Gotorz.Server.Contexts;
 using Gotorz.Server.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Gotorz.Server.DataAccess
 {
@@ -8,7 +9,7 @@ namespace Gotorz.Server.DataAccess
     /// </summary>
     /// <remarks>Based on a ChatGPT-generated template. Customized for this project.</remarks>
     /// <author>Anna</author>
-    public class AirportRepository : ISimpleKeyRepository<Airport>
+    public class AirportRepository : IRepository<Airport>
     {
         private readonly GotorzDbContext _context;
 
@@ -25,9 +26,9 @@ namespace Gotorz.Server.DataAccess
         /// Retrieves all <see cref="Airport"/> entities from the database.
         /// </summary>
         /// <returns>A collection of <see cref="Airport"/> entities.</returns>
-        public IEnumerable<Airport> GetAll()
+        public async Task<IEnumerable<Airport>> GetAllAsync()
         {
-            return _context.Airports.ToList();
+            return await _context.Airports.ToListAsync();
         }
 
         /// <summary>
@@ -35,42 +36,42 @@ namespace Gotorz.Server.DataAccess
         /// </summary>
         /// <param name="key">The <c>AirportId</c> of the <see cref="Airport"/> entity to retrieve.</param>
         /// <returns>The matching <see cref="Airport"/> or <c>null</c> if not found.</returns>
-        public Airport? GetByKey(int key)
+        public async Task<Airport?> GetByKeyAsync(int key)
         {
-            return _context.Airports.FirstOrDefault(a => a.AirportId == key);
+            return await _context.Airports.FirstOrDefaultAsync(a => a.AirportId == key);
         }
 
         /// <summary>
         /// Adds a new <see cref="Airport"/> to the database.
         /// </summary>
         /// <param name="airport">The <see cref="Airport"/> entity to add.</param>
-        public void Add(Airport airport)
+        public async Task AddAsync(Airport airport)
         {
-            _context.Airports.Add(airport);
-            _context.SaveChanges();
+            await _context.Airports.AddAsync(airport);
+            await _context.SaveChangesAsync();
         }
 
         /// <summary>
         /// Updates an existing <see cref="Airport"/> in the database.
         /// </summary>
         /// <param name="airport">The <see cref="Airport"/> entity to update.</param>
-        public void Update(Airport airport)
+        public async Task UpdateAsync(Airport airport)
         {
             _context.Airports.Update(airport);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         /// <summary>
         /// Deletes an <see cref="Airport"/> from the database.
         /// </summary>
         /// <param name="key">The <c>AirportId</c> of the <see cref="Airport"/> entity to delete.</param>
-        public void Delete(int key)
+        public async Task DeleteAsync(int key)
         {
-            var airport = GetByKey(key);
+            var airport = await GetByKeyAsync(key);
             if (airport != null)
             {
                 _context.Airports.Remove(airport);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
     }

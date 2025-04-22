@@ -57,7 +57,7 @@ namespace Gotorz.Server.Services
                         string? localizedName = airportData?["localizedName"]?.ToString();
                         string? skyId = airportData?["skyId"]?.ToString();
                         
-                        airports.Add(new AirportDto { EntityId = entityId, LocalizedName = localizedName, SkyId = skyId });      
+                        airports.Add(new AirportDto { EntityId = entityId!, LocalizedName = localizedName!, SkyId = skyId! });      
                     }
                 }
                 return airports;
@@ -83,7 +83,7 @@ namespace Gotorz.Server.Services
                 var flights = new List<FlightDto>();
 
                 var body = await response.Content.ReadAsStringAsync();
-                JsonNode root = JsonNode.Parse(body);
+                JsonNode? root = JsonNode.Parse(body);
                 JsonArray? results = root?["data"]?["flightQuotes"]?["results"]?.AsArray();
 
                 if (results != null)
@@ -119,12 +119,18 @@ namespace Gotorz.Server.Services
 
                         if (destinationEntityId != arrivalAirport.EntityId || destinationSkyId != arrivalAirport.SkyId) continue;
                         
+                        // Define price for a ticket
+                        double _ticketPrice = content?["rawPrice"]?.GetValue<double>() ?? 0;
+                        if (_ticketPrice == 0) continue;
+
                         // Define id
-                        string _flightNumber = result?["id"]?.ToString();
+                        string? _flightNumber = result?["id"]?.ToString();
                         if (_flightNumber == null) continue;
 
-                        // Define flight and add to flights
-                        flights.Add(new FlightDto { FlightNumber = _flightNumber, DepartureDate = _departureDate, DepartureAirport = _departureAirport, ArrivalAirport = _arrivalAirport });
+
+                        // Define flight and add to flightsw
+                        flights.Add(new FlightDto { FlightNumber = _flightNumber, DepartureDate = _departureDate,
+                            DepartureAirport = _departureAirport, ArrivalAirport = _arrivalAirport, TicketPrice = _ticketPrice });
                     }
                 }
                 return flights;
