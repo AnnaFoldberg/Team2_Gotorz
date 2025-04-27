@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Gotorz.Shared.DTO
+namespace Gotorz.Shared.DTOs
 {
     /// <summary>
     /// Represents a login request used for data transfer between the client and server.

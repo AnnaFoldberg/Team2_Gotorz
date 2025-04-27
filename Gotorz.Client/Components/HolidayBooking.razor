@@ -1,0 +1,56 @@
+﻿@using Gotorz.Shared.DTOs
+@using Gotorz.Client.Services
+@using Microsoft.AspNetCore.Authorization
+@inject IBookingService BookingService
+@inject IUserService UserService
+
+<AuthorizeView>
+    <Authorized Context="auth">
+        @if (HolidayBookingDto?.HolidayPackage == null || travellers == null)
+        {
+            <p>Loading ...</p>
+        }
+        else if ((auth.User.IsInRole("customer") && HolidayBookingDto?.CustomerEmail == userEmail )
+            || auth.User.IsInRole("sales"))
+        {
+                <div class="d-flex justify-content-between">
+                    <div class="p-2 flex-fill">
+                        <h5><b>Holiday Booking</b></h5>
+                        <p>Destination: @HolidayBookingDto.HolidayPackage.Destination</p>
+                    </div>
+                    <div class="card bg-light border-light p-2 mb-3">
+                        <div class="card-body">
+                            <h6 class="card-title text-dark">Travellers</h6>
+                            @foreach(var traveller in travellers)
+                            {
+                                <p class="card-text small">@traveller.Name. Age: @traveller.Age<br>
+                                Passport number: @traveller.PassportNumber</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+        }
+</Authorized>
+    <NotAuthorized>
+        <div class="mt-5 standard-page-wrapper">
+            <Login/>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+ 
+
+@code {
+    private string? userEmail { get; set; }
+    private IEnumerable<TravellerDto> travellers;
+    private HolidayPackageDto holidayPackage;
+
+    [Parameter]
+    public HolidayBookingDto HolidayBookingDto { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        userEmail = await UserService.GetEmailAsync();
+        holidayPackage = HolidayBookingDto.HolidayPackage;
+        travellers = await BookingService.GetTravellersAsync(HolidayBookingDto.BookingReference);
+    }
+}

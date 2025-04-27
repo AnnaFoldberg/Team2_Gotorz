@@ -1,6 +1,6 @@
 using AutoMapper;
 using Gotorz.Server.Models;
-using Gotorz.Shared.DTO;
+using Gotorz.Shared.DTOs;
 
 /// <summary>
 /// AutoMapper profile for mapping between domain models and DTOs.
@@ -26,5 +26,16 @@ public class MappingProfile : Profile
 
         CreateMap<FlightTicketDto, FlightTicket>()
             .ForMember(dest => dest.Flight, opt => opt.Ignore()).ReverseMap();
+
+        CreateMap<HolidayPackageDto, HolidayPackage>().ReverseMap();
+
+        CreateMap<HolidayBookingDto, HolidayBooking>()
+            .ForMember(dest => dest.HolidayPackageId, opt => opt.MapFrom(src => src.HolidayPackage.HolidayPackageId))
+            .ForMember(dest => dest.HolidayPackage, opt => opt.Ignore())
+            .ReverseMap()
+            .ForMember(dest => dest.HolidayPackage, opt => opt.MapFrom(src => src.HolidayPackage));
+
+        CreateMap<TravellerDto, Traveller>()
+            .ForMember(dest => dest.HolidayBooking, opt => opt.Ignore()).ReverseMap();
     }
 }

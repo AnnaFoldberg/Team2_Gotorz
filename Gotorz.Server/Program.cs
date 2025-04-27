@@ -12,6 +12,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IRepository<Airport>, AirportRepository>();
 builder.Services.AddScoped<IFlightRepository, FlightRepository>();
 builder.Services.AddScoped<IRepository<FlightTicket>, FlightTicketRepository>();
+builder.Services.AddScoped<IRepository<HolidayPackage>, HolidayPackageRepository>();
+builder.Services.AddScoped<IHolidayBookingRepository, HolidayBookingRepository>();
+builder.Services.AddScoped<IRepository<Traveller>, TravellerRepository>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 

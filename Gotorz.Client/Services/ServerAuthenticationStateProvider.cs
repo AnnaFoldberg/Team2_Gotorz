@@ -1,7 +1,7 @@
 ﻿using System.Net.Http.Json;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
-using Gotorz.Shared.DTO;
+using Gotorz.Shared.DTOs;
 
 /// <summary>
 /// Provides the authentication state for the Blazor WebAssembly client by retrieving user data from the backend server.

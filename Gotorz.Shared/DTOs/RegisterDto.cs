@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Gotorz.Shared.DTO
+namespace Gotorz.Shared.DTOs
 {
     /// <summary>
     /// Represents a registration request used for data transfer between the client and server.

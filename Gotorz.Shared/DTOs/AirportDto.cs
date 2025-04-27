@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Gotorz.Shared.DTO
+namespace Gotorz.Shared.DTOs
 {
     /// <summary>
     /// Represents an airport used for data transfer between the client and server.

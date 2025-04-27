@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
-using Gotorz.Shared.DTO;
+using Gotorz.Shared.DTOs;
 using Bunit.TestDoubles;
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
@@ -15,7 +15,7 @@ using Microsoft.Extensions.Options;
 namespace Gotorz.Client.UnitTests.Pages
 {
     /// <summary>
-    /// Contains unit tests for the <see cref="Flights"/> component.
+    /// Contains unit tests for the <see cref="Flights"/> page.
     /// </summary>
     /// <author>Anna</author>
     [TestClass]
@@ -49,10 +49,7 @@ namespace Gotorz.Client.UnitTests.Pages
             Services.AddSingleton(mockAuthService.Object);
             Services.AddSingleton(_mockFlightService.Object);
             Services.AddSingleton(logger.Object);
-        }
-
-        // -------------------- AuthorizeView --------------------
-        
+        }        
 
         // -------------------- Form --------------------
         [TestMethod]

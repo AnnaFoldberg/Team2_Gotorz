@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Gotorz.Shared.DTO
+namespace Gotorz.Shared.DTOs
 {
     /// <summary>
     /// Represents a flight ticket used for data transfer between the client and server.

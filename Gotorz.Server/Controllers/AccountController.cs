@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Gotorz.Server.Models;
 using Gotorz.Server.Repositories;
-using Gotorz.Shared.DTO;
+using Gotorz.Shared.DTOs;
 
 /// <summary>
 /// Handles user account operations such as registration, login, logout, and retrieving the current user.

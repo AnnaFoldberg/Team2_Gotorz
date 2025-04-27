@@ -1,0 +1,38 @@
+﻿@page "/holiday-package"
+@using Gotorz.Shared.DTOs
+@using Gotorz.Client.Services
+@inject IBookingService BookingService
+@inject IUserService UserService
+@inject NavigationManager Navigation
+
+<h3>HolidayPackage</h3>
+
+<button class="btn btn-primary" @onclick="BookHoliday">Book</button>
+
+@code {
+    private string? bookingReference;
+    private string? userEmail;
+    private HolidayPackageDto holidayPackage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        userEmail = await UserService.GetEmailAsync();
+        holidayPackage = new HolidayPackageDto {
+            Destination = "Rome",
+            MaxCapacity = 4
+        };
+    }
+
+    private async Task BookHoliday()
+    {
+        bookingReference = "G01020";
+        HolidayBookingDto holidayBooking = new HolidayBookingDto {
+            BookingReference = bookingReference,
+            CustomerEmail = userEmail,
+            Status = 0,
+            HolidayPackage = holidayPackage
+        };
+        await BookingService.PostHolidayBookingAsync(holidayBooking);
+        Navigation.NavigateTo($"/booking/travellers/{bookingReference}");
+    }
+}

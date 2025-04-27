@@ -24,6 +24,21 @@ namespace Gotorz.Server.Contexts
         public DbSet<FlightTicket> FlightTickets { get; set; }
 
         /// <summary>
+        /// DbSet for <see cref="HolidayPackage"/> entities
+        /// </summary>
+        public DbSet<HolidayPackage> HolidayPackages { get; set; }
+
+        /// <summary>
+        /// DbSet for <see cref="HolidayBooking"/> entities
+        /// </summary>
+        public DbSet<HolidayBooking> HolidayBookings { get; set; }
+
+        /// <summary>
+        /// DbSet for <see cref="Traveller"/> entities
+        /// </summary>
+        public DbSet<Traveller> Travellers { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="GotorzDbContext"/> class.
         /// </summary>
         /// <param name="options">The options to configure the <see cref="GotorzDbContext"/> instance with.</param>

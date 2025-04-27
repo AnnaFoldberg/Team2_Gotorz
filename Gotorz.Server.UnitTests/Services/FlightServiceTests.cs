@@ -5,7 +5,7 @@ using Moq.Protected;
 using System.Net;
 using Microsoft.Extensions.Configuration;
 using System.Text;
-using Gotorz.Shared.DTO;
+using Gotorz.Shared.DTOs;
 
 namespace Gotorz.Server.UnitTests.Services
 {

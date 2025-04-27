@@ -1,0 +1,167 @@
+﻿@page "/booking/travellers/{BookingReference}"
+@using Gotorz.Client.Components
+@using Gotorz.Shared.DTOs
+@using Gotorz.Client.ViewModels
+@using Gotorz.Client.Services
+@using Microsoft.AspNetCore.Authorization
+@using System.ComponentModel.DataAnnotations
+@using System.Text.Json
+@using Microsoft.AspNetCore.Mvc
+@inject IUserService UserService
+@inject IBookingService BookingService
+@inject ILogger<Travellers> Logger
+@inject NavigationManager Navigation
+
+<AuthorizeView>
+    <Authorized Context="auth">
+        @if (!isLoaded)
+        {
+          <p>Loading...</p>
+        }
+        else if (auth.User.IsInRole("customer"))
+        {
+          if (holidayBooking != null && holidayBooking?.CustomerEmail == userEmail)
+          {
+            <div class="container d-flex flex-column standard-page-wrapper">
+                <h3>Travellers</h3><br><br>
+                <EditForm Model="@travellerForms" OnValidSubmit="ConfirmAndPostTravellersAsync">
+                  <DataAnnotationsValidator />
+                    <p style="color: red;">@errorMessage</p>
+                    @foreach (var item in travellerForms.Select((traveller, index) => (traveller, index)))
+                    {
+                      var traveller = item.traveller;
+                      var index = item.index;
+                      <div class="container">
+                        <div class="d-flex gap-2 align-items-end">
+                          <div class="form-group flex-grow-1">
+                              <label for=@($"name-{index}") class="form-label">Name</label>
+                              <ValidationMessage For="@(() => traveller.Name)" />
+                              <InputText class="form-control" id=@($"name-{index}") @bind-Value="traveller.Name" />
+                          </div>
+                         <div class="form-group flex-grow-1">
+                              <label for=@($"age-{index}") class="form-label">Age</label>
+                              <ValidationMessage For="@(() => traveller.Age)" />
+                              <InputNumber class="form-control" id=@($"age-{index}") @bind-Value="traveller.Age" />
+                          </div>
+                          <div class="form-group flex-grow-1">
+                              <label for=@($"passportNumber-{index}") class="form-label">Passport Number</label>
+                              <ValidationMessage For="@(() => traveller.PassportNumber)" />
+                              <InputText class="form-control" id=@($"passportNumber-{index}") @bind-Value="traveller.PassportNumber" />
+                          </div>
+                          <div class="form-group flex-grow-1">
+                            <button type="button" class="btn icon-white h-100 custom-background text-white bi bi-dash-square-fill"
+                              @onclick="(() => RemoveTraveller(traveller))" disabled="@(index == 0)"></button>
+                          </div>
+                        </div>
+                      </div>
+                    }
+                  <br><br>
+                  <div class="form-group flex-grow-1">
+                    <button type="button" class="btn icon-white h-100 custom-background text-white"
+                      @onclick="AddTraveller"><i class="bi bi-plus-square-fill me-2"></i>Add traveller</button>
+                  </div>
+                  <br><br><br><br>
+                  <div class="container mt-auto mb-4">
+                    <div class="d-flex justify-content-between align-items-center p-3 border rounded bg-white shadow">
+                        <p class="mb-0 flex-grow-1">@($"{travellerForms.Count} traveller(s) added (max: {maxCapacity})")</p>
+                        <button type="submit" class="btn btn-light custom-background text-white">Confirm</button>
+                    </div>
+                  </div>
+                </EditForm>
+            </div>
+          }
+          else
+          {
+            <p>Page not found.</p>
+          }
+        }
+        else
+        {
+          <p>Page not found.</p>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <div class="mt-5 standard-page-wrapper">
+            <Login/>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private bool isLoaded = false;
+    private string? errorMessage;
+    private string? userEmail;
+    private HolidayBookingDto? holidayBooking;
+    private List<TravellerForm> travellerForms = new List<TravellerForm>();
+    private int maxCapacity = 0;
+
+    [Parameter]
+    public string BookingReference { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+      try
+      {
+        userEmail = await UserService.GetEmailAsync();
+        holidayBooking = await BookingService.GetHolidayBookingAsync(BookingReference);
+        if (holidayBooking == null)
+        {
+          Logger.LogError("Error retrieving holiday booking");
+        }
+        maxCapacity = holidayBooking.HolidayPackage.MaxCapacity;
+        if (travellerForms.Count == 0)
+        {
+          AddTraveller();
+        }
+        isLoaded = true;
+      }
+      catch (Exception ex)
+      {
+          Logger.LogError(ex, "Error initializing travellers");
+      }
+    }
+
+    private void AddTraveller()
+    {
+      if (travellerForms.Count < maxCapacity)
+      {
+        travellerForms.Add(new TravellerForm());
+      }
+    }
+
+    private void RemoveTraveller(TravellerForm travellerForm)
+    {
+        travellerForms.Remove(travellerForm);
+    }
+
+    private async Task ConfirmAndPostTravellersAsync()
+    {
+      try
+      {
+        var travellers = new List<TravellerDto>();
+
+        foreach (TravellerForm traveller in travellerForms)
+        {
+          if (string.IsNullOrWhiteSpace(traveller.Name) || string.IsNullOrWhiteSpace(traveller.PassportNumber)
+            || traveller.Age < 0 || traveller.Age > 120 )
+          {
+            errorMessage = "One or more fields were not filled in properly.";
+            return;
+          }
+          var travellerDto = new TravellerDto {
+              Name = traveller.Name,
+              Age = traveller.Age,
+              PassportNumber = traveller.PassportNumber,
+              HolidayBooking = holidayBooking
+          };
+          travellers.Add(travellerDto);
+        }
+        await BookingService.PostTravellersAsync(travellers);
+        Navigation.NavigateTo($"/booking/request-confirmation/{BookingReference}");
+      }
+      catch (Exception ex)
+      {
+          Logger.LogError(ex, "Error committing travellers");
+      }
+    }
+}
