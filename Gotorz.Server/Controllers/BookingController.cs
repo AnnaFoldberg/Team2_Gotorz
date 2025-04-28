@@ -51,6 +51,7 @@ public class BookingController : ControllerBase
     public async Task<HolidayBookingDto?> GetHolidayBookingAsync(string bookingReference)
     {
         var holidayBooking = await _holidayBookingRepository.GetByBookingReferenceAsync(bookingReference);
+        if (holidayBooking == null) return null;
         var holidayBookingDto = _mapper.Map<HolidayBookingDto>(holidayBooking);
         return holidayBookingDto;
     }
@@ -64,6 +65,18 @@ public class BookingController : ControllerBase
     [HttpPost("holiday-booking")]
     public async Task<IActionResult> PostHolidayBookingAsync(HolidayBookingDto holidayBooking)
     {
+        if (holidayBooking == null)
+        {
+            return BadRequest("No holiday booking was provided");
+        }
+
+        // Check if a holiday booking with the same booking reference already exists
+        var matchingHolidayBooking = await _holidayBookingRepository.GetByBookingReferenceAsync(holidayBooking.BookingReference);
+        if (matchingHolidayBooking != null)
+        {
+            return BadRequest("A holiday booking with the same booking reference already exists in the database");
+        }
+
         var _holidayBooking = _mapper.Map<HolidayBooking>(holidayBooking);
         _holidayBooking.HolidayPackageId = 2; // ONLY TEMPORARY UNTIL WE HAVE MERGED BRANCHES!!!!!!!!!!!!!!!!!!!!!!
         await _holidayBookingRepository.AddAsync(_holidayBooking);
@@ -80,6 +93,7 @@ public class BookingController : ControllerBase
     public async Task<IEnumerable<TravellerDto>?> GetTravellersAsync(string bookingReference)
     {
         var holidayBooking = await _holidayBookingRepository.GetByBookingReferenceAsync(bookingReference);
+        if (holidayBooking == null) return null;
         var holidayBookingId = holidayBooking.HolidayBookingId;
         var travellers = (await _travellerRepository.GetAllAsync()).Where(t => t.HolidayBookingId == holidayBookingId);
         var travellerDtos = _mapper.Map<IEnumerable<TravellerDto>>(travellers);
@@ -100,10 +114,16 @@ public class BookingController : ControllerBase
             return BadRequest("No travellers were provided");
         }
 
+        var bookingReference = travellers.First().HolidayBooking.BookingReference;
+
+        var holidayBooking = await _holidayBookingRepository.GetByBookingReferenceAsync(bookingReference);
+        if (holidayBooking == null)
+        {
+            return BadRequest($"No holiday booking found for booking reference '{bookingReference}'");
+        }
+
         foreach (var traveller in travellers)
         {
-            var holidayBooking = await _holidayBookingRepository.GetByBookingReferenceAsync(traveller.HolidayBooking.BookingReference);
-
             var _traveller = _mapper.Map<Traveller>(traveller);
             _traveller.HolidayBookingId = holidayBooking.HolidayBookingId;
             await _travellerRepository.AddAsync(_traveller);

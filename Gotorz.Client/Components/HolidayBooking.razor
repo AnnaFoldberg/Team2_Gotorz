@@ -11,7 +11,7 @@
             <p>Loading ...</p>
         }
         else if ((auth.User.IsInRole("customer") && HolidayBookingDto?.CustomerEmail == userEmail )
-            || auth.User.IsInRole("sales"))
+            || auth.User.IsInRole("sales") || auth.User.IsInRole("admin"))
         {
                 <div class="d-flex justify-content-between">
                     <div class="p-2 flex-fill">

@@ -19,7 +19,7 @@ namespace Gotorz.Server.UnitTests.Controllers
     {
         private FlightController _flightController;
         private Mock<IFlightService> _mockFlightService;
-        private Mock<IMapper> _mapper;
+        private Mock<IMapper> _mockMapper;
         private Mock<IRepository<Airport>> _mockAirportRepository;
         private Mock<IFlightRepository> _mockFlightRepository;
         private Mock<IRepository<FlightTicket>> _mockFlightTicketRepository;
@@ -28,12 +28,12 @@ namespace Gotorz.Server.UnitTests.Controllers
         public void TestInitialize()
         {
             _mockFlightService = new Mock<IFlightService>();
-            _mapper = new Mock<IMapper>();
+            _mockMapper = new Mock<IMapper>();
             _mockAirportRepository = new Mock<IRepository<Airport>>();
             _mockFlightRepository = new Mock<IFlightRepository>();
             _mockFlightTicketRepository = new Mock<IRepository<FlightTicket>>();
 
-            _flightController = new FlightController(_mockFlightService.Object, _mapper.Object,
+            _flightController = new FlightController(_mockFlightService.Object, _mockMapper.Object,
                 _mockAirportRepository.Object, _mockFlightRepository.Object, _mockFlightTicketRepository.Object);
         }
 
@@ -56,8 +56,8 @@ namespace Gotorz.Server.UnitTests.Controllers
                 new AirportDto { AirportId = 2, EntityId = "95565058", LocalizedName = "New York John F. Kennedy", SkyId = "JFK" }
             };
 
-            _mockAirportRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(mockAirports);
-            _mapper.Setup(m => m.Map<IEnumerable<AirportDto>>(mockAirports)).Returns(mockAirportDtos);
+            _mockAirportRepository.Setup(r => r.GetAllAsync()).ReturnsAsync(mockAirports);
+            _mockMapper.Setup(m => m.Map<IEnumerable<AirportDto>>(mockAirports)).Returns(mockAirportDtos);
 
             // Act
             var airports = await _flightController.GetAllAirportsAsync();
@@ -81,8 +81,8 @@ namespace Gotorz.Server.UnitTests.Controllers
                 new AirportDto { AirportId = 1, EntityId = "95673765", LocalizedName = "Sacramento International", SkyId = "SMF" }
             };
 
-            _mockAirportRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(mockAirports);
-            _mapper.Setup(m => m.Map<IEnumerable<AirportDto>>(mockAirports)).Returns(mockAirportDtos);
+            _mockAirportRepository.Setup(r => r.GetAllAsync()).ReturnsAsync(mockAirports);
+            _mockMapper.Setup(m => m.Map<IEnumerable<AirportDto>>(mockAirports)).Returns(mockAirportDtos);
 
             // Act
             var airports = await _flightController.GetAllAirportsAsync();
@@ -100,8 +100,8 @@ namespace Gotorz.Server.UnitTests.Controllers
             var mockAirports = new List<Airport>();
             var mockAirportDtos = new List<AirportDto>();
 
-            _mockAirportRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(mockAirports);
-            _mapper.Setup(m => m.Map<IEnumerable<AirportDto>>(mockAirports)).Returns(mockAirportDtos);
+            _mockAirportRepository.Setup(r => r.GetAllAsync()).ReturnsAsync(mockAirports);
+            _mockMapper.Setup(m => m.Map<IEnumerable<AirportDto>>(mockAirports)).Returns(mockAirportDtos);
 
             // Act
             var airports = await _flightController.GetAllAirportsAsync();
@@ -125,7 +125,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             _mockFlightService.Setup(s => s.GetAirportAsync(airportName))
                       .ReturnsAsync( new List<AirportDto> { airportDto } );
 
-            _mapper.Setup(m => m.Map<Airport>(airportDto)).Returns(airport);
+            _mockMapper.Setup(m => m.Map<Airport>(airportDto)).Returns(airport);
 
             // Act
             var result = await _flightController.GetAirportAsync(airportName);
@@ -220,8 +220,8 @@ namespace Gotorz.Server.UnitTests.Controllers
             var departureAirportDto = new AirportDto { EntityId = "95565058", LocalizedName = "New York John F. Kennedy", SkyId = "JFK" };
             var arrivalAirportDto = new AirportDto { EntityId = "95565050", LocalizedName = "London Heathrow", SkyId = "LHR" };
 
-            _mapper.Setup(m => m.Map<AirportDto>(departureAirport)).Returns(departureAirportDto);
-            _mapper.Setup(m => m.Map<AirportDto>(arrivalAirport)).Returns(arrivalAirportDto);
+            _mockMapper.Setup(m => m.Map<AirportDto>(departureAirport)).Returns(departureAirportDto);
+            _mockMapper.Setup(m => m.Map<AirportDto>(arrivalAirport)).Returns(arrivalAirportDto);
 
             var mockFlights = new List<FlightDto>
             {
@@ -279,8 +279,8 @@ namespace Gotorz.Server.UnitTests.Controllers
             var departureAirportDto = new AirportDto { EntityId = "95565058", LocalizedName = "New York John F. Kennedy", SkyId = "JFK" };
             var arrivalAirportDto = new AirportDto { EntityId = "95565050", LocalizedName = "London Heathrow", SkyId = "LHR" };
 
-            _mapper.Setup(m => m.Map<AirportDto>(departureAirport)).Returns(departureAirportDto);
-            _mapper.Setup(m => m.Map<AirportDto>(arrivalAirport)).Returns(arrivalAirportDto);
+            _mockMapper.Setup(m => m.Map<AirportDto>(departureAirport)).Returns(departureAirportDto);
+            _mockMapper.Setup(m => m.Map<AirportDto>(arrivalAirport)).Returns(arrivalAirportDto);
 
             var mockFlights = new List<FlightDto>
             {
@@ -330,8 +330,8 @@ namespace Gotorz.Server.UnitTests.Controllers
             var departureAirportDto = new AirportDto { EntityId = "95565058", LocalizedName = "New York John F. Kennedy", SkyId = "JFK" };
             var arrivalAirportDto = new AirportDto { EntityId = "95565050", LocalizedName = "London Heathrow", SkyId = "LHR" };
 
-            _mapper.Setup(m => m.Map<AirportDto>(departureAirport)).Returns(departureAirportDto);
-            _mapper.Setup(m => m.Map<AirportDto>(arrivalAirport)).Returns(arrivalAirportDto);
+            _mockMapper.Setup(m => m.Map<AirportDto>(departureAirport)).Returns(departureAirportDto);
+            _mockMapper.Setup(m => m.Map<AirportDto>(arrivalAirport)).Returns(arrivalAirportDto);
 
             _mockFlightService.Setup(s => s.GetFlightsAsync(null, departureAirportDto, arrivalAirportDto))
                       .ReturnsAsync( new List<FlightDto>() );
@@ -362,8 +362,8 @@ namespace Gotorz.Server.UnitTests.Controllers
             var departureAirportDto = new AirportDto { EntityId = "95565058", LocalizedName = "New York John F. Kennedy", SkyId = "JFK" };
             var arrivalAirportDto = new AirportDto { EntityId = "95565050", LocalizedName = "London Heathrow", SkyId = "LHR" };
 
-            _mapper.Setup(m => m.Map<AirportDto>(departureAirport)).Returns(departureAirportDto);
-            _mapper.Setup(m => m.Map<AirportDto>(arrivalAirport)).Returns(arrivalAirportDto);
+            _mockMapper.Setup(m => m.Map<AirportDto>(departureAirport)).Returns(departureAirportDto);
+            _mockMapper.Setup(m => m.Map<AirportDto>(arrivalAirport)).Returns(arrivalAirportDto);
 
             _mockFlightService.Setup(s => s.GetFlightsAsync(null, departureAirportDto, arrivalAirportDto))
                       .ReturnsAsync( (List<FlightDto>?) null );
@@ -398,9 +398,9 @@ namespace Gotorz.Server.UnitTests.Controllers
             _mockFlightService.Setup(s => s.GetAirportAsync(departureAirportName))
                     .ReturnsAsync( new List<AirportDto> { departureAirportDto } );
 
-            _mapper.Setup(m => m.Map<AirportDto>(arrivalAirport)).Returns(arrivalAirportDto);
-            _mapper.Setup(m => m.Map<Airport>(departureAirportDto)).Returns(departureAirport);
-            _mapper.Setup(m => m.Map<AirportDto>(departureAirport)).Returns(departureAirportDto);
+            _mockMapper.Setup(m => m.Map<AirportDto>(arrivalAirport)).Returns(arrivalAirportDto);
+            _mockMapper.Setup(m => m.Map<Airport>(departureAirportDto)).Returns(departureAirport);
+            _mockMapper.Setup(m => m.Map<AirportDto>(departureAirport)).Returns(departureAirportDto);
 
             var mockFlights = new List<FlightDto>
             {
@@ -462,9 +462,9 @@ namespace Gotorz.Server.UnitTests.Controllers
             _mockFlightService.Setup(s => s.GetAirportAsync(arrivalAirportName))
                       .ReturnsAsync( new List<AirportDto> { arrivalAirportDto } );
 
-            _mapper.Setup(m => m.Map<AirportDto>(departureAirport)).Returns(departureAirportDto);
-            _mapper.Setup(m => m.Map<Airport>(arrivalAirportDto)).Returns(arrivalAirport);
-            _mapper.Setup(m => m.Map<AirportDto>(arrivalAirport)).Returns(arrivalAirportDto);
+            _mockMapper.Setup(m => m.Map<AirportDto>(departureAirport)).Returns(departureAirportDto);
+            _mockMapper.Setup(m => m.Map<Airport>(arrivalAirportDto)).Returns(arrivalAirport);
+            _mockMapper.Setup(m => m.Map<AirportDto>(arrivalAirport)).Returns(arrivalAirportDto);
 
             var mockFlights = new List<FlightDto>
             {
@@ -523,7 +523,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             _mockFlightService.Setup(s => s.GetAirportAsync(departureAirportName))
                       .ReturnsAsync( new List<AirportDto>() );
 
-            _mapper.Setup(m => m.Map<AirportDto>(arrivalAirport)).Returns(arrivalAirportDto);
+            _mockMapper.Setup(m => m.Map<AirportDto>(arrivalAirport)).Returns(arrivalAirportDto);
 
             // Act
             var flights = await _flightController.GetFlightsAsync(null, departureAirportName, arrivalAirportName);
@@ -553,7 +553,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             _mockFlightService.Setup(s => s.GetAirportAsync(arrivalAirportName))
                       .ReturnsAsync( new List<AirportDto>() );
 
-            _mapper.Setup(m => m.Map<AirportDto>(departureAirport)).Returns(departureAirportDto);
+            _mockMapper.Setup(m => m.Map<AirportDto>(departureAirport)).Returns(departureAirportDto);
 
             // Act
             var flights = await _flightController.GetFlightsAsync(null, departureAirportName, arrivalAirportName);
@@ -577,7 +577,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             var mockFlight = new Flight { FlightId = 1, FlightNumber = "{bl}:202504040709*D*JFK*LHR*20250512*smtf*FI",
                     DepartureDate = new DateOnly(2025, 5, 12)};
 
-            _mapper.Setup(m => m.Map<Flight>(mockFlightDto)).Returns(mockFlight);
+            _mockMapper.Setup(m => m.Map<Flight>(mockFlightDto)).Returns(mockFlight);
             _mockFlightRepository.Setup(r => r.GetByFlightNumberAsync(mockFlight.FlightNumber)).ReturnsAsync(mockFlight);
 
             // Flight tickets
@@ -611,8 +611,8 @@ namespace Gotorz.Server.UnitTests.Controllers
                 },
             };
 
-            _mapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[0])).Returns(mockFlightTickets[0]);
-            _mapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[1])).Returns(mockFlightTickets[1]);
+            _mockMapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[0])).Returns(mockFlightTickets[0]);
+            _mockMapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[1])).Returns(mockFlightTickets[1]);
             _mockFlightTicketRepository.Setup(r => r.AddAsync(It.IsAny<FlightTicket>())).Returns(Task.CompletedTask);
 
             // Act
@@ -663,8 +663,8 @@ namespace Gotorz.Server.UnitTests.Controllers
                 }
             };
 
-            _mapper.Setup(m => m.Map<Flight>(mockFlightDtos[0])).Returns(mockFlights[0]);
-            _mapper.Setup(m => m.Map<Flight>(mockFlightDtos[1])).Returns(mockFlights[1]);
+            _mockMapper.Setup(m => m.Map<Flight>(mockFlightDtos[0])).Returns(mockFlights[0]);
+            _mockMapper.Setup(m => m.Map<Flight>(mockFlightDtos[1])).Returns(mockFlights[1]);
             _mockFlightRepository.Setup(r => r.GetByFlightNumberAsync(mockFlights[0].FlightNumber)).ReturnsAsync(mockFlights[0]);
             _mockFlightRepository.Setup(r => r.GetByFlightNumberAsync(mockFlights[1].FlightNumber)).ReturnsAsync(mockFlights[1]);
 
@@ -699,14 +699,15 @@ namespace Gotorz.Server.UnitTests.Controllers
                 }
             };
 
-            _mapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[0])).Returns(mockFlightTickets[0]);
-            _mapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[1])).Returns(mockFlightTickets[1]);
+            _mockMapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[0])).Returns(mockFlightTickets[0]);
+            _mockMapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[1])).Returns(mockFlightTickets[1]);
             _mockFlightTicketRepository.Setup(r => r.AddAsync(It.IsAny<FlightTicket>())).Returns(Task.CompletedTask);
 
             // Act
             var result = await _flightController.PostFlightTicketsAsync(mockFlightTicketDtos);
 
             // Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             var okResult = result as OkObjectResult;
             Assert.IsNotNull(okResult);
             Assert.AreEqual($"Successfully added 2 flight ticket(s) to database", okResult.Value);
@@ -724,6 +725,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             var result = await _flightController.PostFlightTicketsAsync(mockFlightTicketDtos);
 
             // Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
             var badRequestResult = result as BadRequestObjectResult;
             Assert.IsNotNull(badRequestResult);
             Assert.AreEqual($"No flight tickets were provided", badRequestResult.Value);
@@ -736,6 +738,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             var result = await _flightController.PostFlightTicketsAsync(null!);
 
             // Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
             var badRequestResult = result as BadRequestObjectResult;
             Assert.IsNotNull(badRequestResult);
             Assert.AreEqual($"No flight tickets were provided", badRequestResult.Value);
@@ -778,8 +781,8 @@ namespace Gotorz.Server.UnitTests.Controllers
                 }
             };
 
-            _mapper.Setup(m => m.Map<Flight>(mockFlightDtos[0])).Returns(mockFlights[0]);
-            _mapper.Setup(m => m.Map<Flight>(mockFlightDtos[1])).Returns(mockFlights[1]);
+            _mockMapper.Setup(m => m.Map<Flight>(mockFlightDtos[0])).Returns(mockFlights[0]);
+            _mockMapper.Setup(m => m.Map<Flight>(mockFlightDtos[1])).Returns(mockFlights[1]);
             _mockFlightRepository.Setup(r => r.GetByFlightNumberAsync(mockFlights[0].FlightNumber)).ReturnsAsync(mockFlights[0]);
             _mockFlightRepository.Setup(r => r.GetByFlightNumberAsync(mockFlights[1].FlightNumber)).ReturnsAsync(mockFlights[1]);
 
@@ -814,14 +817,15 @@ namespace Gotorz.Server.UnitTests.Controllers
                 }
             };
 
-            _mapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[0])).Returns(mockFlightTickets[0]);
-            _mapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[1])).Returns(mockFlightTickets[1]);
+            _mockMapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[0])).Returns(mockFlightTickets[0]);
+            _mockMapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[1])).Returns(mockFlightTickets[1]);
             _mockFlightTicketRepository.Setup(r => r.AddAsync(It.IsAny<FlightTicket>())).Returns(Task.CompletedTask);
 
             // Act
             var result = await _flightController.PostFlightTicketsAsync(mockFlightTicketDtos);
 
             // Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             var okResult = result as OkObjectResult;
             Assert.IsNotNull(okResult);
             Assert.AreEqual($"Successfully added 2 flight ticket(s) to database", okResult.Value);
@@ -841,8 +845,8 @@ namespace Gotorz.Server.UnitTests.Controllers
             var departureAirportDto = new AirportDto { EntityId = "95565058", LocalizedName = "New York John F. Kennedy", SkyId = "JFK" };
             var arrivalAirportDto = new AirportDto { EntityId = "95565050", LocalizedName = "London Heathrow", SkyId = "LHR" };
 
-            _mapper.Setup(m => m.Map<AirportDto>(departureAirport)).Returns(departureAirportDto);
-            _mapper.Setup(m => m.Map<AirportDto>(arrivalAirport)).Returns(arrivalAirportDto);
+            _mockMapper.Setup(m => m.Map<AirportDto>(departureAirport)).Returns(departureAirportDto);
+            _mockMapper.Setup(m => m.Map<AirportDto>(arrivalAirport)).Returns(arrivalAirportDto);
             _mockAirportRepository.Setup(r => r.GetAllAsync()).ReturnsAsync(airports);
 
             // Flights
@@ -908,9 +912,9 @@ namespace Gotorz.Server.UnitTests.Controllers
                 }
             };
 
-            _mapper.Setup(m => m.Map<Flight>(mockFlightDtos[0])).Returns(mockFlights[0]);
-            _mapper.Setup(m => m.Map<Flight>(mockFlightDtos[1])).Returns(mockFlights[1]);
-            _mapper.Setup(m => m.Map<Flight>(mockFlightDtos[2])).Returns(mockFlights[2]);
+            _mockMapper.Setup(m => m.Map<Flight>(mockFlightDtos[0])).Returns(mockFlights[0]);
+            _mockMapper.Setup(m => m.Map<Flight>(mockFlightDtos[1])).Returns(mockFlights[1]);
+            _mockMapper.Setup(m => m.Map<Flight>(mockFlightDtos[2])).Returns(mockFlights[2]);
             _mockFlightRepository.Setup(r => r.GetByFlightNumberAsync(mockFlights[0].FlightNumber)).ReturnsAsync(mockFlights[0]);
             _mockFlightRepository.Setup(r => r.GetByFlightNumberAsync(mockFlights[1].FlightNumber)).ReturnsAsync(mockFlights[1]);
             _mockFlightRepository.Setup(r => r.GetByFlightNumberAsync(mockFlights[2].FlightNumber)).ReturnsAsync((Flight)null!);
@@ -958,15 +962,16 @@ namespace Gotorz.Server.UnitTests.Controllers
                 },
             };
 
-            _mapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[0])).Returns(mockFlightTickets[0]);
-            _mapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[1])).Returns(mockFlightTickets[1]);
-            _mapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[2])).Returns(mockFlightTickets[2]);
+            _mockMapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[0])).Returns(mockFlightTickets[0]);
+            _mockMapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[1])).Returns(mockFlightTickets[1]);
+            _mockMapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[2])).Returns(mockFlightTickets[2]);
             _mockFlightTicketRepository.Setup(r => r.AddAsync(It.IsAny<FlightTicket>())).Returns(Task.CompletedTask);
 
             // Act
             var result = await _flightController.PostFlightTicketsAsync(mockFlightTicketDtos);
 
             // Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             var okResult = result as OkObjectResult;
             Assert.IsNotNull(okResult);
             Assert.AreEqual($"Successfully added 3 flight ticket(s) to database", okResult.Value);
@@ -987,7 +992,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             var mockFlight = new Flight { FlightId = 1, FlightNumber = "{bl}:202504040709*D*JFK*LHR*20250512*smtf*FI",
                     DepartureDate = new DateOnly(2025, 5, 12)};
 
-            _mapper.Setup(m => m.Map<Flight>(mockFlightDto)).Returns(mockFlight);
+            _mockMapper.Setup(m => m.Map<Flight>(mockFlightDto)).Returns(mockFlight);
             _mockFlightRepository.Setup(r => r.GetByFlightNumberAsync(mockFlight.FlightNumber)).ReturnsAsync(mockFlight);
 
             // Flight tickets
@@ -1021,14 +1026,15 @@ namespace Gotorz.Server.UnitTests.Controllers
                 },
             };
 
-            _mapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[0])).Returns(mockFlightTickets[0]);
-            _mapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[1])).Returns(mockFlightTickets[1]);
+            _mockMapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[0])).Returns(mockFlightTickets[0]);
+            _mockMapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[1])).Returns(mockFlightTickets[1]);
             _mockFlightTicketRepository.Setup(r => r.AddAsync(It.IsAny<FlightTicket>())).Returns(Task.CompletedTask);
 
             // Act
             var result = await _flightController.PostFlightTicketsAsync(mockFlightTicketDtos);
 
             // Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             var okResult = result as OkObjectResult;
             Assert.IsNotNull(okResult);
             Assert.AreEqual($"Successfully added 2 flight ticket(s) to database", okResult.Value);
@@ -1048,8 +1054,8 @@ namespace Gotorz.Server.UnitTests.Controllers
             var departureAirportDto = new AirportDto { EntityId = "95565058", LocalizedName = "New York John F. Kennedy", SkyId = "JFK" };
             var arrivalAirportDto = new AirportDto { EntityId = "95565050", LocalizedName = "London Heathrow", SkyId = "LHR" };
 
-            _mapper.Setup(m => m.Map<AirportDto>(departureAirport)).Returns(departureAirportDto);
-            _mapper.Setup(m => m.Map<AirportDto>(arrivalAirport)).Returns(arrivalAirportDto);
+            _mockMapper.Setup(m => m.Map<AirportDto>(departureAirport)).Returns(departureAirportDto);
+            _mockMapper.Setup(m => m.Map<AirportDto>(arrivalAirport)).Returns(arrivalAirportDto);
             _mockAirportRepository.Setup(r => r.GetAllAsync()).ReturnsAsync(airports);
 
             // Flights
@@ -1115,9 +1121,9 @@ namespace Gotorz.Server.UnitTests.Controllers
                 }
             };
 
-            _mapper.Setup(m => m.Map<Flight>(mockFlightDtos[0])).Returns(mockFlights[0]);
-            _mapper.Setup(m => m.Map<Flight>(mockFlightDtos[1])).Returns(mockFlights[1]);
-            _mapper.Setup(m => m.Map<Flight>(mockFlightDtos[2])).Returns(mockFlights[2]);
+            _mockMapper.Setup(m => m.Map<Flight>(mockFlightDtos[0])).Returns(mockFlights[0]);
+            _mockMapper.Setup(m => m.Map<Flight>(mockFlightDtos[1])).Returns(mockFlights[1]);
+            _mockMapper.Setup(m => m.Map<Flight>(mockFlightDtos[2])).Returns(mockFlights[2]);
             _mockFlightRepository.Setup(r => r.GetByFlightNumberAsync(mockFlights[0].FlightNumber)).ReturnsAsync((Flight)null!);
             _mockFlightRepository.Setup(r => r.GetByFlightNumberAsync(mockFlights[1].FlightNumber)).ReturnsAsync((Flight)null!);
             _mockFlightRepository.Setup(r => r.GetByFlightNumberAsync(mockFlights[2].FlightNumber)).ReturnsAsync((Flight)null!);
@@ -1165,15 +1171,16 @@ namespace Gotorz.Server.UnitTests.Controllers
                 },
             };
 
-            _mapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[0])).Returns(mockFlightTickets[0]);
-            _mapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[1])).Returns(mockFlightTickets[1]);
-            _mapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[2])).Returns(mockFlightTickets[2]);
+            _mockMapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[0])).Returns(mockFlightTickets[0]);
+            _mockMapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[1])).Returns(mockFlightTickets[1]);
+            _mockMapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[2])).Returns(mockFlightTickets[2]);
             _mockFlightTicketRepository.Setup(r => r.AddAsync(It.IsAny<FlightTicket>())).Returns(Task.CompletedTask);
 
             // Act
             var result = await _flightController.PostFlightTicketsAsync(mockFlightTicketDtos);
 
             // Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
             var okResult = result as OkObjectResult;
             Assert.IsNotNull(okResult);
             Assert.AreEqual($"Successfully added 3 flight ticket(s) to database", okResult.Value);
@@ -1288,6 +1295,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             var result = await _flightController.PostFlightTicketsAsync(mockFlightTicketDtos);
 
             // Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
             var badRequestResult = result as BadRequestObjectResult;
             Assert.IsNotNull(badRequestResult);
             Assert.AreEqual($"One or more airports linked to flight do not exist", badRequestResult.Value);
