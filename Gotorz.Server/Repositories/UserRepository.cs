@@ -93,11 +93,25 @@ namespace Gotorz.Server.Repositories
             return await _userManager.GetUserAsync(userPrincipal);
         }
 
+        /// <summary>
+        /// Retrieves a user by their unique identifier.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns>
+        /// The <see cref="ApplicationUser"/> if found; otherwise, <c>null</c>.
+        /// </returns>
         public async Task<ApplicationUser?> GetUserByIdAsync(string userId)
         {
             return await _userManager.FindByIdAsync(userId);
         }
 
+        /// <summary>
+        /// Retrieves the claims associated with a user, including roles.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns>
+        /// A list of <see cref="ClaimDto"/> containing claims and roles.
+        /// </returns>
         public async Task<List<ClaimDto>> GetClaimsAsync(ApplicationUser user)
         {
             var claims = await _userManager.GetClaimsAsync(user);

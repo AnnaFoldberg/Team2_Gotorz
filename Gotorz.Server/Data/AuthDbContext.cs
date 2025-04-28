@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
+namespace Gotorz.Server.Data;
+
 /// <summary>
 /// Represents the database context for authentication.
 /// </summary>

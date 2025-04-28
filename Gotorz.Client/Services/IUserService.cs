@@ -32,8 +32,21 @@ namespace Gotorz.Client.Services
         /// <returns><c>true</c> if the user has the role; otherwise, <c>false</c>.</returns>
         Task<bool> IsUserInRoleAsync(string role);
 
+        /// <summary>
+        /// Retrieves the role of the currently authenticated user based on claims.
+        /// </summary>
+        /// <returns>
+        /// The user's role as a string if available; otherwise, <c>null</c>.
+        /// </returns>
         Task<string?> GetUserRoleAsync();
 
+        /// <summary>
+        /// Retrieves a user's profile information by their unique identifier
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns>
+        /// A <see cref="CurrentUserDto"/> containing user details if successful; otherwise, <c>null</c>.
+        /// </returns>
         Task<CurrentUserDto?> GetUserByIdAsync(string userId);
 
         /// <summary>

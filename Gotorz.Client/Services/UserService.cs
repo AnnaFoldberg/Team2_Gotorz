@@ -58,12 +58,25 @@ namespace Gotorz.Client.Services
             return user?.Claims?.Any(c => c.Type == ClaimTypes.Role && c.Value == role) == true;
         }
 
+        /// <summary>
+        /// Retrieves the role of the currently authenticated user based on claims.
+        /// </summary>
+        /// <returns>
+        /// The user's role as a string if available; otherwise, <c>null</c>.
+        /// </returns>
         public async Task<string?> GetUserRoleAsync()
         {
             var user = await GetCurrentUserAsync();
             return user?.Claims?.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
         }
 
+        /// <summary>
+        /// Retrieves a user's profile information by their unique identifier
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns>
+        /// A <see cref="CurrentUserDto"/> containing user details if successful; otherwise, <c>null</c>.
+        /// </returns>
         public async Task<CurrentUserDto?> GetUserByIdAsync(string userId)
         {
             try

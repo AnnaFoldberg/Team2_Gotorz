@@ -48,8 +48,22 @@ namespace Gotorz.Server.Repositories
         /// <returns>The <see cref="ApplicationUser"/> if found; otherwise, <c>null</c>.</returns>
         Task<ApplicationUser?> GetCurrentUserAsync(ClaimsPrincipal userPrincipal);
 
+        /// <summary>
+        /// Retrieves a user by their unique identifier.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns>
+        /// The <see cref="ApplicationUser"/> if found; otherwise, <c>null</c>.
+        /// </returns>
         Task<ApplicationUser?> GetUserByIdAsync(string userId);
 
+        /// <summary>
+        /// Retrieves the claims associated with a user, including roles.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns>
+        /// A list of <see cref="ClaimDto"/> containing claims and roles.
+        /// </returns>
         Task<List<ClaimDto>> GetClaimsAsync(ApplicationUser user);
 
         /// <summary>

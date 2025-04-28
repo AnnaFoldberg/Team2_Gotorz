@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Gotorz.Server.Repositories;
+using Gotorz.Server.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
