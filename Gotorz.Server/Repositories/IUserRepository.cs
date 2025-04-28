@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Gotorz.Server.Models;
+using Gotorz.Shared.DTO;
 using Microsoft.AspNetCore.Identity;
 
 namespace Gotorz.Server.Repositories
@@ -46,6 +47,10 @@ namespace Gotorz.Server.Repositories
         /// <param name="userPrincipal">The <see cref="ClaimsPrincipal"/> representing the current user.</param>
         /// <returns>The <see cref="ApplicationUser"/> if found; otherwise, <c>null</c>.</returns>
         Task<ApplicationUser?> GetCurrentUserAsync(ClaimsPrincipal userPrincipal);
+
+        Task<ApplicationUser?> GetUserByIdAsync(string userId);
+
+        Task<List<ClaimDto>> GetClaimsAsync(ApplicationUser user);
 
         /// <summary>
         /// Retrieves a user by their email address.

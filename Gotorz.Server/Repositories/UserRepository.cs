@@ -1,4 +1,5 @@
 ﻿using Gotorz.Server.Models;
+using Gotorz.Shared.DTO;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
@@ -91,6 +92,28 @@ namespace Gotorz.Server.Repositories
         {
             return await _userManager.GetUserAsync(userPrincipal);
         }
+
+        public async Task<ApplicationUser?> GetUserByIdAsync(string userId)
+        {
+            return await _userManager.FindByIdAsync(userId);
+        }
+
+        public async Task<List<ClaimDto>> GetClaimsAsync(ApplicationUser user)
+        {
+            var claims = await _userManager.GetClaimsAsync(user);
+            var roles = await _userManager.GetRolesAsync(user);
+
+            var allClaims = claims.Select(c => new ClaimDto { Type = c.Type, Value = c.Value }).ToList();
+
+            allClaims.AddRange(roles.Select(r => new ClaimDto
+            {
+                Type = ClaimTypes.Role,
+                Value = r
+            }));
+
+            return allClaims;
+        }
+
 
         /// <summary>
         /// Retrieves a user by their email address.

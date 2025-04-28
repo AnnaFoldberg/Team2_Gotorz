@@ -58,6 +58,24 @@ namespace Gotorz.Client.Services
             return user?.Claims?.Any(c => c.Type == ClaimTypes.Role && c.Value == role) == true;
         }
 
+        public async Task<string?> GetUserRoleAsync()
+        {
+            var user = await GetCurrentUserAsync();
+            return user?.Claims?.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+        }
+
+        public async Task<CurrentUserDto?> GetUserByIdAsync(string userId)
+        {
+            try
+            {
+                return await _http.GetFromJsonAsync<CurrentUserDto>($"api/account/user/{userId}");
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         /// <summary>
         /// Retrieves the unique identifier of the current user.
         /// </summary>

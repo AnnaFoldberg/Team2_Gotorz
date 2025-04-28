@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Gotorz.Server.Models;
 using Gotorz.Server.Repositories;
 using Gotorz.Shared.DTO;
+using Microsoft.AspNetCore.Authorization;
 
 /// <summary>
 /// Handles user account operations such as registration, login, logout, and retrieving the current user.
@@ -107,4 +108,26 @@ public class AccountController : ControllerBase
 
         return Ok(userDto);
     }
+
+    [HttpGet("user/{id}")]
+    [Authorize(Roles = "admin")]
+    public async Task<IActionResult> GetUserById(string id)
+    {
+        var user = await _userRepository.GetUserByIdAsync(id);
+        if (user == null) return NotFound();
+
+        var claims = await _userRepository.GetClaimsAsync(user);
+
+        var userDto = new CurrentUserDto
+        {
+            Email = user.Email,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            IsAuthenticated = true,
+            Claims = claims
+        };
+
+        return Ok(userDto);
+    }
+
 }

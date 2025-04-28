@@ -32,6 +32,10 @@ namespace Gotorz.Client.Services
         /// <returns><c>true</c> if the user has the role; otherwise, <c>false</c>.</returns>
         Task<bool> IsUserInRoleAsync(string role);
 
+        Task<string?> GetUserRoleAsync();
+
+        Task<CurrentUserDto?> GetUserByIdAsync(string userId);
+
         /// <summary>
         /// Retrieves the unique identifier of the current user.
         /// </summary>
