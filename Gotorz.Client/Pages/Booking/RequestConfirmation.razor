@@ -5,45 +5,39 @@
 @using Microsoft.AspNetCore.Authorization
 @inject IUserService UserService
 @inject IBookingService BookingService
+@inject ILogger<RequestConfirmation> Logger
 
 <AuthorizeView>
     <Authorized Context="auth">
-        @if (!isLoaded)
+        @if (!isAuthorizedUser)
+        {
+          <p>Page not found.</p>
+        }
+        else if (holidayBooking == null)
         {
           <p>Loading...</p>
         }
-        else if (auth.User.IsInRole("customer"))
+        else if (isAuthorizedUser)
         {
-          if (holidayBooking?.CustomerEmail == userEmail)
-          {
-            <div class="container d-flex flex-column request-confirmation-page-wrapper">
-              <h3>Booking Request Confirmation</h3>
-              <h6>Booking Reference: #@holidayBooking.BookingReference</h6>
-              <br>
-              <HolidayBooking HolidayBookingDto="@holidayBooking" />
+          <div class="container d-flex flex-column request-confirmation-page-wrapper">
+            <h3>Booking Request Confirmation</h3>
+            <h6>Booking Reference: #@holidayBooking.BookingReference</h6>
+            <br>
+            <HolidayBooking HolidayBookingDto="@holidayBooking" />
 
-              <div class="card mb-3" style="background-color: #d4edda;">
-                <div class="card-body d-flex align-items-start">
-                  <i class="bi bi-credit-card me-3" style="color: #218838; font-size: 1.5rem;"></i>
-                  <p class="card-text mb-0">Please transfer the payment to IBAN XX7050518371227343
-                    to proceed with your booking.</p>
-                </div>
-              </div>
-              <div>
-                <p>Once we receive your payment, a travel agent will begin processing your booking.
-                We will send you an email with your full travel details as soon as the reservation is confirmed.
-                <b>This usually happens within 24 hours of receiving your payment.</b></p>
+            <div class="card mb-3" style="background-color: #d4edda;">
+              <div class="card-body d-flex align-items-start">
+                <i class="bi bi-credit-card me-3" style="color: #218838; font-size: 1.5rem;"></i>
+                <p class="card-text mb-0">Please transfer the payment to IBAN XX7050518371227343
+                  to proceed with your booking.</p>
               </div>
             </div>
-          }
-          else
-          {
-            <p>Page not found.</p>
-          }
-        }
-        else
-        {
-          <p>Page not found.</p>
+            <div>
+              <p>Once we receive your payment, a travel agent will begin processing your booking.
+              We will send you an email with your full travel details as soon as the reservation is confirmed.
+              <b>This usually happens within 24 hours of receiving your payment.</b></p>
+            </div>
+          </div>
         }
     </Authorized>
     <NotAuthorized>
@@ -54,8 +48,7 @@
 </AuthorizeView>
 
 @code {
-    private bool isLoaded = false;
-    private string? userEmail { get; set; }
+    private bool isAuthorizedUser;
     private HolidayBookingDto? holidayBooking;
 
     [Parameter]
@@ -63,8 +56,18 @@
 
     protected override async Task OnInitializedAsync()
     {
-      userEmail = await UserService.GetEmailAsync();
-      holidayBooking = await BookingService.GetHolidayBookingAsync(BookingReference);
-      isLoaded = true;
+      try
+      {
+        holidayBooking = await BookingService.GetHolidayBookingAsync(BookingReference);
+
+        if (holidayBooking == null) return;
+
+        isAuthorizedUser = (await UserService.IsUserInRoleAsync("customer")) &&
+          holidayBooking.CustomerEmail == await UserService.GetEmailAsync();
+      }
+      catch (Exception ex)
+      {
+          Logger.LogError(ex, "Error initializing request confirmation");
+      }
     }
 }

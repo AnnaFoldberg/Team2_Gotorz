@@ -22,12 +22,14 @@ namespace Gotorz.Client.UnitTests.Pages
     public class FlightsTests : Bunit.TestContext
     {
         private Mock<IFlightService> _mockFlightService;
+        private Mock<IUserService> _mockUserService;
         private Mock<ILogger<Flights>> logger;
 
         [TestInitialize]
         public void TestInitialize()
         {
             _mockFlightService = new Mock<IFlightService>();
+            _mockUserService = new Mock<IUserService>();
             logger = new Mock<ILogger<Flights>>();
 
             Services.AddOptions();
@@ -48,8 +50,75 @@ namespace Gotorz.Client.UnitTests.Pages
 
             Services.AddSingleton(mockAuthService.Object);
             Services.AddSingleton(_mockFlightService.Object);
+            Services.AddSingleton(_mockUserService.Object);
             Services.AddSingleton(logger.Object);
-        }        
+        }
+
+        // -------------------- AuthorizeView --------------------
+        [TestMethod]
+        public void OnInitializedAsync_IsSales_ShowsFlights()
+        {
+            // Arrange
+            SetUser("sales");
+
+            // Act
+            var component = RenderFlightsWithAirports();
+
+            // Assert
+            var departureDatalist = component.Find("datalist#departure-options");
+            var arrivalDatalist = component.Find("datalist#arrival-options");
+            var departureOptions = departureDatalist.GetElementsByTagName("option");
+            var arrivalOptions = arrivalDatalist.GetElementsByTagName("option");
+            
+            Assert.AreEqual(2, departureOptions.Length);
+            Assert.AreEqual(2, arrivalOptions.Length);
+            Assert.IsTrue(departureOptions.Any(o => o.GetAttribute("value") == "New York John F. Kennedy"));
+            Assert.IsTrue(departureOptions.Any(o => o.GetAttribute("value") == "London Heathrow"));
+            Assert.IsTrue(arrivalOptions.Any(o => o.GetAttribute("value") == "New York John F. Kennedy"));
+            Assert.IsTrue(arrivalOptions.Any(o => o.GetAttribute("value") == "London Heathrow"));
+        }
+
+        [TestMethod]
+        public void OnInitializedAsync_IsAdmin_ShowsPageNotFound()
+        {
+            // Arrange
+            SetUser("admin");
+
+            // Act
+            var component = RenderFlightsWithAirports();
+
+            // Assert
+            Assert.IsTrue(component.Markup.Contains("Page not found."));
+        }
+
+        [TestMethod]
+        public void OnInitializedAsync_IsCustomer_ShowsPageNotFound()
+        {
+            // Arrange
+            SetUser("customer");
+
+            // Act
+            var component = RenderFlightsWithAirports();
+
+            // Assert
+            Assert.IsTrue(component.Markup.Contains("Page not found."));
+        }
+
+        [TestMethod]
+        public void OnInitializedAsync_NotLoggedIn_ShowsLogin()
+        {
+            // Arrange
+            SetUser(null);
+
+            // Act
+            var component = RenderFlightsWithAirports();
+
+            // Assert
+            Assert.IsTrue(component.Markup.Contains("Login"));
+            Assert.IsFalse(component.Markup.Contains("Page not found."));
+            Assert.IsFalse(component.Markup.Contains("Loading ..."));
+            Assert.IsFalse(component.Markup.Contains("Departure Airport"));
+        }
 
         // -------------------- Form --------------------
         [TestMethod]
@@ -259,7 +328,7 @@ namespace Gotorz.Client.UnitTests.Pages
         }
 
         [TestMethod]
-        public void SearchAsync_ThrowException_LogsError()
+        public void SearchAsync_ThrowsException_LogsError()
         {
             // Arrange
             SetUser("sales");
@@ -373,7 +442,7 @@ namespace Gotorz.Client.UnitTests.Pages
         }
 
         [TestMethod]
-        public async Task ConfirmAndPostFlightTicketsAsync_ThrowException_LogsError()
+        public async Task ConfirmAndPostFlightTicketsAsync_ThrowsException_LogsError()
         {
             // Arrange
             SetUser("sales");
@@ -425,14 +494,21 @@ namespace Gotorz.Client.UnitTests.Pages
         }
 
         // -------------------- Helper Methods --------------------
-        private void SetUser(string role)
+        private void SetUser(string? role)
         {
             var authContext = this.AddTestAuthorization();
+            if (role == null)
+            {
+                authContext.SetNotAuthorized();
+                return;
+            }
+
             authContext.SetAuthorized("Test user");
             authContext.SetClaims(
                 new Claim(ClaimTypes.Name, "Test user"),
                 new Claim(ClaimTypes.Role, role)
             );
+            _mockUserService.Setup(s => s.IsUserInRoleAsync(role)).ReturnsAsync(true);
         }
 
         private IRenderedComponent<Flights> RenderFlightsWithAirports()

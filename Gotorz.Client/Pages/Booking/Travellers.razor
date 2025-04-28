@@ -14,14 +14,16 @@
 
 <AuthorizeView>
     <Authorized Context="auth">
-        @if (!isLoaded)
+        @if (!isAuthorizedUser)
+        {
+          <p>Page not found.</p>
+        }
+        else if (holidayBooking == null)
         {
           <p>Loading...</p>
         }
-        else if (auth.User.IsInRole("customer"))
+        else if (isAuthorizedUser)
         {
-          if (holidayBooking != null && holidayBooking?.CustomerEmail == userEmail)
-          {
             <div class="container d-flex flex-column standard-page-wrapper">
                 <h3>Travellers</h3><br><br>
                 <EditForm Model="@travellerForms" OnValidSubmit="ConfirmAndPostTravellersAsync">
@@ -48,17 +50,17 @@
                               <ValidationMessage For="@(() => traveller.PassportNumber)" />
                               <InputText class="form-control" id=@($"passportNumber-{index}") @bind-Value="traveller.PassportNumber" />
                           </div>
-                          <div class="form-group flex-grow-1">
-                            <button type="button" class="btn icon-white h-100 custom-background text-white bi bi-dash-square-fill"
-                              @onclick="(() => RemoveTraveller(traveller))" disabled="@(index == 0)"></button>
+                          <div class="flex-grow-1">
+                            <button type="button" class="btn icon-white h-100 custom-background text-white" @onclick="(() => RemoveTraveller(traveller))"
+                                disabled="@(index == 0 && travellerForms.Count() == 1)"><i class="bi bi-dash-square-fill"></i></button>
                           </div>
                         </div>
                       </div>
                     }
                   <br><br>
-                  <div class="form-group flex-grow-1">
-                    <button type="button" class="btn icon-white h-100 custom-background text-white"
-                      @onclick="AddTraveller"><i class="bi bi-plus-square-fill me-2"></i>Add traveller</button>
+                  <div class="flex-grow-1">
+                    <button type="button" class="btn icon-white h-100 custom-background text-white" @onclick="AddTraveller"
+                      disabled="@(travellerForms.Count() == maxCapacity)"><i class="bi bi-plus-square-fill me-2"></i>Add traveller</button>
                   </div>
                   <br><br><br><br>
                   <div class="container mt-auto mb-4">
@@ -69,15 +71,6 @@
                   </div>
                 </EditForm>
             </div>
-          }
-          else
-          {
-            <p>Page not found.</p>
-          }
-        }
-        else
-        {
-          <p>Page not found.</p>
         }
     </Authorized>
     <NotAuthorized>
@@ -88,9 +81,8 @@
 </AuthorizeView>
 
 @code {
-    private bool isLoaded = false;
+    private bool isAuthorizedUser;
     private string? errorMessage;
-    private string? userEmail;
     private HolidayBookingDto? holidayBooking;
     private List<TravellerForm> travellerForms = new List<TravellerForm>();
     private int maxCapacity = 0;
@@ -102,18 +94,19 @@
     {
       try
       {
-        userEmail = await UserService.GetEmailAsync();
         holidayBooking = await BookingService.GetHolidayBookingAsync(BookingReference);
-        if (holidayBooking == null)
-        {
-          Logger.LogError("Error retrieving holiday booking");
-        }
+
+        if (holidayBooking == null) return;
+        
+        isAuthorizedUser = (await UserService.IsUserInRoleAsync("customer")) &&
+          holidayBooking.CustomerEmail == await UserService.GetEmailAsync();
+        
         maxCapacity = holidayBooking.HolidayPackage.MaxCapacity;
+
         if (travellerForms.Count == 0)
         {
           AddTraveller();
         }
-        isLoaded = true;
       }
       catch (Exception ex)
       {
@@ -131,7 +124,10 @@
 
     private void RemoveTraveller(TravellerForm travellerForm)
     {
+      if (travellerForms.Count > 1)
+      {
         travellerForms.Remove(travellerForm);
+      }
     }
 
     private async Task ConfirmAndPostTravellersAsync()

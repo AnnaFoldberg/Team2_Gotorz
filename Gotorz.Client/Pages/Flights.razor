@@ -6,11 +6,20 @@
 @using Gotorz.Client.Services
 @using Gotorz.Client.ViewModels
 @inject IFlightService FlightService
+@inject IUserService UserService
 @inject ILogger<Flights> Logger
 
 <AuthorizeView>
     <Authorized Context="auth">
-        @if (auth.User.IsInRole("sales"))
+        @if (!isAuthorizedUser)
+        {
+            <p>Page not found.</p>
+        }
+        else if (airports == null)
+        {
+            <p>Loading ...</p>
+        }
+        else
         {
             <div class="container d-flex flex-column standard-page-wrapper">
                 <EditForm Model="@searchForm" OnValidSubmit="SearchAsync">
@@ -116,6 +125,7 @@
 </AuthorizeView>
 
 @code {
+    private bool isAuthorizedUser;
     private bool searchPerformed = false;
     private SearchForm searchForm = new SearchForm();
     private IEnumerable<AirportDto> airports = Enumerable.Empty<AirportDto>();
@@ -124,6 +134,9 @@
     
     protected override async Task OnInitializedAsync()
     {
+        isAuthorizedUser = await UserService.IsUserInRoleAsync("sales");
+        if (!isAuthorizedUser) return;
+
         airports = await FlightService.GetAllAirportsAsync();
     }
 
