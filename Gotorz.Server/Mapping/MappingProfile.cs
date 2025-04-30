@@ -26,5 +26,9 @@ public class MappingProfile : Profile
 
         CreateMap<FlightTicketDto, FlightTicket>()
             .ForMember(dest => dest.Flight, opt => opt.Ignore()).ReverseMap();
+        
+        CreateMap<HolidayPackageDto, HolidayPackage>();
+
+        CreateMap<HolidayPackage, HolidayPackageDto>();
     }
 }
