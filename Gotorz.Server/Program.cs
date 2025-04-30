@@ -12,16 +12,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IRepository<Airport>, AirportRepository>();
 builder.Services.AddScoped<IFlightRepository, FlightRepository>();
 builder.Services.AddScoped<IRepository<FlightTicket>, FlightTicketRepository>();
+builder.Services.AddScoped<IRepository<HolidayPackage>, HolidayPackageRepository>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
-builder.Services.AddAutoMapper(typeof(HolidayPackageProfile));
 
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connectionString = builder.Configuration.GetConnectionString("AnnaConnection"); // <--- Change connectionstring here
+var connectionString = builder.Configuration.GetConnectionString("FrederikConnection"); // <--- Change connectionstring here
 
 builder.Services.AddDbContext<GotorzDbContext>(options =>
 {

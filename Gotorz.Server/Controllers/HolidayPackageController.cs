@@ -10,35 +10,40 @@ namespace Gotorz.Server.Controllers
     [ApiController]
     public class HolidayPackageController : ControllerBase
     {
-        private readonly ISimpleKeyRepository<HolidayPackage>? _repository;
+        private readonly IRepository<HolidayPackage>? _repository;
         private IMapper _mapper;
 
-        public HolidayPackageController(ISimpleKeyRepository<HolidayPackage> repository, IMapper mapper)
+        public HolidayPackageController(IRepository<HolidayPackage> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
         }
 
+        /*
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HolidayPackageDto>>> GetAll()
+        public async Task<ActionResult<IEnumerable<HolidayPackageDto>>> GetAllAsync()
         {
             var all = await _repository.GetAllAsync();
             var result = _mapper.Map<IEnumerable<HolidayPackageDto>>(all);
 
             return Ok(result);
         }
+        */
+
 
         [HttpPost]
-        public async Task<ActionResult<HolidayPackageDto>> Create(CreateHolidayPackageDto dto)
+        public async Task<IActionResult> Create(HolidayPackageDto dto)
         {
             var package = _mapper.Map<HolidayPackage>(dto);
-            var created = await _repository.AddAsync(package);
-            var resultDto = _mapper.Map<HolidayPackageDto>(created);
+            package.CostPrice = 0;  //Slettes
+            package.MarkupPercentage = 0;  //Slettes
+            await _repository.AddAsync(package);
 
 
-            return CreatedAtAction(nameof(GetAll), new { id = created.HolidayPackageId }, resultDto);
+            return Ok("Succesfully created package");  //OBS!! Hvis beskeden ændres skal det rettes i testen også!
         }
 
+        /*
         [HttpGet("{id}")]
         public async Task<ActionResult<HolidayPackageDto>> GetById(int id)
         {
@@ -49,14 +54,18 @@ namespace Gotorz.Server.Controllers
             }
             return Ok(_mapper.Map<HolidayPackageDto>(package));
         }
+        */
 
+        /*
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             await _repository.DeleteAsync(id);
             return NoContent();
         }
+        */
 
+        /*
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, HolidayPackageDto dto)
         {
@@ -74,5 +83,6 @@ namespace Gotorz.Server.Controllers
 
             return NoContent();
         }
+        */
     }
 }

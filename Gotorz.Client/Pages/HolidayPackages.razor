@@ -9,7 +9,8 @@
 
 <h2 class="text-2xl font-bold mb-4">Holiday packages</h2>
 
-@if (packages is null)
+
+@* @if (packages is null)
 {
     <p>Loading holidays...</p>
 }
@@ -19,6 +20,7 @@ else if (!packages.Any())
 }
 else
 {
+
     <ul class="space-y-2 mb-6">
         @foreach (var package in packages)
         {
@@ -33,65 +35,80 @@ else
                 </button>
             </li>
         }
+
     </ul>
-}
+
+} *@
 
 <hr class="my-6" />
 
 <h3 class="text-xl font-semibold mb-2">Create a new holiday package</h3>
 
+
 <EditForm Model="newPackage" OnValidSubmit="CreatePackage">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <div class="mb-3">
-        <label>Title:</label><br />
-        <InputText @bind-Value="newPackage.Title" class="border p-1 w-full" />
+    <div class="mb-3 w-50">
+        <label for="title" class="form-label">Title</label>
+        <InputText id="title" @bind-Value="newPackage.Title" class="form-control" />
     </div>
 
-    <div class="mb-3">
-        <label>Description:</label><br />
-        <InputTextArea @bind-Value="newPackage.Description" class="border p-1 w-full" />
+    <div class="mb-3 w-50">
+        <label for="description" class="form-label">Description</label>
+        <InputTextArea id="description" @bind-Value="newPackage.Description" class="form-control" rows="4" />
     </div>
 
-    <button type="submit" class="btn icon-white h-100 custom-background text-white">
-        Create
-    </button>
+    <div class="d-flex align-items-center gap-3 mb-3">
+        <button type="submit" class="btn btn-primary">
+            Create
+        </button>
+
+        @if (showSuccessMessage)
+        {
+            <div class="alert alert-success mb-0 py-1 px-3" role="alert">
+                Holiday package created successfully!
+            </div>
+        }
+    </div>
 </EditForm>
 
 @code {
-    private List<HolidayPackageDto> packages = new();
-    private CreateHolidayPackageDto newPackage = new();
+    //private List<HolidayPackageDto> packages = new();
+    private HolidayPackageDto newPackage = new();
+    private bool showSuccessMessage = false;
 
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadPackages();
-    }
 
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     await LoadPackages();
+    // }
+
+    /*
     private async Task LoadPackages()
     {
         packages = await PackageService.GetAllAsync();
-    }
+        }
+    */
 
     private async Task CreatePackage()
     {
-        var created = await PackageService.CreateAsync(newPackage);
+        await PackageService.CreateAsync(newPackage);
 
-        if (created is not null)
-        {
-            packages.Add(created);
-            newPackage = new(); // nulstil formular
-        }
+        showSuccessMessage = true;
+        newPackage = new HolidayPackageDto();
+        StateHasChanged();
     }
 
-    private async Task DeletePackage(int id)
-    {
-        await PackageService.DeleteAsync(id);
-        var toRemove = packages.FirstOrDefault(p => p.Id == id);
-        if (toRemove is not null)
-        {
-            packages.Remove(toRemove);
-        }
-    }
+    // private async Task DeletePackage(int id)
+    // {
+    //     await PackageService.DeleteAsync(id);
+    //     var toRemove = packages.FirstOrDefault(p => p.Id == id);
+    //     if (toRemove is not null)
+    //     {
+    //         packages.Remove(toRemove);
+    //     }
+    // }
 }
 
+    z
