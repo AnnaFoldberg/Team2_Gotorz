@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Gotorz.Server.Repositories;
+using Gotorz.Server.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +22,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connectionString = builder.Configuration.GetConnectionString("FrederikConnection"); // <--- Change connectionstring here
+var connectionString = builder.Configuration.GetConnectionString("EskeConnection");
 
 builder.Services.AddDbContext<GotorzDbContext>(options =>
 {
@@ -88,7 +89,7 @@ using (var scope = app.Services.CreateScope())
 
     // Seed Default Admin User
     // Username: admin@gotorz.com
-    // Password: Admin123!
+    // Password: Admin123
     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
     var adminEmail = "admin@gotorz.com";
     var adminUser = await userManager.FindByEmailAsync(adminEmail);
