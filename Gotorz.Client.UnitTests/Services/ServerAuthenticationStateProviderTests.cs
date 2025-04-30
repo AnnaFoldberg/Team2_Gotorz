@@ -11,6 +11,7 @@ using Moq;
 using Moq.Protected;
 using System.Threading;
 using System.Threading.Tasks;
+using Gotorz.Client.Services;
 
 namespace Gotorz.Client.UnitTests.Services
 {

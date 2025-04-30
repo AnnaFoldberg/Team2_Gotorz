@@ -128,7 +128,8 @@ namespace Gotorz.Server.UnitTests.Controllers
                          {
                              UserName = "user@example.com",
                              FirstName = "Eske",
-                             LastName = "Knudsen"
+                             LastName = "Knudsen",
+                             PhoneNumber = "12345678"
                          });
 
             var result = await _controller.GetCurrentUser();
@@ -141,6 +142,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             Assert.AreEqual("user@example.com", dto.Email);
             Assert.AreEqual("Eske", dto.FirstName);
             Assert.AreEqual("Knudsen", dto.LastName);
+            Assert.AreEqual("12345678", dto.PhoneNumber);
             Assert.IsTrue(dto.IsAuthenticated);
         }
 
@@ -154,5 +156,58 @@ namespace Gotorz.Server.UnitTests.Controllers
             _userRepoMock.Verify(r => r.LogoutAsync(), Times.Once);
             Assert.IsInstanceOfType(result, typeof(OkObjectResult));
         }
+
+        [TestMethod]
+        public async Task GetUserById_UserExists_ReturnsCorrectUserDto()
+        {
+            // Arrange
+            var userId = "test-user-id";
+            var testUser = new ApplicationUser
+            {
+                Id = userId,
+                Email = "customer@example.com",
+                FirstName = "Test",
+                LastName = "Customer",
+                PhoneNumber = "87654321"
+            };
+            var claims = new List<ClaimDto>
+            {
+                new ClaimDto { Type = ClaimTypes.Role, Value = "customer" }
+            };
+
+            _userRepoMock.Setup(r => r.GetUserByIdAsync(userId)).ReturnsAsync(testUser);
+            _userRepoMock.Setup(r => r.GetClaimsAsync(testUser)).ReturnsAsync(claims);
+
+            // Act
+            var result = await _controller.GetUserById(userId);
+
+            // Assert
+            var okResult = result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+
+            var dto = okResult.Value as CurrentUserDto;
+            Assert.IsNotNull(dto);
+            Assert.AreEqual(testUser.Email, dto.Email);
+            Assert.AreEqual(testUser.FirstName, dto.FirstName);
+            Assert.AreEqual(testUser.LastName, dto.LastName);
+            Assert.AreEqual(testUser.PhoneNumber, dto.PhoneNumber);
+            Assert.IsTrue(dto.IsAuthenticated);
+            Assert.AreEqual("customer", dto.Claims.FirstOrDefault()?.Value);
+        }
+
+        [TestMethod]
+        public async Task GetUserById_UserDoesNotExist_ReturnsNotFound()
+        {
+            // Arrange
+            var userId = "nonexistent-id";
+            _userRepoMock.Setup(r => r.GetUserByIdAsync(userId)).ReturnsAsync((ApplicationUser?)null);
+
+            // Act
+            var result = await _controller.GetUserById(userId);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(NotFoundResult));
+        }
+
     }
 }

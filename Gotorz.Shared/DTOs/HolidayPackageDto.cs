@@ -1,18 +1,16 @@
-using System.Text.Json.Serialization;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Gotorz.Shared.DTOs
+namespace Gotorz.Shared.DTO
 {
-    /// <summary>
-    /// Represents a holiday package used for data transfer between the client and server.
-    /// </summary>
     public class HolidayPackageDto
     {
-        // HolidayPackageId needed internally for mapping holiday bookings.
-        // [JsonIgnore] ensures it won't be included in JSON responses to the client.
-        // It also hides it from API docs generated in Swagger.
-        [JsonIgnore]
-        public int HolidayPackageId { get; set; }
-        public string Destination { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
         public int MaxCapacity { get; set; }
     }
 }
+

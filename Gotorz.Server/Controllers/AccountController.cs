@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Gotorz.Server.Models;
 using Gotorz.Server.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Gotorz.Shared.DTOs;
+
+namespace Gotorz.Server.Controllers;
 
 /// <summary>
 /// Handles user account operations such as registration, login, logout, and retrieving the current user.
@@ -102,9 +105,40 @@ public class AccountController : ControllerBase
             IsAuthenticated = User.Identity?.IsAuthenticated ?? false,
             FirstName = user?.FirstName,
             LastName = user?.LastName,
+            PhoneNumber = user?.PhoneNumber,
             Claims = User.Claims.Select(c => new ClaimDto { Type = c.Type, Value = c.Value }).ToList()
         };
 
         return Ok(userDto);
     }
+
+    /// <summary>
+    /// Retrieves a user by their unique identifier.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>
+    /// An <see cref="IActionResult"/> containing the <see cref="CurrentUserDto"/> if found; otherwise, 404 Not Found.
+    /// </returns>
+    [HttpGet("user/{id}")]
+    [Authorize(Roles = "admin")]
+    public async Task<IActionResult> GetUserById(string id)
+    {
+        var user = await _userRepository.GetUserByIdAsync(id);
+        if (user == null) return NotFound();
+
+        var claims = await _userRepository.GetClaimsAsync(user);
+
+        var userDto = new CurrentUserDto
+        {
+            Email = user.Email,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            PhoneNumber = user.PhoneNumber,
+            IsAuthenticated = true,
+            Claims = claims
+        };
+
+        return Ok(userDto);
+    }
+
 }

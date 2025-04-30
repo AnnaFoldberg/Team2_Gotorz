@@ -221,7 +221,7 @@ namespace Gotorz.Client.UnitTests.Services
 
             var result = await _service.IsUserInRoleAsync("admin");
 
-            Assert.IsFalse(result); // .Any(...) returns false
+            Assert.IsFalse(result);
         }
 
         [TestMethod]
@@ -358,5 +358,92 @@ namespace Gotorz.Client.UnitTests.Services
             var result = await _service.GetEmailAsync();
             Assert.IsNull(result);
         }
+
+        [TestMethod]
+        public async Task GetUserByIdAsync_ReturnsUser_WhenUserExists()
+        {
+            var testUser = new CurrentUserDto
+            {
+                Email = "profileuser@example.com",
+                FirstName = "Profile",
+                LastName = "User",
+                IsAuthenticated = true,
+                Claims = new List<ClaimDto>
+        {
+            new ClaimDto { Type = ClaimTypes.Role, Value = "customer" }
+        }
+            };
+
+            SetupResponse(testUser);
+
+            var result = await _service.GetUserByIdAsync("some-id");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual("profileuser@example.com", result.Email);
+            Assert.AreEqual("Profile", result.FirstName);
+            Assert.AreEqual("User", result.LastName);
+        }
+
+        [TestMethod]
+        public async Task GetUserByIdAsync_ReturnsNull_WhenUserDoesNotExist()
+        {
+            SetupResponse(null);
+
+            var result = await _service.GetUserByIdAsync("invalid-id");
+
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public async Task GetUserByIdAsync_ReturnsNull_WhenHttpFails()
+        {
+            // Arrange
+            _handler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                .ThrowsAsync(new HttpRequestException()); // <-- simulate failure
+
+            // Act
+            var result = await _service.GetUserByIdAsync("invalid-id");
+
+            // Assert
+            Assert.IsNull(result);
+        }
+
+        [TestMethod]
+        public async Task GetUserRoleAsync_UserHasRole_ReturnsRole()
+        {
+            var user = new CurrentUserDto
+            {
+                Claims = new List<ClaimDto>
+        {
+            new ClaimDto { Type = ClaimTypes.Role, Value = "admin" }
+        }
+            };
+            SetupResponse(user); // You already have SetupResponse() helper
+
+            var result = await _service.GetUserRoleAsync();
+
+            Assert.AreEqual("admin", result);
+        }
+
+        [TestMethod]
+        public async Task GetUserRoleAsync_UserHasNoClaims_ReturnsNull()
+        {
+            var user = new CurrentUserDto
+            {
+                Claims = null // no claims
+            };
+            SetupResponse(user);
+
+            var result = await _service.GetUserRoleAsync();
+
+            Assert.IsNull(result);
+        }
+
+
     }
 }

@@ -68,6 +68,7 @@ namespace Gotorz.Server.DataAccess
         public async Task DeleteAsync(int key)
         {
             var airport = await GetByKeyAsync(key);
+
             if (airport != null)
             {
                 _context.Airports.Remove(airport);
