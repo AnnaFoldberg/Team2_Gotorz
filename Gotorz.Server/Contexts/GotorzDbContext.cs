@@ -46,5 +46,6 @@ namespace Gotorz.Server.Contexts
         /// DbSet for <see cref="FlightTicket"/> entities
         /// </summary>
         public DbSet<FlightTicket> FlightTickets { get; set; }
+        public DbSet<HolidayPackage> HolidayPackages { get; set; }
     }
 }
