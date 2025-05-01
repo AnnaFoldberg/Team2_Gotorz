@@ -13,11 +13,11 @@ namespace Gotorz.Shared.DTOs
     /// <author>Eske</author>
     public class LoginDto
     {
-        [Required(ErrorMessage = "Email er påkrævet")]
-        [EmailAddress(ErrorMessage = "Ugyldig email")]
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email")]
         public string Email { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Adgangskode er påkrævet")]
+        [Required(ErrorMessage = "Password is required")]
         public string Password { get; set; } = string.Empty;
     }
 }

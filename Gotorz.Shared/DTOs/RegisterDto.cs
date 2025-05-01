@@ -13,23 +13,23 @@ namespace Gotorz.Shared.DTOs
     /// <author>Eske</author>
     public class RegisterDto
     {
-        [Required(ErrorMessage = "Email er påkrævet")]
-        [EmailAddress(ErrorMessage = "Ugyldig email")]
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email")]
         public string Email { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Fornavn er påkrævet")]
+        [Required(ErrorMessage = "First name is required")]
         public string FirstName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Efternavn er påkrævet")]
+        [Required(ErrorMessage = "Last name is required")]
         public string LastName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Telefonnummer er påkrævet")]
-        [Phone(ErrorMessage = "Ugyldigt telefonnummer")]
+        [Required(ErrorMessage = "Phonenumber is required")]
+        [Phone(ErrorMessage = "Invalid phonenumber")]
         public string PhoneNumber { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Adgangskode er påkrævet")]
-        [StringLength(100, MinimumLength = 6, ErrorMessage = "Adgangskoden skal være mindst 6 tegn.")]
-        [RegularExpression(@"^(?=.*[a-zæøå])(?=.*[A-ZÆØÅ]).+$", ErrorMessage = "Adgangskoden skal indeholde både store og små bogstaver.")]
+        [Required(ErrorMessage = "Password is required")]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long")]
+        [RegularExpression(@"^(?=.*[a-zæøå])(?=.*[A-ZÆØÅ]).+$", ErrorMessage = "Password must include both uppercase and lowercase letters")]
         public string Password { get; set; } = string.Empty;
 
         public string Role { get; set; } = string.Empty;

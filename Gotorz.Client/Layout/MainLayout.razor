@@ -18,11 +18,11 @@
                     {
                         <div class="d-flex align-items-center gap-2">
                             <span class="me-2 p-0">Hej @_firstName</span>
-                            <span class="badge bg-secondary p-1">Administrator</span>
+                            <span class="badge bg-secondary p-1">Admin</span>
                         </div>
                         <div class="d-flex align-items-center gap-2">
-                            <NavLink href="/register" class="nav-link p-0">Opret Bruger</NavLink>
-                            <NavLink href="/profile" class="nav-link p-0">Min Profil</NavLink>
+                            <NavLink href="/register" class="nav-link p-0">Register User</NavLink>
+                            <NavLink href="/profile" class="nav-link p-0">My Profile</NavLink>
                             <button @onclick="Logout" class="btn btn-link p-0">Logout</button>
                         </div>
                     }
@@ -31,19 +31,19 @@
                     {
                         <div>
                             <span class="me-2 p-0">Hej @_firstName</span>
-                            <span class="badge bg-secondary p-1">Salgsmedarbejder</span>
+                            <span class="badge bg-secondary p-1">Sales Representative</span>
                         </div>
                         <div class="d-flex align-items-center gap-2">
-                            <NavLink href="/profile" class="nav-link p-0">Min Profil</NavLink>
+                            <NavLink href="/profile" class="nav-link p-0">My Profile</NavLink>
                             <button @onclick="Logout" class="btn btn-link p-0">Logout</button>
                         </div>
                     }
 
 					@if (auth.User.IsInRole("customer"))
 					{
-					    <span class="me-2">Hej @_firstName</span>
+					    <span class="me-2">Hello @_firstName</span>
                         <div class="d-flex align-items-center gap-2">
-                            <NavLink href="/profile" class="nav-link p-0">Min Profil</NavLink>
+                            <NavLink href="/profile" class="nav-link p-0">My Profile</NavLink>
                             <button @onclick="Logout" class="btn btn-link p-0">Logout</button>
                         </div>
 					}

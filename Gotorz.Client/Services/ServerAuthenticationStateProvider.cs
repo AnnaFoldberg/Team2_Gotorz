@@ -36,7 +36,7 @@ public class ServerAuthenticationStateProvider : AuthenticationStateProvider
     {
         try
         {
-            var user = await _http.GetFromJsonAsync<CurrentUserDto>("api/account/currentuser");
+            var user = await _http.GetFromJsonAsync<UserDto>("api/account/currentuser");
 
             if (user is { IsAuthenticated: true, Email: not null })
             {

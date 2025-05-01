@@ -10,7 +10,7 @@ namespace Gotorz.Shared.DTOs;
 /// Represents the current user information used for data transfer between the client and server.
 /// </summary>
 /// <author>Eske</author>
-public class CurrentUserDto
+public class UserDto
 {
     public string? Email { get; set; }
     public bool IsAuthenticated { get; set; }

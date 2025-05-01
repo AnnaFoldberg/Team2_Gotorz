@@ -57,8 +57,8 @@ namespace Gotorz.Client.UnitTests.Pages
 
             // Assert
             var markup = component.Markup;
-            Assert.IsTrue(markup.Contains("Email er påkrævet"));
-            Assert.IsTrue(markup.Contains("Adgangskode er påkrævet"));
+            Assert.IsTrue(markup.Contains("Email is required"));
+            Assert.IsTrue(markup.Contains("Password is required"));
         }
 
         [TestMethod]
@@ -69,7 +69,7 @@ namespace Gotorz.Client.UnitTests.Pages
             component.Find("input[id=password]").Change("ValidPass1");
             component.Find("form").Submit();
 
-            Assert.IsTrue(component.Markup.Contains("Ugyldig email"));
+            Assert.IsTrue(component.Markup.Contains("Invalid email"));
         }
 
         [TestMethod]
@@ -77,10 +77,10 @@ namespace Gotorz.Client.UnitTests.Pages
         {
             var component = RenderComponent<Login>();
             component.Find("input[id=email]").Change("test@example.com");
-            component.Find("input[id=password]").Change(""); // empty triggers [Required]
+            component.Find("input[id=password]").Change("");
             component.Find("form").Submit();
 
-            Assert.IsTrue(component.Markup.Contains("Adgangskode er påkrævet"));
+            Assert.IsTrue(component.Markup.Contains("Password is required"));
         }
 
         [TestMethod]

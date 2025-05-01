@@ -99,7 +99,7 @@ public class AccountController : ControllerBase
     {
         var user = await _userRepository.GetCurrentUserAsync(User);
 
-        var userDto = new CurrentUserDto
+        var userDto = new UserDto
         {
             Email = user?.UserName,
             IsAuthenticated = User.Identity?.IsAuthenticated ?? false,
@@ -128,7 +128,7 @@ public class AccountController : ControllerBase
 
         var claims = await _userRepository.GetClaimsAsync(user);
 
-        var userDto = new CurrentUserDto
+        var userDto = new UserDto
         {
             Email = user.Email,
             FirstName = user.FirstName,

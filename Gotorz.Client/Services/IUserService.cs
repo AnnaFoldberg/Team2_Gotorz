@@ -17,7 +17,7 @@ namespace Gotorz.Client.Services
         /// <returns>
         /// A <see cref="CurrentUserDto"/> containing user details and claims, or <c>null</c> if the user is not authenticated.
         /// </returns>
-        Task<CurrentUserDto?> GetCurrentUserAsync();
+        Task<UserDto?> GetCurrentUserAsync();
 
         /// <summary>
         /// Determines whether the user is currently authenticated.
@@ -47,7 +47,7 @@ namespace Gotorz.Client.Services
         /// <returns>
         /// A <see cref="CurrentUserDto"/> containing user details if successful; otherwise, <c>null</c>.
         /// </returns>
-        Task<CurrentUserDto?> GetUserByIdAsync(string userId);
+        Task<UserDto?> GetUserByIdAsync(string userId);
 
         /// <summary>
         /// Retrieves the unique identifier of the current user.

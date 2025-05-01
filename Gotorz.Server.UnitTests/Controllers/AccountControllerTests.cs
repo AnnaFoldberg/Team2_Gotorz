@@ -137,7 +137,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             var ok = result as OkObjectResult;
             Assert.IsNotNull(ok);
 
-            var dto = ok.Value as CurrentUserDto;
+            var dto = ok.Value as UserDto;
             Assert.IsNotNull(dto);
             Assert.AreEqual("user@example.com", dto.Email);
             Assert.AreEqual("Eske", dto.FirstName);
@@ -185,7 +185,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             var okResult = result as OkObjectResult;
             Assert.IsNotNull(okResult);
 
-            var dto = okResult.Value as CurrentUserDto;
+            var dto = okResult.Value as UserDto;
             Assert.IsNotNull(dto);
             Assert.AreEqual(testUser.Email, dto.Email);
             Assert.AreEqual(testUser.FirstName, dto.FirstName);

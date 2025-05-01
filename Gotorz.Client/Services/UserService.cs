@@ -24,12 +24,12 @@ namespace Gotorz.Client.Services
         /// <summary>
         /// Retrieves the full current user object from the backend.
         /// </summary>
-        /// <returns>A <see cref="CurrentUserDto"/> containing user details and claims, or <c>null</c> if unauthenticated.</returns>
-        public async Task<CurrentUserDto?> GetCurrentUserAsync()
+        /// <returns>A <see cref="UserDto"/> containing user details and claims, or <c>null</c> if unauthenticated.</returns>
+        public async Task<UserDto?> GetCurrentUserAsync()
         {
             try
             {
-                return await _http.GetFromJsonAsync<CurrentUserDto>("api/account/currentuser");
+                return await _http.GetFromJsonAsync<UserDto>("api/account/currentuser");
             }
             catch
             {
@@ -75,13 +75,13 @@ namespace Gotorz.Client.Services
         /// </summary>
         /// <param name="userId"></param>
         /// <returns>
-        /// A <see cref="CurrentUserDto"/> containing user details if successful; otherwise, <c>null</c>.
+        /// A <see cref="UserDto"/> containing user details if successful; otherwise, <c>null</c>.
         /// </returns>
-        public async Task<CurrentUserDto?> GetUserByIdAsync(string userId)
+        public async Task<UserDto?> GetUserByIdAsync(string userId)
         {
             try
             {
-                return await _http.GetFromJsonAsync<CurrentUserDto>($"api/account/user/{userId}");
+                return await _http.GetFromJsonAsync<UserDto>($"api/account/user/{userId}");
             }
             catch
             {

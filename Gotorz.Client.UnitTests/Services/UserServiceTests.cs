@@ -35,7 +35,7 @@ namespace Gotorz.Client.UnitTests.Services
             _service = new UserService(_httpClient);
         }
 
-        private void SetupResponse(CurrentUserDto? user)
+        private void SetupResponse(UserDto? user)
         {
             var json = JsonSerializer.Serialize(user);
             _handler.Protected()
@@ -54,7 +54,7 @@ namespace Gotorz.Client.UnitTests.Services
         [TestMethod]
         public async Task GetCurrentUserAsync_ReturnsUser()
         {
-            var user = new CurrentUserDto { Email = "test@example.com", IsAuthenticated = true };
+            var user = new UserDto { Email = "test@example.com", IsAuthenticated = true };
             SetupResponse(user);
 
             var result = await _service.GetCurrentUserAsync();
@@ -83,7 +83,7 @@ namespace Gotorz.Client.UnitTests.Services
         [TestMethod]
         public async Task IsLoggedInAsync_AuthenticatedUser_ReturnsTrue()
         {
-            var user = new CurrentUserDto { IsAuthenticated = true };
+            var user = new UserDto { IsAuthenticated = true };
             SetupResponse(user);
 
             var result = await _service.IsLoggedInAsync();
@@ -94,7 +94,7 @@ namespace Gotorz.Client.UnitTests.Services
         [TestMethod]
         public async Task IsLoggedInAsync_UnauthenticatedUser_ReturnsFalse()
         {
-            var user = new CurrentUserDto { IsAuthenticated = false };
+            var user = new UserDto { IsAuthenticated = false };
             SetupResponse(user);
 
             var result = await _service.IsLoggedInAsync();
@@ -122,7 +122,7 @@ namespace Gotorz.Client.UnitTests.Services
         [TestMethod]
         public async Task IsUserInRoleAsync_RoleExists_ReturnsTrue()
         {
-            var user = new CurrentUserDto
+            var user = new UserDto
             {
                 Claims = new List<ClaimDto>
                 {
@@ -139,7 +139,7 @@ namespace Gotorz.Client.UnitTests.Services
         [TestMethod]
         public async Task IsUserInRoleAsync_RoleMissing_ReturnsFalse()
         {
-            var user = new CurrentUserDto
+            var user = new UserDto
             {
                 Claims = new List<ClaimDto>
                 {
@@ -164,7 +164,7 @@ namespace Gotorz.Client.UnitTests.Services
         [TestMethod]
         public async Task IsUserInRoleAsync_ClaimNotFound_ReturnsFalse()
         {
-            var user = new CurrentUserDto
+            var user = new UserDto
             {
                 Claims = new List<ClaimDto>
         {
@@ -179,7 +179,7 @@ namespace Gotorz.Client.UnitTests.Services
         [TestMethod]
         public async Task IsUserInRoleAsync_ClaimsNull_ReturnsFalse()
         {
-            var user = new CurrentUserDto
+            var user = new UserDto
             {
                 Claims = null
             };
@@ -193,7 +193,7 @@ namespace Gotorz.Client.UnitTests.Services
         [TestMethod]
         public async Task IsUserInRoleAsync_NoMatchingRole_ReturnsFalse()
         {
-            var user = new CurrentUserDto
+            var user = new UserDto
             {
                 Claims = new List<ClaimDto>
         {
@@ -210,7 +210,7 @@ namespace Gotorz.Client.UnitTests.Services
         [TestMethod]
         public async Task IsUserInRoleAsync_ClaimsExist_NoMatch_ReturnsFalse()
         {
-            var user = new CurrentUserDto
+            var user = new UserDto
             {
                 Claims = new List<ClaimDto>
         {
@@ -227,7 +227,7 @@ namespace Gotorz.Client.UnitTests.Services
         [TestMethod]
         public async Task GetUserIdAsync_ReturnsClaimValue()
         {
-            var user = new CurrentUserDto
+            var user = new UserDto
             {
                 Claims = new List<ClaimDto>
                 {
@@ -252,7 +252,7 @@ namespace Gotorz.Client.UnitTests.Services
         [TestMethod]
         public async Task GetUserIdAsync_ClaimMissing_ReturnsNull()
         {
-            var user = new CurrentUserDto
+            var user = new UserDto
             {
                 Claims = new List<ClaimDto>
         {
@@ -267,7 +267,7 @@ namespace Gotorz.Client.UnitTests.Services
         [TestMethod]
         public async Task GetUserIdAsync_ClaimsNull_ReturnsNull()
         {
-            var user = new CurrentUserDto
+            var user = new UserDto
             {
                 Claims = null
             };
@@ -281,7 +281,7 @@ namespace Gotorz.Client.UnitTests.Services
         [TestMethod]
         public async Task GetFirstNameAsync_ReturnsFirstName()
         {
-            var user = new CurrentUserDto { FirstName = "Alice", Email = "alice@example.com" };
+            var user = new UserDto { FirstName = "Alice", Email = "alice@example.com" };
             SetupResponse(user);
 
             var result = await _service.GetFirstNameAsync();
@@ -292,7 +292,7 @@ namespace Gotorz.Client.UnitTests.Services
         [TestMethod]
         public async Task GetFirstNameAsync_ReturnsEmailAsFallback()
         {
-            var user = new CurrentUserDto { FirstName = null, Email = "alice@example.com" };
+            var user = new UserDto { FirstName = null, Email = "alice@example.com" };
             SetupResponse(user);
 
             var result = await _service.GetFirstNameAsync();
@@ -311,7 +311,7 @@ namespace Gotorz.Client.UnitTests.Services
         [TestMethod]
         public async Task GetFirstNameAsync_FirstNameMissing_EmailExists_ReturnsEmail()
         {
-            var user = new CurrentUserDto
+            var user = new UserDto
             {
                 FirstName = null,
                 Email = "fallback@example.com"
@@ -324,7 +324,7 @@ namespace Gotorz.Client.UnitTests.Services
         [TestMethod]
         public async Task GetLastNameAsync_ReturnsLastName()
         {
-            var user = new CurrentUserDto { LastName = "Doe" };
+            var user = new UserDto { LastName = "Doe" };
             SetupResponse(user);
 
             var result = await _service.GetLastNameAsync();
@@ -343,7 +343,7 @@ namespace Gotorz.Client.UnitTests.Services
         [TestMethod]
         public async Task GetEmailAsync_ReturnsEmail()
         {
-            var user = new CurrentUserDto { Email = "test@example.com" };
+            var user = new UserDto { Email = "test@example.com" };
             SetupResponse(user);
 
             var result = await _service.GetEmailAsync();
@@ -362,7 +362,7 @@ namespace Gotorz.Client.UnitTests.Services
         [TestMethod]
         public async Task GetUserByIdAsync_ReturnsUser_WhenUserExists()
         {
-            var testUser = new CurrentUserDto
+            var testUser = new UserDto
             {
                 Email = "profileuser@example.com",
                 FirstName = "Profile",
@@ -416,7 +416,7 @@ namespace Gotorz.Client.UnitTests.Services
         [TestMethod]
         public async Task GetUserRoleAsync_UserHasRole_ReturnsRole()
         {
-            var user = new CurrentUserDto
+            var user = new UserDto
             {
                 Claims = new List<ClaimDto>
         {
@@ -433,7 +433,7 @@ namespace Gotorz.Client.UnitTests.Services
         [TestMethod]
         public async Task GetUserRoleAsync_UserHasNoClaims_ReturnsNull()
         {
-            var user = new CurrentUserDto
+            var user = new UserDto
             {
                 Claims = null // no claims
             };

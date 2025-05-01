@@ -6,18 +6,18 @@
 @inject IUserService UserService
 @inject NavigationManager Navigation
 
-<h3 class="text-center mb-4">Min Profil</h3>
+<h3 class="text-center mb-4">My Profile</h3>
 
 @if (user == null)
 {
     <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Indlæser...</span>
+        <span class="visually-hidden">Loading...</span>
     </div>
 }
 else if (!user.IsAuthenticated)
 {
     <div class="alert alert-warning">
-        Du er ikke logget ind.
+		Please log in to view your profile.
     </div>
 }
 else
@@ -25,15 +25,15 @@ else
     <div class="mx-auto" style="max-width: 500px;">
         <div class="card shadow-sm">
             <div class="card-header bg-primary text-white">
-                Brugerinformation
+                Profile Information
             </div>
             <div class="card-body">
                 <div class="row mb-2">
-                    <div class="col-sm-4 fw-bold">Fornavn:</div>
+                    <div class="col-sm-4 fw-bold">First name:</div>
                     <div class="col-sm-8">@user.FirstName</div>
                 </div>
                 <div class="row mb-2">
-                    <div class="col-sm-4 fw-bold">Efternavn:</div>
+                    <div class="col-sm-4 fw-bold">Last name:</div>
                     <div class="col-sm-8">@user.LastName</div>
                 </div>
                 <div class="row mb-2">
@@ -41,14 +41,14 @@ else
                     <div class="col-sm-8">@user.Email</div>
                 </div>
                 <div class="row mb-2">
-                    <div class="col-sm-4 fw-bold">Telefonnummer:</div>
+                    <div class="col-sm-4 fw-bold">Phonenumber:</div>
                     <div class="col-sm-8">@user.PhoneNumber</div>
                 </div>
 
                 @if (isAdmin == true || profileRole == "sales")
                 {
                     <div class="row mb-2">
-                        <div class="col-sm-4 fw-bold">Rolle:</div>
+                        <div class="col-sm-4 fw-bold">Role:</div>
                         <div class="col-sm-8">
                             <span class="col-sm-8">@GetRoleDisplayName(profileRole)</span>
                         </div>
@@ -63,7 +63,7 @@ else
     [Parameter]
     public string? ProfileId { get; set; }
 
-    private CurrentUserDto? user;
+    private UserDto? user;
     private string? profileRole;
     private bool isAdmin;
 
@@ -88,6 +88,6 @@ else
     }
 
     private string GetRoleDisplayName(string? role) => 
-    role switch { "sales" => "Salgsmedarbejder", "admin" => "Administrator", "customer" => "Kunde", _ => role ?? "Ukendt" };
+    role switch { "sales" => "Sales Representative", "admin" => "Admin", "customer" => "Customer", _ => role ?? "Unknown" };
 }
 
