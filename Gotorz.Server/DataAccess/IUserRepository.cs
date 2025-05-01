@@ -1,9 +1,9 @@
 ﻿using System.Security.Claims;
 using Gotorz.Server.Models;
-using Gotorz.Shared.DTO;
+using Gotorz.Shared.DTOs;
 using Microsoft.AspNetCore.Identity;
 
-namespace Gotorz.Server.Repositories
+namespace Gotorz.Server.DataAccess
 {
     /// <summary>
     /// Defines the contract for user-related operations such as registration, login, retrieval, update, and deletion.

@@ -5,7 +5,7 @@ using Moq;
 using System.Security.Claims;
 using Gotorz.Server.Controllers;
 using Gotorz.Server.Models;
-using Gotorz.Server.Repositories;
+using Gotorz.Server.DataAccess;
 using Gotorz.Shared.DTOs;
 using Microsoft.AspNetCore.Http;
 

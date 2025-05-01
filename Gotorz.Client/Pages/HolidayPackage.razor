@@ -17,21 +17,22 @@
     protected override async Task OnInitializedAsync()
     {
         userEmail = await UserService.GetEmailAsync();
-        holidayPackage = new HolidayPackageDto {
-            Destination = "Rome",
-            MaxCapacity = 4
-        };
     }
 
     private async Task BookHoliday()
     {
-        bookingReference = "G01040";
+        bookingReference = await BookingService.GetBookingReferenceAsync();
         HolidayBookingDto holidayBooking = new HolidayBookingDto {
             BookingReference = bookingReference,
             CustomerEmail = userEmail,
             Status = 0,
-            HolidayPackage = holidayPackage
+            HolidayPackage = new HolidayPackageDto {
+                Title = "Venice",
+                Description = "Trip to Venice",
+                MaxCapacity = 4
+            }
         };
+
         await BookingService.PostHolidayBookingAsync(holidayBooking);
         Navigation.NavigateTo($"/booking/travellers/{bookingReference}");
     }

@@ -11,8 +11,8 @@ namespace Gotorz.Server.Models
         //public List<Flight>? Flights { get; set; }
         // public Hotel? Hotel { get; set; }
         public int MaxCapacity { get; set; }
-        public Decimal CostPrice { get; set; }
-        public Decimal MarkupPercentage { get; set; }
+        public decimal CostPrice { get; set; }
+        public decimal MarkupPercentage { get; set; }
     }
 }
 

@@ -66,7 +66,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -86,7 +86,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             // Assert
             Assert.IsTrue(component.Markup.Contains($"Booking Reference: #{mockHolidayBooking.BookingReference}"));
-            Assert.IsTrue(component.Markup.Contains($"Destination: Rome"));
+            Assert.IsTrue(component.Markup.Contains("Rome"));
             Assert.IsTrue(component.Markup.Contains($"IBAN XX7050518371227343"));
         }
 
@@ -99,7 +99,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -130,7 +130,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -160,7 +160,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -190,7 +190,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -224,7 +224,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -252,7 +252,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             // Assert
             Assert.IsTrue(component.Markup.Contains($"Booking Reference: #{mockHolidayBooking.BookingReference}"));
-            Assert.IsTrue(component.Markup.Contains($"Destination: Rome"));
+            Assert.IsTrue(component.Markup.Contains("Rome"));
             Assert.IsTrue(component.Markup.Contains("Travellers"));
             Assert.IsTrue(component.Markup.Contains($"IBAN XX7050518371227343"));
             _mockUserService.Verify(s => s.GetEmailAsync(), Times.Exactly(2));
@@ -287,7 +287,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 

@@ -1,9 +1,9 @@
 ﻿using Gotorz.Server.Models;
-using Gotorz.Shared.DTO;
+using Gotorz.Shared.DTOs;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
-namespace Gotorz.Server.Repositories
+namespace Gotorz.Server.DataAccess
 {
     /// <summary>
     /// Provides methods for managing user accounts including registration, login, logout, and user queries.

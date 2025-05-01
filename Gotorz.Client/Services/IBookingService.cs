@@ -9,6 +9,12 @@ namespace Gotorz.Client.Services
     public interface IBookingService
     {
         /// <summary>
+        /// Retrieves the next available booking reference.
+        /// </summary>
+        /// <returns>A <c>string</c> representing the next available booking reference.</returns>
+        Task<string> GetBookingReferenceAsync();
+
+        /// <summary>
         /// Retrieves a holiday booking matching the specified <paramref name="bookingReference"/> from the database.
         /// </summary>
         /// <param name="bookingReference">The booking reference to match the holiday booking against.</param>

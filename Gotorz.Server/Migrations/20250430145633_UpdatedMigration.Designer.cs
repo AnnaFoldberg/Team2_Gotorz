@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Gotorz.Server.Migrations.GotorzDb
+namespace Gotorz.Server.Migrations
 {
     [DbContext(typeof(GotorzDbContext))]
-    [Migration("20250414150336_FlightTickets")]
-    partial class FlightTickets
+    [Migration("20250430145633_UpdatedMigration")]
+    partial class UpdatedMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -101,6 +101,94 @@ namespace Gotorz.Server.Migrations.GotorzDb
                     b.ToTable("FlightTickets");
                 });
 
+            modelBuilder.Entity("Gotorz.Server.Models.HolidayBooking", b =>
+                {
+                    b.Property<int>("HolidayBookingId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HolidayBookingId"));
+
+                    b.Property<string>("BookingReference")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("HolidayPackageId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("HolidayBookingId");
+
+                    b.HasIndex("HolidayPackageId");
+
+                    b.ToTable("HolidayBookings");
+                });
+
+            modelBuilder.Entity("Gotorz.Server.Models.HolidayPackage", b =>
+                {
+                    b.Property<int>("HolidayPackageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HolidayPackageId"));
+
+                    b.Property<decimal>("CostPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("MarkupPercentage")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("MaxCapacity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("HolidayPackageId");
+
+                    b.ToTable("HolidayPackages");
+                });
+
+            modelBuilder.Entity("Gotorz.Server.Models.Traveller", b =>
+                {
+                    b.Property<int>("TravellerId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TravellerId"));
+
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HolidayBookingId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PassportNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("TravellerId");
+
+                    b.HasIndex("HolidayBookingId");
+
+                    b.ToTable("Travellers");
+                });
+
             modelBuilder.Entity("Gotorz.Server.Models.Flight", b =>
                 {
                     b.HasOne("Gotorz.Server.Models.Airport", "ArrivalAirport")
@@ -129,6 +217,28 @@ namespace Gotorz.Server.Migrations.GotorzDb
                         .IsRequired();
 
                     b.Navigation("Flight");
+                });
+
+            modelBuilder.Entity("Gotorz.Server.Models.HolidayBooking", b =>
+                {
+                    b.HasOne("Gotorz.Server.Models.HolidayPackage", "HolidayPackage")
+                        .WithMany()
+                        .HasForeignKey("HolidayPackageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("HolidayPackage");
+                });
+
+            modelBuilder.Entity("Gotorz.Server.Models.Traveller", b =>
+                {
+                    b.HasOne("Gotorz.Server.Models.HolidayBooking", "HolidayBooking")
+                        .WithMany()
+                        .HasForeignKey("HolidayBookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("HolidayBooking");
                 });
 #pragma warning restore 612, 618
         }

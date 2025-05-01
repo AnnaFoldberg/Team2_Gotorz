@@ -68,7 +68,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -100,7 +100,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -131,7 +131,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -161,7 +161,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -191,7 +191,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -224,7 +224,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -289,7 +289,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -332,7 +332,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 4
             };
 
@@ -375,7 +375,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 4
             };
 
@@ -422,7 +422,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -470,7 +470,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 4
             };
 
@@ -518,7 +518,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 4
             };
 
@@ -569,7 +569,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 4
             };
 
@@ -628,7 +628,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -674,7 +674,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -720,7 +720,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -766,7 +766,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -809,7 +809,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -853,7 +853,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -897,7 +897,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -941,7 +941,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -985,7 +985,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -1029,7 +1029,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 

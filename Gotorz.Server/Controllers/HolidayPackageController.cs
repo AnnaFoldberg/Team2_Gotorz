@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Gotorz.Server.DataAccess;
 using Gotorz.Server.Models;
-using Gotorz.Shared.DTO;
+using Gotorz.Shared.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gotorz.Server.Controllers

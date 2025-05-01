@@ -18,6 +18,7 @@ namespace Gotorz.Server.Controllers;
 public class BookingController : ControllerBase
 {
     private readonly IMapper _mapper;
+    private readonly IBookingService _bookingService;
     private readonly IRepository<HolidayPackage> _holidayPackageRepository;
     private readonly IHolidayBookingRepository _holidayBookingRepository;
     private readonly IRepository<Traveller> _travellerRepository;
@@ -32,13 +33,27 @@ public class BookingController : ControllerBase
     /// <see cref="HolidayBooking"/> data in the database.</param>
     /// /// <param name="travellerRepository">The <see cref="IRepository<Traveller>"/> used to access
     /// <see cref="Traveller"/> data in the database.</param>
-    public BookingController(IMapper mapper, IRepository<HolidayPackage> holidayPackageRepository,
-        IHolidayBookingRepository holidayBookingReposiotry, IRepository<Traveller> travellerRepository)
+    public BookingController(IMapper mapper, IBookingService bookingService,
+        IRepository<HolidayPackage> holidayPackageRepository, IHolidayBookingRepository holidayBookingReposiotry,
+        IRepository<Traveller> travellerRepository)
     {
         _mapper = mapper;
+        _bookingService = bookingService;
         _holidayPackageRepository = holidayPackageRepository;
         _holidayBookingRepository = holidayBookingReposiotry;
         _travellerRepository = travellerRepository;
+    }
+
+    /// <summary>
+    /// Defines an API endpoint for HTTP GET that generates the next booking reference
+    /// for <see cref="HolidayBooking"/> entities.
+    /// </summary>
+    /// <returns>A <c>string</c> representing the next available booking reference.</returns>
+    [HttpGet("booking-reference")]
+    public async Task<ActionResult<string>> GetNextBookingReference()
+    {
+        var bookingReference = await _bookingService.GenerateNextBookingReferenceAsync();
+        return new JsonResult(bookingReference);
     }
 
     /// <summary>
@@ -78,9 +93,19 @@ public class BookingController : ControllerBase
         }
 
         var _holidayBooking = _mapper.Map<HolidayBooking>(holidayBooking);
-        _holidayBooking.HolidayPackageId = 2; // ONLY TEMPORARY UNTIL WE HAVE MERGED BRANCHES!!!!!!!!!!!!!!!!!!!!!!
+
+        // Ensure holiday booking contains the correct HolidayPackageId 
+        var holidayPackages = await _holidayPackageRepository.GetAllAsync();
+        var holidayPackage = holidayPackages.FirstOrDefault(p => p.Title == holidayBooking.HolidayPackage.Title);
+
+        if (holidayPackage == null )
+        {
+            return BadRequest("Holiday package linked to booking does not exist");
+        }
+
+        _holidayBooking.HolidayPackageId = holidayPackage.HolidayPackageId;
         await _holidayBookingRepository.AddAsync(_holidayBooking);
-        return Ok($"Successfully added holiday booking to database");
+        return Ok($"Successfully added holiday booking {holidayBooking.BookingReference} to database");
     }
 
     /// <summary>

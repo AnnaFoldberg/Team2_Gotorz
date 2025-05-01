@@ -67,7 +67,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -92,7 +92,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var component = RenderComponent<HolidayBooking>(parameters => parameters.Add(p => p.HolidayBookingDto, mockHolidayBooking));
 
             // Assert
-            Assert.IsTrue(component.Markup.Contains("Destination: Rome"));
+            Assert.IsTrue(component.Markup.Contains("Rome"));
         }
 
         [TestMethod]
@@ -104,7 +104,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -129,7 +129,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var component = RenderComponent<HolidayBooking>(parameters => parameters.Add(p => p.HolidayBookingDto, mockHolidayBooking));
 
             // Assert
-            Assert.IsTrue(component.Markup.Contains("Destination: Rome"));
+            Assert.IsTrue(component.Markup.Contains("Rome"));
         }
 
         [TestMethod]
@@ -141,7 +141,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -167,7 +167,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var component = RenderComponent<HolidayBooking>(parameters => parameters.Add(p => p.HolidayBookingDto, mockHolidayBooking));
 
             // Assert
-            Assert.IsTrue(component.Markup.Contains("Destination: Rome"));
+            Assert.IsTrue(component.Markup.Contains("Rome"));
         }
 
         [TestMethod]
@@ -179,7 +179,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -212,7 +212,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -245,7 +245,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -271,7 +271,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var component = RenderComponent<HolidayBooking>(parameters => parameters.Add(p => p.HolidayBookingDto, mockHolidayBooking));
 
             // Assert
-            Assert.IsTrue(component.Markup.Contains("Destination: Rome"));
+            Assert.IsTrue(component.Markup.Contains("Rome"));
             Assert.IsTrue(component.Markup.Contains("Traveller 1. Age: 21"));
             Assert.IsTrue(component.Markup.Contains("Passport number: P1"));
             Assert.IsTrue(component.Markup.Contains("Traveller 2. Age: 22"));
@@ -306,7 +306,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
@@ -339,7 +339,7 @@ namespace Gotorz.Client.UnitTests.Pages
             var mockHolidayPackage = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
-                Destination = "Rome",
+                Title = "Rome",
                 MaxCapacity = 2
             };
 
