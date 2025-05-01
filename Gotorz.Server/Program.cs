@@ -5,8 +5,6 @@ using Gotorz.Server.Models;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using Gotorz.Server.Repositories;
-using Gotorz.Server.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +12,9 @@ builder.Services.AddScoped<IRepository<Airport>, AirportRepository>();
 builder.Services.AddScoped<IFlightRepository, FlightRepository>();
 builder.Services.AddScoped<IRepository<FlightTicket>, FlightTicketRepository>();
 builder.Services.AddScoped<IRepository<HolidayPackage>, HolidayPackageRepository>();
+builder.Services.AddScoped<IHolidayBookingRepository, HolidayBookingRepository>();
+builder.Services.AddScoped<IRepository<Traveller>, TravellerRepository>();
+builder.Services.AddScoped<IBookingService, BookingService>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
@@ -22,7 +23,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connectionString = builder.Configuration.GetConnectionString("EskeConnection");
+var connectionString = builder.Configuration.GetConnectionString("AnnaConnection");
 
 builder.Services.AddDbContext<GotorzDbContext>(options =>
 {

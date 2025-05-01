@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Moq;
 using Moq.Protected;
 using Gotorz.Client.Services;
-using Gotorz.Shared.DTO;
+using Gotorz.Shared.DTOs;
 using System.Net.Http.Json;
 
 namespace Gotorz.Client.UnitTests.Services

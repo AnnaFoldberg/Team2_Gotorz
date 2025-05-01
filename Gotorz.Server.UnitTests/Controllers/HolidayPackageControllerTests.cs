@@ -7,7 +7,7 @@ using AutoMapper;
 using Gotorz.Server.Controllers;
 using Gotorz.Server.DataAccess;
 using Gotorz.Server.Models;
-using Gotorz.Shared.DTO;
+using Gotorz.Shared.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 

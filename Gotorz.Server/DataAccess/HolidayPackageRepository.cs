@@ -1,4 +1,4 @@
-﻿using Gotorz.Server.Contexts;
+using Gotorz.Server.Contexts;
 using Gotorz.Server.Models;
 using Microsoft.EntityFrameworkCore;
 

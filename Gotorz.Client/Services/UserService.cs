@@ -1,4 +1,4 @@
-﻿using Gotorz.Shared.DTO;
+﻿using Gotorz.Shared.DTOs;
 using System.Net.Http.Json;
 using System.Security.Claims;
 

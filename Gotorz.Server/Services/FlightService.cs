@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Nodes;
-using Gotorz.Shared.DTO;
+using Gotorz.Shared.DTOs;
 
 namespace Gotorz.Server.Services
 {

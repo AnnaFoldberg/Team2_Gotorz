@@ -8,9 +8,6 @@ namespace Gotorz.Server.Contexts
     /// </summary>
     public class GotorzDbContext : DbContext
     {
-        /// <inheritdoc />
-        public GotorzDbContext(DbContextOptions<GotorzDbContext> options) : base(options) {}
-
         /// <summary>
         /// DbSet for <see cref="Airport"/> entities
         /// </summary>
@@ -22,30 +19,39 @@ namespace Gotorz.Server.Contexts
         public DbSet<Flight> Flights { get; set; }
 
         /// <summary>
-        /// Disables cascade deletes to prevent airports from being deleted if they are linked to flights.
-        /// This is required as SQL Server does not support multiple <c>ON DELETE CASCADE</c> constraints
-        /// from the same child table to the same parent table.
-        /// </summary>
-        /// <param name="modelBuilder">The <see cref="ModelBuilder"/> used to configure entity relationships.</param>
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Flight>()
-                .HasOne(f => f.DepartureAirport)
-                .WithMany()
-                .HasForeignKey(f => f.DepartureAirportId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Flight>()
-                .HasOne(f => f.ArrivalAirport)
-                .WithMany()
-                .HasForeignKey(f => f.ArrivalAirportId)
-                .OnDelete(DeleteBehavior.Restrict);
-        }
-
-        /// <summary>
         /// DbSet for <see cref="FlightTicket"/> entities
         /// </summary>
         public DbSet<FlightTicket> FlightTickets { get; set; }
+
+        /// <summary>
+        /// DbSet for <see cref="HolidayPackage"/> entities
+        /// </summary>
         public DbSet<HolidayPackage> HolidayPackages { get; set; }
+
+        /// <summary>
+        /// DbSet for <see cref="HolidayBooking"/> entities
+        /// </summary>
+        public DbSet<HolidayBooking> HolidayBookings { get; set; }
+
+        /// <summary>
+        /// DbSet for <see cref="Traveller"/> entities
+        /// </summary>
+        public DbSet<Traveller> Travellers { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GotorzDbContext"/> class.
+        /// </summary>
+        /// <param name="options">The options to configure the <see cref="GotorzDbContext"/> instance with.</param>
+        public GotorzDbContext(DbContextOptions<GotorzDbContext> options) : base(options) {}
+
+        /// <summary>
+        /// Applies all entity configurations that implement <see cref="IEntityTypeConfiguration{TEntity}"/>.
+        /// </summary>
+        /// <param name="modelBuilder">The <see cref="ModelBuilder"/> used to configure entity relationships.</param>
+        /// <remarks>Based on suggestion from ChatGPT. Customized for this project.</remarks>
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(GotorzDbContext).Assembly);
+        }
     }
 }

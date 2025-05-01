@@ -2,7 +2,7 @@
 using Gotorz.Server.Models;
 using Gotorz.Server.Services;
 using Gotorz.Server.DataAccess;
-using Gotorz.Shared.DTO;
+using Gotorz.Shared.DTOs;
 using AutoMapper;
 
 namespace Gotorz.Server.Controllers;
@@ -29,6 +29,7 @@ public class FlightController : ControllerBase
     /// Initializes a new instance of the <see cref="FlightController"/> class.
     /// </summary>
     /// <param name="flightService">The <see cref="IFlightService"/> used for fetching flight-related data.</param>
+    /// <param name="mapper">The <see cref="IMapper"/> used for mapping DTOs to Models.</param>
     /// <param name="airportRepository">The <see cref="IRepository<Airport>"/> used to access
     /// <see cref="Airport"/> data in the database.</param>
     /// /// <param name="flightRepository">The <see cref="IFlightRepository"/> used to access
