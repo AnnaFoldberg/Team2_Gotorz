@@ -29,11 +29,16 @@ public class MappingProfile : Profile
 
         CreateMap<HolidayPackageDto, HolidayPackage>().ReverseMap();
 
+        CreateMap<UserDto, ApplicationUser>().ReverseMap();
+
         CreateMap<HolidayBookingDto, HolidayBooking>()
             .ForMember(dest => dest.HolidayPackageId, opt => opt.MapFrom(src => src.HolidayPackage.HolidayPackageId))
             .ForMember(dest => dest.HolidayPackage, opt => opt.Ignore())
+            .ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.Customer.UserId))
+            .ForMember(dest => dest.CustomerId, opt => opt.Ignore())
             .ReverseMap()
-            .ForMember(dest => dest.HolidayPackage, opt => opt.MapFrom(src => src.HolidayPackage));
+            .ForMember(dest => dest.HolidayPackage, opt => opt.MapFrom(src => src.HolidayPackage))
+            .ForMember(dest => dest.Customer, opt => opt.MapFrom(src => src.Customer));
 
         CreateMap<TravellerDto, Traveller>()
             .ForMember(dest => dest.HolidayBooking, opt => opt.Ignore()).ReverseMap();

@@ -11,12 +11,12 @@
 
 @code {
     private string? bookingReference;
-    private string? userEmail;
+    private UserDto user;
     private HolidayPackageDto holidayPackage;
 
     protected override async Task OnInitializedAsync()
     {
-        userEmail = await UserService.GetEmailAsync();
+        user = await UserService.GetCurrentUserAsync();
     }
 
     private async Task BookHoliday()
@@ -24,11 +24,11 @@
         bookingReference = await BookingService.GetBookingReferenceAsync();
         HolidayBookingDto holidayBooking = new HolidayBookingDto {
             BookingReference = bookingReference,
-            CustomerEmail = userEmail,
+            Customer = user,
             Status = 0,
             HolidayPackage = new HolidayPackageDto {
-                Title = "Venice",
-                Description = "Trip to Venice",
+                Title = "London",
+                Description = "Trip to London",
                 MaxCapacity = 4
             }
         };

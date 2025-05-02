@@ -49,6 +49,7 @@
 
 @code {
     private bool isAuthorizedUser;
+    private UserDto currentUser;
     private HolidayBookingDto? holidayBooking;
 
     [Parameter]
@@ -62,8 +63,10 @@
 
         if (holidayBooking == null) return;
 
+        currentUser = await UserService.GetCurrentUserAsync();
+
         isAuthorizedUser = (await UserService.IsUserInRoleAsync("customer")) &&
-          holidayBooking.CustomerEmail == await UserService.GetEmailAsync();
+          holidayBooking.Customer.Email == currentUser.Email;
       }
       catch (Exception ex)
       {

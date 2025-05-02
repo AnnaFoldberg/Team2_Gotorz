@@ -23,7 +23,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connectionString = builder.Configuration.GetConnectionString("EskeConnection");
+var connectionString = builder.Configuration.GetConnectionString("AnnaConnection");
 
 builder.Services.AddDbContext<GotorzDbContext>(options =>
 {

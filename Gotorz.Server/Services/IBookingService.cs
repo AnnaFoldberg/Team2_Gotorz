@@ -12,8 +12,7 @@ namespace Gotorz.Server.Services
         /// <summary>
         /// Generates the next booking reference number.
         /// </summary>
-        /// <remarks>Based on a ChatGPT-generated template. Customized for this project.</remarks>
-        /// <author>Anna</author>
+        /// <returns>A <c>string</c> representing the next available booking reference.</returns>
         Task<string> GenerateNextBookingReferenceAsync();
     }
 }

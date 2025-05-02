@@ -22,6 +22,7 @@ public class BookingController : ControllerBase
     private readonly IRepository<HolidayPackage> _holidayPackageRepository;
     private readonly IHolidayBookingRepository _holidayBookingRepository;
     private readonly IRepository<Traveller> _travellerRepository;
+    private readonly IUserRepository _userRepository;
     
     /// <summary>
     /// Initializes a new instance of the <see cref="BookingController"/> class.
@@ -29,19 +30,20 @@ public class BookingController : ControllerBase
     /// <param name="mapper">The <see cref="IMapper"/> used for mapping DTOs to Models.</param>
     /// <param name="holidayPackageRepository">The <see cref="IRepository<HolidayPackage>"/> used to access
     /// <see cref="HolidayPackage"/> data in the database.</param>
-    /// <param name="holidayBookingReposiotry">The <see cref="IHolidayBookingRepository"/> used to access
+    /// <param name="holidayBookingRepository">The <see cref="IHolidayBookingRepository"/> used to access
     /// <see cref="HolidayBooking"/> data in the database.</param>
     /// /// <param name="travellerRepository">The <see cref="IRepository<Traveller>"/> used to access
     /// <see cref="Traveller"/> data in the database.</param>
     public BookingController(IMapper mapper, IBookingService bookingService,
-        IRepository<HolidayPackage> holidayPackageRepository, IHolidayBookingRepository holidayBookingReposiotry,
-        IRepository<Traveller> travellerRepository)
+        IRepository<HolidayPackage> holidayPackageRepository, IHolidayBookingRepository holidayBookingRepository,
+        IRepository<Traveller> travellerRepository, IUserRepository userRepository)
     {
         _mapper = mapper;
         _bookingService = bookingService;
         _holidayPackageRepository = holidayPackageRepository;
-        _holidayBookingRepository = holidayBookingReposiotry;
+        _holidayBookingRepository = holidayBookingRepository;
         _travellerRepository = travellerRepository;
+        _userRepository = userRepository;
     }
 
     /// <summary>
@@ -50,10 +52,10 @@ public class BookingController : ControllerBase
     /// </summary>
     /// <returns>A <c>string</c> representing the next available booking reference.</returns>
     [HttpGet("booking-reference")]
-    public async Task<ActionResult<string>> GetNextBookingReference()
+    public async Task<string> GetNextBookingReferenceAsync()
     {
         var bookingReference = await _bookingService.GenerateNextBookingReferenceAsync();
-        return new JsonResult(bookingReference);
+        return bookingReference;
     }
 
     /// <summary>
@@ -96,7 +98,9 @@ public class BookingController : ControllerBase
 
         // Ensure holiday booking contains the correct HolidayPackageId 
         var holidayPackages = await _holidayPackageRepository.GetAllAsync();
-        var holidayPackage = holidayPackages.FirstOrDefault(p => p.Title == holidayBooking.HolidayPackage.Title);
+        var holidayPackage = holidayPackages
+            .FirstOrDefault(p => p.Title == holidayBooking.HolidayPackage.Title &&
+            p.Description == holidayBooking.HolidayPackage.Description);
 
         if (holidayPackage == null )
         {
@@ -104,6 +108,17 @@ public class BookingController : ControllerBase
         }
 
         _holidayBooking.HolidayPackageId = holidayPackage.HolidayPackageId;
+
+        // Ensure holiday booking contains the correct CustomerId
+        var user = await _userRepository.GetUserByEmailAsync(holidayBooking.Customer.Email);
+
+        if (user == null)
+        {
+            return BadRequest("Customer linked to booking does not exist");
+        }
+
+        _holidayBooking.CustomerId = user.Id;
+
         await _holidayBookingRepository.AddAsync(_holidayBooking);
         return Ok($"Successfully added holiday booking {holidayBooking.BookingReference} to database");
     }

@@ -8,6 +8,8 @@ using Gotorz.Server.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Gotorz.Shared.Enums;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace Gotorz.Server.UnitTests.Controllers
 {
@@ -24,6 +26,7 @@ namespace Gotorz.Server.UnitTests.Controllers
         private Mock<IRepository<HolidayPackage>> _mockHolidayPackageRepository;
         private Mock<IHolidayBookingRepository> _mockHolidayBookingRepository;
         private Mock<IRepository<Traveller>> _mockTravellerRepository;
+        private Mock<IUserRepository> _mockUserRepository;
 
         [TestInitialize]
         public void TestInitialize()
@@ -33,9 +36,29 @@ namespace Gotorz.Server.UnitTests.Controllers
             _mockHolidayPackageRepository = new Mock<IRepository<HolidayPackage>>();
             _mockHolidayBookingRepository = new Mock<IHolidayBookingRepository>();
             _mockTravellerRepository = new Mock<IRepository<Traveller>>();
+            _mockUserRepository = new Mock<IUserRepository>();
 
             _bookingController = new BookingController(_mockMapper.Object, _mockBookingService.Object,
-                _mockHolidayPackageRepository.Object, _mockHolidayBookingRepository.Object, _mockTravellerRepository.Object);
+                _mockHolidayPackageRepository.Object, _mockHolidayBookingRepository.Object,
+                _mockTravellerRepository.Object, _mockUserRepository.Object);
+        }
+
+        // -------------------- GetNextBookingReferenceAsync --------------------
+        [TestMethod]
+        public async Task GetNextBookingReferenceAsync_ReturnsNextBookingReference()
+        {
+            // Arrange
+            var expectedBookingReference = "G0002";
+            
+            _mockBookingService.Setup(s => s.GenerateNextBookingReferenceAsync()).ReturnsAsync(expectedBookingReference);
+
+            // Act
+            var bookingReference = await _bookingController.GetNextBookingReferenceAsync();
+
+            // Assert
+            Assert.IsNotNull(bookingReference);
+            Assert.AreEqual(expectedBookingReference, bookingReference);
+            _mockBookingService.Verify(s => s.GenerateNextBookingReferenceAsync(), Times.Once);
         }
 
         // -------------------- GetHolidayBookingAsync --------------------
@@ -44,6 +67,16 @@ namespace Gotorz.Server.UnitTests.Controllers
         {
             // Arrange
             var bookingReference = "G01";
+
+            var mockCustomer = new ApplicationUser
+            {
+                Email = "customer@mail.com",
+            };
+
+            var mockCustomerDto = new UserDto
+            {
+                Email = "customer@mail.com",
+            };
 
             var mockHolidayPackageDto = new HolidayPackageDto
             {
@@ -56,7 +89,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             {
                 HolidayBookingId = 1,
                 BookingReference = bookingReference,
-                CustomerEmail = "customer@mail.com",
+                Customer = mockCustomer,
                 Status = 0,
                 HolidayPackageId = mockHolidayPackageDto.HolidayPackageId
             };
@@ -64,7 +97,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             var mockHolidayBookingDto = new HolidayBookingDto
             {
                 BookingReference = bookingReference,
-                CustomerEmail = "customer@mail.com",
+                Customer = mockCustomerDto,
                 Status = BookingStatus.Pending,
                 HolidayPackage = mockHolidayPackageDto
             };
@@ -106,6 +139,28 @@ namespace Gotorz.Server.UnitTests.Controllers
             // Arrange
             var bookingReference = "G01";
 
+            var mockCustomer = new ApplicationUser
+            {
+                Email = "customer@mail.com",
+            };
+
+            var mockCustomerDto = new UserDto
+            {
+                Email = "customer@mail.com",
+            };
+            
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.Name, "customer@mail.com"),
+                new Claim(ClaimTypes.NameIdentifier, "Customer"),
+                new Claim(ClaimTypes.Role, "customer")
+            }, "mock"));
+
+            _bookingController.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext { User = user }
+            };
+
             var mockHolidayPackage = new HolidayPackage
             {
                 HolidayPackageId = 1,
@@ -124,7 +179,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             {
                 HolidayBookingId = 1,
                 BookingReference = bookingReference,
-                CustomerEmail = "customer@mail.com",
+                Customer = mockCustomer,
                 Status = 0,
                 HolidayPackageId = mockHolidayPackage.HolidayPackageId
             };
@@ -132,13 +187,14 @@ namespace Gotorz.Server.UnitTests.Controllers
             var mockHolidayBookingDto = new HolidayBookingDto
             {
                 BookingReference = bookingReference,
-                CustomerEmail = "customer@mail.com",
+                Customer = mockCustomerDto,
                 Status = BookingStatus.Pending,
                 HolidayPackage = mockHolidayPackageDto
             };
 
             _mockMapper.Setup(m => m.Map<HolidayBooking>(mockHolidayBookingDto)).Returns(mockHolidayBooking);
             _mockHolidayPackageRepository.Setup(r => r.GetAllAsync()).ReturnsAsync(new List<HolidayPackage> { mockHolidayPackage });
+            _mockUserRepository.Setup(r => r.GetUserByEmailAsync(mockCustomerDto.Email)).ReturnsAsync(mockCustomer);
             _mockHolidayBookingRepository.Setup(r => r.GetByBookingReferenceAsync(bookingReference)).ReturnsAsync((HolidayBooking)null);
             _mockHolidayBookingRepository.Setup(r => r.AddAsync(mockHolidayBooking)).Returns(Task.CompletedTask);
 
@@ -160,6 +216,16 @@ namespace Gotorz.Server.UnitTests.Controllers
             // Arrange
             var bookingReference = "G01";
 
+            var mockCustomer = new ApplicationUser
+            {
+                Email = "customer@mail.com",
+            };
+
+            var mockCustomerDto = new UserDto
+            {
+                Email = "customer@mail.com",
+            };
+
             var mockHolidayPackageDto = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
@@ -171,7 +237,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             {
                 HolidayBookingId = 1,
                 BookingReference = bookingReference,
-                CustomerEmail = "customer@mail.com",
+                Customer = mockCustomer,
                 Status = 0,
                 HolidayPackageId = mockHolidayPackageDto.HolidayPackageId
             };
@@ -179,7 +245,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             var mockHolidayBookingDto = new HolidayBookingDto
             {
                 BookingReference = bookingReference,
-                CustomerEmail = "customer@mail.com",
+                Customer = mockCustomerDto,
                 Status = BookingStatus.Pending,
                 HolidayPackage = mockHolidayPackageDto
             };
@@ -210,16 +276,27 @@ namespace Gotorz.Server.UnitTests.Controllers
             Assert.AreEqual($"No holiday booking was provided", badRequestResult.Value);
         }
 
-                [TestMethod]
+        [TestMethod]
         public async Task PostHolidayBookingAsync_InvalidHolidayPackage_ReturnsBadRequest()
         {
             // Arrange
             var bookingReference = "G01";
 
+            var mockCustomer = new ApplicationUser
+            {
+                Email = "customer@mail.com",
+            };
+
+            var mockCustomerDto = new UserDto
+            {
+                Email = "customer@mail.com",
+            };
+
             var mockHolidayPackage = new HolidayPackage
             {
                 HolidayPackageId = 1,
                 Title = "Venice",
+                Description = "Trip",
                 MaxCapacity = 2
             };
 
@@ -227,6 +304,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             {
                 HolidayPackageId = 2,
                 Title = "Rome",
+                Description = "Trip",
                 MaxCapacity = 2
             };
 
@@ -234,7 +312,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             {
                 HolidayBookingId = 1,
                 BookingReference = bookingReference,
-                CustomerEmail = "customer@mail.com",
+                Customer = mockCustomer,
                 Status = 0,
                 HolidayPackageId = 2
             };
@@ -242,7 +320,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             var mockHolidayBookingDto = new HolidayBookingDto
             {
                 BookingReference = bookingReference,
-                CustomerEmail = "customer@mail.com",
+                Customer = mockCustomerDto,
                 Status = BookingStatus.Pending,
                 HolidayPackage = mockHolidayPackageDto
             };
@@ -264,12 +342,88 @@ namespace Gotorz.Server.UnitTests.Controllers
             _mockHolidayBookingRepository.Verify(s => s.AddAsync(mockHolidayBooking), Times.Never);
         }
 
+        [TestMethod]
+        public async Task PostHolidayBookingAsync_InvalidCustomer_ReturnsBadRequest()
+        {
+            // Arrange
+            var bookingReference = "G01";
+
+            var mockCustomer = new ApplicationUser
+            {
+                Email = "customer@mail.com",
+            };
+
+            var mockCustomerDto = new UserDto
+            {
+                Email = "invalidcustomer@mail.com",
+            };
+
+            var mockHolidayPackage = new HolidayPackage
+            {
+                HolidayPackageId = 1,
+                Title = "Venice",
+                MaxCapacity = 2
+            };
+
+            var mockHolidayPackageDto = new HolidayPackageDto
+            {
+                HolidayPackageId = 1,
+                Title = "Venice",
+                MaxCapacity = 2
+            };
+
+            var mockHolidayBooking = new HolidayBooking
+            {
+                HolidayBookingId = 1,
+                BookingReference = bookingReference,
+                Customer = mockCustomer,
+                Status = 0,
+                HolidayPackageId = 2
+            };
+
+            var mockHolidayBookingDto = new HolidayBookingDto
+            {
+                BookingReference = bookingReference,
+                Customer = mockCustomerDto,
+                Status = BookingStatus.Pending,
+                HolidayPackage = mockHolidayPackageDto
+            };
+
+            _mockMapper.Setup(m => m.Map<HolidayBooking>(mockHolidayBookingDto)).Returns(mockHolidayBooking);
+            _mockUserRepository.Setup(r => r.GetUserByEmailAsync(mockCustomerDto.Email)).ReturnsAsync((ApplicationUser)null);
+            _mockHolidayPackageRepository.Setup(r => r.GetAllAsync()).ReturnsAsync(new List<HolidayPackage> { mockHolidayPackage });
+            _mockHolidayBookingRepository.Setup(r => r.GetByBookingReferenceAsync(bookingReference)).ReturnsAsync((HolidayBooking)null);
+
+            // Act
+            var result = await _bookingController.PostHolidayBookingAsync(mockHolidayBookingDto);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+            var badRequestResult = result as BadRequestObjectResult;
+            Assert.IsNotNull(badRequestResult);
+            Assert.AreEqual($"Customer linked to booking does not exist", badRequestResult.Value);
+            _mockHolidayPackageRepository.Verify(r => r.GetAllAsync(), Times.Once);
+            _mockUserRepository.Verify(s => s.GetUserByEmailAsync(mockCustomerDto.Email), Times.Once);
+            _mockHolidayBookingRepository.Verify(s => s.GetByBookingReferenceAsync(bookingReference), Times.Once);
+            _mockHolidayBookingRepository.Verify(s => s.AddAsync(mockHolidayBooking), Times.Never);
+        }
+
         // -------------------- GetTravellersAsync --------------------
         [TestMethod]
         public async Task GetTravellersAsync_ValidBookingReference_ReturnsTravellersMatchingBookingReference()
         {
             // Arrange
             var bookingReference = "G01";
+
+            var mockCustomer = new ApplicationUser
+            {
+                Email = "customer@mail.com",
+            };
+
+            var mockCustomerDto = new UserDto
+            {
+                Email = "customer@mail.com",
+            };
 
             var mockHolidayPackageDto = new HolidayPackageDto
             {
@@ -282,7 +436,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             {
                 HolidayBookingId = 1,
                 BookingReference = bookingReference,
-                CustomerEmail = "customer@mail.com",
+                Customer = mockCustomer,
                 Status = 0,
                 HolidayPackageId = mockHolidayPackageDto.HolidayPackageId
             };
@@ -291,7 +445,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             {
                 HolidayBookingId = 2,
                 BookingReference = "G02",
-                CustomerEmail = "customer@mail.com",
+                Customer = mockCustomer,
                 Status = 0,
                 HolidayPackageId = mockHolidayPackageDto.HolidayPackageId
             };
@@ -299,7 +453,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             var mockHolidayBookingDto = new HolidayBookingDto
             {
                 BookingReference = bookingReference,
-                CustomerEmail = "customer@mail.com",
+                Customer = mockCustomerDto,
                 Status = BookingStatus.Pending,
                 HolidayPackage = mockHolidayPackageDto
             };
@@ -307,7 +461,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             var mockHolidayBookingDtoTwo = new HolidayBookingDto
             {
                 BookingReference = "G02",
-                CustomerEmail = "customer@mail.com",
+                Customer = mockCustomerDto,
                 Status = BookingStatus.Pending,
                 HolidayPackage = mockHolidayPackageDto
             };
@@ -373,6 +527,16 @@ namespace Gotorz.Server.UnitTests.Controllers
             // Arrange
             var bookingReference = "G01";
 
+            var mockCustomer = new ApplicationUser
+            {
+                Email = "customer@mail.com",
+            };
+
+            var mockCustomerDto = new UserDto
+            {
+                Email = "customer@mail.com",
+            };
+
             var mockHolidayPackageDto = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
@@ -384,7 +548,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             {
                 HolidayBookingId = 1,
                 BookingReference = bookingReference,
-                CustomerEmail = "customer@mail.com",
+                Customer = mockCustomer,
                 Status = 0,
                 HolidayPackageId = mockHolidayPackageDto.HolidayPackageId
             };
@@ -392,7 +556,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             var mockHolidayBookingDto = new HolidayBookingDto
             {
                 BookingReference = bookingReference,
-                CustomerEmail = "customer@mail.com",
+                Customer = mockCustomerDto,
                 Status = BookingStatus.Pending,
                 HolidayPackage = mockHolidayPackageDto
             };
@@ -438,6 +602,11 @@ namespace Gotorz.Server.UnitTests.Controllers
             // Arrange
             var bookingReference = "G01";
 
+            var mockCustomerDto = new UserDto
+            {
+                Email = "customer@mail.com",
+            };
+
             var mockHolidayPackageDto = new HolidayPackageDto
             {
                 HolidayPackageId = 1,
@@ -448,7 +617,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             var mockHolidayBookingDto = new HolidayBookingDto
             {
                 BookingReference = bookingReference,
-                CustomerEmail = "customer@mail.com",
+                Customer = mockCustomerDto,
                 Status = BookingStatus.Pending,
                 HolidayPackage = mockHolidayPackageDto
             };

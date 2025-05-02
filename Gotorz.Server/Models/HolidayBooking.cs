@@ -9,12 +9,14 @@ namespace Gotorz.Server.Models
     {
         public int HolidayBookingId { get; set; }
         public string BookingReference { get; set; }
-        public string CustomerEmail { get; set; }
         public int Status { get; set; }
+        public string CustomerId { get; set; }
         public int HolidayPackageId { get; set; }
 
-        // Navigation property that EF Core uses to join and
+        // Navigation properties that EF Core uses to join and
         // materialize related data.
+        public ApplicationUser Customer { get; set; } = null;
         public HolidayPackage HolidayPackage { get; set; } = null;
+
     }
 }
