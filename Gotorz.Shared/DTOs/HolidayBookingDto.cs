@@ -10,8 +10,8 @@ namespace Gotorz.Shared.DTOs
     public class HolidayBookingDto
     {
         public string BookingReference { get; set; }
-        public string CustomerEmail { get; set; }
         public BookingStatus Status { get; set; }
+        public UserDto Customer { get; set; }
         public HolidayPackageDto HolidayPackage { get; set; }
     }
 }

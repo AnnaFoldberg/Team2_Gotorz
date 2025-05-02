@@ -20,7 +20,7 @@ namespace Gotorz.Client.Services
         /// <inheritdoc />
         public async Task<string> GetBookingReferenceAsync()
         {
-            return await _httpClient.GetFromJsonAsync<string>($"/Booking/booking-reference");
+            return await _httpClient.GetStringAsync($"/Booking/booking-reference");
         }
 
         /// <inheritdoc />

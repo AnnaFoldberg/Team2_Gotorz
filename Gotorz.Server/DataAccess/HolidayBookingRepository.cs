@@ -38,7 +38,10 @@ namespace Gotorz.Server.DataAccess
         /// <returns>The matching <see cref="HolidayBooking"/> or <c>null</c> if not found.</returns>
         public async Task<HolidayBooking?> GetByKeyAsync(int key)
         {
-            return await _context.HolidayBookings.Include(p => p.HolidayPackage).FirstOrDefaultAsync(b => b.HolidayBookingId == key);
+            return await _context.HolidayBookings
+            .Include(b => b.HolidayPackage)
+            .Include(b => b.Customer)
+            .FirstOrDefaultAsync(b => b.HolidayBookingId == key);
         }
 
         /// <summary>
@@ -48,7 +51,10 @@ namespace Gotorz.Server.DataAccess
         /// <returns>The matching <see cref="HolidayBooking"/> or <c>null</c> if not found.</returns>
         public async Task<HolidayBooking?> GetByBookingReferenceAsync(string bookingReference)
         {
-            return await _context.HolidayBookings.Include(p => p.HolidayPackage).FirstOrDefaultAsync(b => b.BookingReference == bookingReference);
+            return await _context.HolidayBookings
+                .Include(b => b.HolidayPackage)
+                .Include(b => b.Customer)
+                .FirstOrDefaultAsync(b => b.BookingReference == bookingReference);
         }
 
         /// <summary>

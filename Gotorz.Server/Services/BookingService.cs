@@ -1,6 +1,7 @@
 
 using Gotorz.Client.Services;
 using Gotorz.Server.Contexts;
+using Gotorz.Server.DataAccess;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gotorz.Server.Services
@@ -10,22 +11,23 @@ namespace Gotorz.Server.Services
     /// </summary>
     public class BookingService : IBookingService
     {
-        GotorzDbContext _context;
+        IHolidayBookingRepository _holidayBookingRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BookingService"/> class.
         /// </summary>
-        /// <param name="context">The application's Entity Framework Core database context.</param>
-        public BookingService(GotorzDbContext context)
+        /// <param name="holidayBookingRepository">The <see cref="IHolidayBookingRepository"/> used to access
+        /// <see cref="HolidayBooking"/> data in the database.</param>
+        public BookingService(IHolidayBookingRepository holidayBookingRepository)
         {
-            _context = context;
+            _holidayBookingRepository = holidayBookingRepository;
         }
 
         /// <inheritdoc />
         public async Task<string> GenerateNextBookingReferenceAsync()
         {
-            var lastBooking = await _context.HolidayBookings.OrderByDescending(b => b.BookingReference)
-                .FirstOrDefaultAsync();
+            var lastBooking = (await _holidayBookingRepository.GetAllAsync())
+                .OrderByDescending(b => b.BookingReference).FirstOrDefault();
 
             if (lastBooking == null || string.IsNullOrWhiteSpace(lastBooking.BookingReference))
                 return "G0001";

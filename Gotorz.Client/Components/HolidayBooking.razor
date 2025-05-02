@@ -45,6 +45,7 @@
 
 @code {
     private bool isAuthorizedUser;
+    private UserDto currentUser;
     private IEnumerable<TravellerDto>? travellers;
     private HolidayPackageDto? holidayPackage;
 
@@ -57,8 +58,10 @@
         {
             if (HolidayBookingDto == null) return;
 
+            currentUser = await UserService.GetCurrentUserAsync();
+
             isAuthorizedUser = ((await UserService.IsUserInRoleAsync("customer")) &&
-                HolidayBookingDto.CustomerEmail == await UserService.GetEmailAsync()) ||
+                HolidayBookingDto.Customer.Email == currentUser.Email ) ||
                 (await UserService.IsUserInRoleAsync("sales")) ||
                 (await UserService.IsUserInRoleAsync("admin"));
 

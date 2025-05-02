@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Gotorz.Shared.DTOs;
@@ -12,6 +13,8 @@ namespace Gotorz.Shared.DTOs;
 /// <author>Eske</author>
 public class UserDto
 {
+    [JsonIgnore]
+    public string? UserId { get; set; }
     public string? Email { get; set; }
     public bool IsAuthenticated { get; set; }
     public string? FirstName { get; set; }

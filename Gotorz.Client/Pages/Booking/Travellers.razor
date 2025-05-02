@@ -1,5 +1,4 @@
 ﻿@page "/booking/travellers/{BookingReference}"
-@using Gotorz.Client.Components
 @using Gotorz.Shared.DTOs
 @using Gotorz.Client.ViewModels
 @using Gotorz.Client.Services
@@ -33,8 +32,8 @@
                     {
                       var traveller = item.traveller;
                       var index = item.index;
-                      <div class="container">
-                        <div class="d-flex gap-2 align-items-end">
+                      <div class="container mb-4">
+                        <div class="d-flex gap-3 align-items-end">
                           <div class="form-group flex-grow-1">
                               <label for=@($"name-{index}") class="form-label">Name</label>
                               <ValidationMessage For="@(() => traveller.Name)" />
@@ -97,9 +96,11 @@
         holidayBooking = await BookingService.GetHolidayBookingAsync(BookingReference);
 
         if (holidayBooking == null) return;
+
+        var currentUser = await UserService.GetCurrentUserAsync();
         
         isAuthorizedUser = (await UserService.IsUserInRoleAsync("customer")) &&
-          holidayBooking.CustomerEmail == await UserService.GetEmailAsync();
+          holidayBooking.Customer.Email == currentUser.Email;
         
         maxCapacity = holidayBooking.HolidayPackage.MaxCapacity;
 
