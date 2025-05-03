@@ -1,0 +1,105 @@
+﻿@page "/booking/holiday-booking/{BookingReference}"
+@using Gotorz.Client.Components
+@using Gotorz.Shared.DTOs
+@using Gotorz.Shared.Enums;
+@using Gotorz.Client.Services
+@using Microsoft.AspNetCore.Authorization
+@using System.Reflection
+@using System.ComponentModel.DataAnnotations
+@inject IUserService UserService
+@inject IBookingService BookingService
+@inject ILogger<HolidayBooking> Logger
+
+<AuthorizeView>
+    <Authorized Context="auth">
+        @if (!isAuthorizedUser)
+        {
+          <p>Page not found.</p>
+        }
+        else if (holidayBooking == null)
+        {
+          <p>Loading...</p>
+        }
+        else
+        {
+          <div class="container d-flex flex-column standard-page-wrapper">
+            <h3>Holiday Booking</h3>
+            <h6>Booking Reference: #@holidayBooking.BookingReference</h6>
+            <br>
+            <HolidayBookingCard HolidayBookingDto="@holidayBooking" />
+            <EditForm Model="@holidayBooking" OnValidSubmit="ConfirmChangesAsync">
+                <div class="form-group flex-grow-1">
+                    <label for="status" class="form-label">Status</label>
+                    <InputSelect class="form-control" id="status" @bind-Value="holidayBooking.Status" disabled="@(!isSales)">
+                        @foreach (var s in bookingStatusEnums)
+                        {
+                            <option value="@s">@s</option>
+                        }
+                    </InputSelect>
+                </div>
+                @if (isSales)
+                {
+                    <br><br><br><br>
+                    <div class="container mt-auto mb-4">
+                        <div class="d-flex justify-content-between align-items-center p-3 border rounded bg-white shadow">
+                            <p class="mb-0 flex-grow-1"></p>
+                            <button type="submit" class="btn btn-light custom-background text-white">Confirm</button>
+                        </div>
+                    </div>
+                }
+            </EditForm>
+          </div>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <div class="mt-5 standard-page-wrapper">
+            <Login/>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private bool isSales;
+    private bool isAuthorizedUser;
+    private UserDto currentUser;
+    private HolidayBookingDto? holidayBooking;
+    private IEnumerable<BookingStatus> bookingStatusEnums;
+
+    [Parameter]
+    public string BookingReference { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            holidayBooking = await BookingService.GetHolidayBookingAsync(BookingReference);
+
+            if (holidayBooking == null) return;
+
+            currentUser = await UserService.GetCurrentUserAsync();
+            
+            isSales = await UserService.IsUserInRoleAsync("sales");
+
+            isAuthorizedUser = ((await UserService.IsUserInRoleAsync("customer")) &&
+                holidayBooking.Customer.Email == currentUser.Email) ||
+                isSales;
+
+            bookingStatusEnums = Enum.GetValues(typeof(BookingStatus)).Cast<BookingStatus>();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error initializing holiday booking");
+        }
+    }
+    private async Task ConfirmChangesAsync()
+    {
+        try
+        {
+            await BookingService.PatchHolidayBookingStatusAsync(holidayBooking);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error patching holiday booking");
+        }
+    }
+}

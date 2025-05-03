@@ -18,22 +18,22 @@ using Gotorz.Shared.Enums;
 namespace Gotorz.Client.UnitTests.Pages
 {
     /// <summary>
-    /// Contains unit tests for the <see cref="HolidayBooking"/> component.
+    /// Contains unit tests for the <see cref="HolidayBookingCard"/> component.
     /// </summary>
     /// <author>Anna</author>
     [TestClass]
-    public class HolidayBookingTests : Bunit.TestContext
+    public class HolidayBookingCardTests : Bunit.TestContext
     {
         private Mock<IBookingService> _mockBookingService;
         private Mock<IUserService> _mockUserService;
-        private Mock<ILogger<HolidayBooking>> logger;
+        private Mock<ILogger<HolidayBookingCard>> logger;
 
         [TestInitialize]
         public void TestInitialize()
         {
             _mockBookingService = new Mock<IBookingService>();
             _mockUserService = new Mock<IUserService>();
-            logger = new Mock<ILogger<HolidayBooking>>();
+            logger = new Mock<ILogger<HolidayBookingCard>>();
 
             Services.AddOptions();
 
@@ -94,7 +94,7 @@ namespace Gotorz.Client.UnitTests.Pages
             _mockBookingService.Setup(s => s.GetTravellersAsync(mockHolidayBooking.BookingReference)).ReturnsAsync(mockTravellers);
 
             // Act
-            var component = RenderComponent<HolidayBooking>(parameters => parameters.Add(p => p.HolidayBookingDto, mockHolidayBooking));
+            var component = RenderComponent<HolidayBookingCard>(parameters => parameters.Add(p => p.HolidayBookingDto, mockHolidayBooking));
 
             // Assert
             Assert.IsTrue(component.Markup.Contains("Rome"));
@@ -136,7 +136,7 @@ namespace Gotorz.Client.UnitTests.Pages
             _mockBookingService.Setup(s => s.GetTravellersAsync(mockHolidayBooking.BookingReference)).ReturnsAsync(mockTravellers);
 
             // Act
-            var component = RenderComponent<HolidayBooking>(parameters => parameters.Add(p => p.HolidayBookingDto, mockHolidayBooking));
+            var component = RenderComponent<HolidayBookingCard>(parameters => parameters.Add(p => p.HolidayBookingDto, mockHolidayBooking));
 
             // Assert
             Assert.IsTrue(component.Markup.Contains("Rome"));
@@ -179,7 +179,7 @@ namespace Gotorz.Client.UnitTests.Pages
             _mockBookingService.Setup(s => s.GetTravellersAsync(mockHolidayBooking.BookingReference)).ReturnsAsync(mockTravellers);
 
             // Act
-            var component = RenderComponent<HolidayBooking>(parameters => parameters.Add(p => p.HolidayBookingDto, mockHolidayBooking));
+            var component = RenderComponent<HolidayBookingCard>(parameters => parameters.Add(p => p.HolidayBookingDto, mockHolidayBooking));
 
             // Assert
             Assert.IsTrue(component.Markup.Contains("Rome"));
@@ -220,7 +220,7 @@ namespace Gotorz.Client.UnitTests.Pages
             _mockBookingService.Setup(s => s.GetTravellersAsync(mockHolidayBooking.BookingReference)).ReturnsAsync((IEnumerable<TravellerDto>)null);
 
             // Act
-            var component = RenderComponent<HolidayBooking>(parameters => parameters.Add(p => p.HolidayBookingDto, mockHolidayBooking));
+            var component = RenderComponent<HolidayBookingCard>(parameters => parameters.Add(p => p.HolidayBookingDto, mockHolidayBooking));
 
             // Assert
             Assert.IsTrue(component.Markup.Contains("Page not found."));
@@ -255,7 +255,7 @@ namespace Gotorz.Client.UnitTests.Pages
             };
 
             // Act
-            var component = RenderComponent<HolidayBooking>(parameters => parameters.Add(p => p.HolidayBookingDto, mockHolidayBooking));
+            var component = RenderComponent<HolidayBookingCard>(parameters => parameters.Add(p => p.HolidayBookingDto, mockHolidayBooking));
 
             // Assert
             Assert.IsTrue(component.Markup.Contains("Login"));
@@ -303,7 +303,7 @@ namespace Gotorz.Client.UnitTests.Pages
             _mockBookingService.Setup(s => s.GetTravellersAsync(mockHolidayBooking.BookingReference)).ReturnsAsync(mockTravellers);
 
             // Act
-            var component = RenderComponent<HolidayBooking>(parameters => parameters.Add(p => p.HolidayBookingDto, mockHolidayBooking));
+            var component = RenderComponent<HolidayBookingCard>(parameters => parameters.Add(p => p.HolidayBookingDto, mockHolidayBooking));
 
             // Assert
             Assert.IsTrue(component.Markup.Contains("Rome"));
@@ -331,7 +331,7 @@ namespace Gotorz.Client.UnitTests.Pages
             _mockUserService.Setup(s => s.GetCurrentUserAsync()).ReturnsAsync(mockCustomer);
 
             // Act
-            var component = RenderComponent<HolidayBooking>(parameters => parameters.Add(p => p.HolidayBookingDto, null));
+            var component = RenderComponent<HolidayBookingCard>(parameters => parameters.Add(p => p.HolidayBookingDto, null));
 
             // Assert
             Assert.IsTrue(component.Markup.Contains("Page not found."));
@@ -367,7 +367,7 @@ namespace Gotorz.Client.UnitTests.Pages
             _mockBookingService.Setup(s => s.GetTravellersAsync(mockHolidayBooking.BookingReference)).ReturnsAsync((IEnumerable<TravellerDto>)null);
 
             // Act
-            var component = RenderComponent<HolidayBooking>(parameters => parameters.Add(p => p.HolidayBookingDto, mockHolidayBooking));
+            var component = RenderComponent<HolidayBookingCard>(parameters => parameters.Add(p => p.HolidayBookingDto, mockHolidayBooking));
 
             // Assert
             Assert.IsTrue(component.Markup.Contains("Loading ..."));
@@ -413,7 +413,7 @@ namespace Gotorz.Client.UnitTests.Pages
                 .ThrowsAsync(new Exception("Mocked booking service failure"));
 
             // Act
-            var component = RenderComponent<HolidayBooking>(parameters => parameters.Add(p => p.HolidayBookingDto, mockHolidayBooking));
+            var component = RenderComponent<HolidayBookingCard>(parameters => parameters.Add(p => p.HolidayBookingDto, mockHolidayBooking));
 
             // Assert
             _mockBookingService.Verify(s => s.GetTravellersAsync(mockHolidayBooking.BookingReference), Times.Once());
@@ -423,7 +423,7 @@ namespace Gotorz.Client.UnitTests.Pages
                 l => l.Log(
                     LogLevel.Error,
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((state, _) => state.ToString()!.Contains("Error initializing holiday booking")),
+                    It.Is<It.IsAnyType>((state, _) => state.ToString()!.Contains("Error initializing holiday booking card")),
                     It.IsAny<Exception>(),
                     It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
                 Times.Once);

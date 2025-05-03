@@ -7,7 +7,7 @@
 
 <h3>HolidayPackage</h3>
 
-<button class="btn btn-primary" @onclick="BookHoliday">Book</button>
+<button class="btn btn-primary" @onclick="BookHolidayAsync">Book</button>
 
 @code {
     private string? bookingReference;
@@ -19,9 +19,9 @@
         user = await UserService.GetCurrentUserAsync();
     }
 
-    private async Task BookHoliday()
+    private async Task BookHolidayAsync()
     {
-        bookingReference = await BookingService.GetBookingReferenceAsync();
+        bookingReference = await BookingService.GetNextBookingReferenceAsync();
         HolidayBookingDto holidayBooking = new HolidayBookingDto {
             BookingReference = bookingReference,
             Customer = user,

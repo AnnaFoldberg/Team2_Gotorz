@@ -18,7 +18,7 @@ namespace Gotorz.Client.Services
         }
 
         /// <inheritdoc />
-        public async Task<string> GetBookingReferenceAsync()
+        public async Task<string> GetNextBookingReferenceAsync()
         {
             return await _httpClient.GetStringAsync($"/Booking/booking-reference");
         }
@@ -27,6 +27,12 @@ namespace Gotorz.Client.Services
         public async Task<HolidayBookingDto> GetHolidayBookingAsync(string bookingReference)
         {
             return await _httpClient.GetFromJsonAsync<HolidayBookingDto>($"/Booking/holiday-booking?bookingReference={bookingReference}");
+        }
+
+        /// <inheritdoc />
+        public async Task PatchHolidayBookingStatusAsync(HolidayBookingDto holidayBooking)
+        {
+            await _httpClient.PatchAsJsonAsync($"/Booking/holiday-booking", holidayBooking);
         }
 
         /// <inheritdoc />
