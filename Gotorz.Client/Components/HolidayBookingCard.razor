@@ -3,7 +3,7 @@
 @using Microsoft.AspNetCore.Authorization
 @inject IBookingService BookingService
 @inject IUserService UserService
-@inject ILogger<HolidayBooking> Logger
+@inject ILogger<HolidayBookingCard> Logger
 
 <AuthorizeView>
     <Authorized Context="auth">
@@ -72,7 +72,7 @@
         }
       catch (Exception ex)
       {
-          Logger.LogError(ex, "Error initializing holiday booking");
+          Logger.LogError(ex, "Error initializing holiday booking card");
       }
     }
 }

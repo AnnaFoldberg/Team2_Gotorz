@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Gotorz.Shared.Enums
@@ -8,9 +9,16 @@ namespace Gotorz.Shared.Enums
     /// <author>Anna</author>
     public enum BookingStatus
     {
+        [Display(Name = "Pending")]
         Pending,
+
+        [Display(Name = "Confirmed")]
         Confirmed,
+
+        [Display(Name = "Cancelled")]
         Cancelled,
+
+        [Display(Name = "Completed")]
         Completed
     }
 }

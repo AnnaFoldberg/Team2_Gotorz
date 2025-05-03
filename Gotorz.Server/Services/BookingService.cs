@@ -11,7 +11,7 @@ namespace Gotorz.Server.Services
     /// </summary>
     public class BookingService : IBookingService
     {
-        IHolidayBookingRepository _holidayBookingRepository;
+        private readonly IHolidayBookingRepository _holidayBookingRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BookingService"/> class.

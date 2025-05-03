@@ -131,6 +131,138 @@ namespace Gotorz.Server.UnitTests.Controllers
             _mockHolidayBookingRepository.Verify(r => r.GetByBookingReferenceAsync(bookingReference), Times.Once);
         }
 
+        // -------------------- PatchHolidayBookingStatusAsync --------------------
+        [TestMethod]
+        public async Task PatchHolidayBookingStatusAsync_ValidHolidayBooking_UpdatesHolidayBookingStatusAndReturnsOk()
+        {
+            // Arrange
+            var bookingReference = "G01";
+
+            var mockCustomer = new ApplicationUser
+            {
+                Email = "customer@mail.com",
+            };
+
+            var mockCustomerDto = new UserDto
+            {
+                Email = "customer@mail.com",
+            };
+            
+            var mockHolidayPackage = new HolidayPackage
+            {
+                HolidayPackageId = 1,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            var mockHolidayPackageDto = new HolidayPackageDto
+            {
+                HolidayPackageId = mockHolidayPackage.HolidayPackageId,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            var mockHolidayBooking = new HolidayBooking
+            {
+                HolidayBookingId = 1,
+                BookingReference = bookingReference,
+                Customer = mockCustomer,
+                Status = 0,
+                HolidayPackageId = mockHolidayPackage.HolidayPackageId
+            };
+
+            var mockHolidayBookingDto = new HolidayBookingDto
+            {
+                BookingReference = bookingReference,
+                Customer = mockCustomerDto,
+                Status = BookingStatus.Pending,
+                HolidayPackage = mockHolidayPackageDto
+            };
+
+            _mockHolidayBookingRepository.Setup(r => r.GetByBookingReferenceAsync(bookingReference)).ReturnsAsync(mockHolidayBooking);
+            _mockHolidayBookingRepository.Setup(r => r.UpdateAsync(mockHolidayBooking)).Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _bookingController.PatchHolidayBookingStatusAsync(mockHolidayBookingDto);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            var okResult = result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+            Assert.AreEqual($"Successfully updated holiday booking {mockHolidayBooking.BookingReference}", okResult.Value);
+            _mockHolidayBookingRepository.Verify(s => s.GetByBookingReferenceAsync(bookingReference), Times.Once);
+            _mockHolidayBookingRepository.Verify(s => s.UpdateAsync(mockHolidayBooking), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task PatchHolidayBookingStatusAsync_InvalidHolidayBooking_ReturnsBadRequest()
+        {
+            // Arrange
+            var bookingReference = "G01";
+
+            var mockCustomer = new ApplicationUser
+            {
+                Email = "customer@mail.com",
+            };
+
+            var mockCustomerDto = new UserDto
+            {
+                Email = "customer@mail.com",
+            };
+            
+            var mockHolidayPackage = new HolidayPackage
+            {
+                HolidayPackageId = 1,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            var mockHolidayPackageDto = new HolidayPackageDto
+            {
+                HolidayPackageId = mockHolidayPackage.HolidayPackageId,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            var mockHolidayBookingDto = new HolidayBookingDto
+            {
+                BookingReference = bookingReference,
+                Customer = mockCustomerDto,
+                Status = BookingStatus.Pending,
+                HolidayPackage = mockHolidayPackageDto
+            };
+
+            _mockHolidayBookingRepository.Setup(r => r.GetByBookingReferenceAsync(bookingReference)).ReturnsAsync((HolidayBooking)null);
+
+            // Act
+            var result = await _bookingController.PatchHolidayBookingStatusAsync(mockHolidayBookingDto);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+            var badRequestResult = result as BadRequestObjectResult;
+            Assert.IsNotNull(badRequestResult);
+            Assert.AreEqual($"The holiday booking does not exist in the database", badRequestResult.Value);
+            _mockHolidayBookingRepository.Verify(s => s.GetByBookingReferenceAsync(bookingReference), Times.Once);
+            _mockHolidayBookingRepository.Verify(s => s.UpdateAsync(It.IsAny<HolidayBooking>()), Times.Never);
+        }
+
+        [TestMethod]
+        public async Task PatchHolidayBookingStatusAsync_NullHolidayBooking_ReturnsBadRequest()
+        {
+            // Arrange
+            var bookingReference = "G01";
+
+            // Act
+            var result = await _bookingController.PatchHolidayBookingStatusAsync((HolidayBookingDto)null);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+            var badRequestResult = result as BadRequestObjectResult;
+            Assert.IsNotNull(badRequestResult);
+            Assert.AreEqual($"No holiday booking was provided", badRequestResult.Value);
+            _mockHolidayBookingRepository.Verify(s => s.GetByBookingReferenceAsync(bookingReference), Times.Never);
+            _mockHolidayBookingRepository.Verify(s => s.UpdateAsync(It.IsAny<HolidayBooking>()), Times.Never);
+        }
 
         // -------------------- PostHolidayBookingAsync --------------------
         [TestMethod]

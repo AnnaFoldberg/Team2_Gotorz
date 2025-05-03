@@ -74,6 +74,33 @@ public class BookingController : ControllerBase
     }
 
     /// <summary>
+    /// Defines an API endpoint for HTTP PATCH that updates a <see cref="HolidayBooking"/> entity's status in the database.
+    /// </summary>
+    /// <param name="holidayBooking">The <see cref="HolidayBookingDto"/> object representing the holiday booking to be updated.</param>
+    /// <returns>An <see cref="IActionResult"/> that contains <c>Ok</c> if the <see cref="HolidayBooking"/> entity was
+    /// updated in the database successfully, otherwise <c>BadRequest</c>.</returns>
+    [HttpPatch("holiday-booking")]
+    public async Task<IActionResult> PatchHolidayBookingStatusAsync(HolidayBookingDto holidayBookingPatch)
+    {
+        if (holidayBookingPatch == null)
+        {
+            return BadRequest("No holiday booking was provided");
+        }
+
+        // Check if a holiday booking with the same booking reference already exists
+        var holidayBooking = await _holidayBookingRepository.GetByBookingReferenceAsync(holidayBookingPatch.BookingReference);
+        if (holidayBooking == null)
+        {
+            return BadRequest("The holiday booking does not exist in the database");
+        }
+
+        holidayBooking.Status = (int)holidayBookingPatch.Status;
+
+        await _holidayBookingRepository.UpdateAsync(holidayBooking);
+        return Ok($"Successfully updated holiday booking {holidayBooking.BookingReference}");
+    }
+
+    /// <summary>
     /// Defines an API endpoint for HTTP POST that adds a <see cref="HolidayBooking"/> entity to the database.
     /// </summary>
     /// <param name="holidayBooking">The <see cref="HolidayBookingDto"/> object representing the holiday booking to be added.</param>

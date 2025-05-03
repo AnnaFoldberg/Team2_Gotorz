@@ -302,14 +302,8 @@ namespace Gotorz.Client.UnitTests.Pages
             // Arrange
             SetUser("customer");
 
-            // var mockCustomer = new UserDto
-            // {
-            //     Email = "customer@mail.com",
-            // };
-
             var bookingReference = "G01";
 
-            // _mockUserService.Setup(s => s.GetCurrentUserAsync()).ReturnsAsync(mockCustomer);
             _mockBookingService.Setup(s => s.GetHolidayBookingAsync(bookingReference)).ReturnsAsync((HolidayBookingDto)null);
 
             // Act
