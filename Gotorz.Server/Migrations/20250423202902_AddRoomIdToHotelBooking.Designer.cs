@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Gotorz.Server.Migrations
 {
     [DbContext(typeof(GotorzDbContext))]
-    [Migration("20250407133238_AddHotelBooking")]
-    partial class AddHotelBooking
+    [Migration("20250423202902_AddRoomIdToHotelBooking")]
+    partial class AddRoomIdToHotelBooking
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,7 +24,7 @@ namespace Gotorz.Server.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("Gotorz.Shared.Models.Airport", b =>
+            modelBuilder.Entity("Gotorz.Server.Models.Airport", b =>
                 {
                     b.Property<int>("AirportId")
                         .ValueGeneratedOnAdd()
@@ -58,6 +58,9 @@ namespace Gotorz.Server.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HotelId"), 1L, 1);
 
                     b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ExternalHotelId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Latitude")
@@ -95,16 +98,75 @@ namespace Gotorz.Server.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<int>("RoomCapacity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RoomId")
                         .HasColumnType("int");
 
                     b.HasKey("HotelBookingId");
 
                     b.HasIndex("HotelId");
 
+                    b.HasIndex("RoomId");
+
                     b.ToTable("HotelBookings");
+                });
+
+            modelBuilder.Entity("Gotorz.Shared.Models.HotelRoom", b =>
+                {
+                    b.Property<int>("HotelRoomId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HotelRoomId"), 1L, 1);
+
+                    b.Property<DateTime>("ArrivalDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CancellationPolicy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DepartureDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ExternalHotelId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MealPlan")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<bool>("Refundable")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("RoomId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Surface")
+                        .HasColumnType("int");
+
+                    b.HasKey("HotelRoomId");
+
+                    b.ToTable("HotelRooms");
                 });
 
             modelBuilder.Entity("Gotorz.Shared.Models.HotelSearchHistory", b =>
@@ -145,7 +207,15 @@ namespace Gotorz.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Gotorz.Shared.Models.HotelRoom", "Room")
+                        .WithMany()
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Hotel");
+
+                    b.Navigation("Room");
                 });
 #pragma warning restore 612, 618
         }

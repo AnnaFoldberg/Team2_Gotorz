@@ -26,6 +26,22 @@ namespace Gotorz.Server.Controllers
             return Ok(result);
         }
 
+        [HttpGet("rooms")]
+        public async Task<IActionResult> GetHotelRooms(
+            [FromQuery] string externalHotelId,
+            [FromQuery] DateTime arrival,
+            [FromQuery] DateTime departure)
+        {
+            Console.WriteLine("🛎️ HotelController -> GetHotelRooms() called");
+            if (string.IsNullOrWhiteSpace(externalHotelId))
+            return BadRequest("Hotel ID is required.");
+
+            var rooms = await _hotelService.GetHotelRoomsAsync(externalHotelId, arrival, departure);
+            if (rooms == null || !rooms.Any())
+            return NotFound(); // Not Empty
+            return Ok(rooms);
+        }
+
         [HttpGet("history")]
         public async Task<IActionResult> GetSearchHistory()
         {

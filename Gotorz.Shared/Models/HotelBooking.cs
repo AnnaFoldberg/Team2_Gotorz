@@ -13,6 +13,9 @@ namespace Gotorz.Shared.Models
     public int HotelId { get; set; }
     public Hotel? Hotel { get; set; }
 
+    public int HotelRoomId { get; set; }      
+    public HotelRoom? HotelRoom { get; set; } 
+
     //public int RejsepakkeId { get; set; }
    // public Rejsepakke? Rejsepakke { get; set; }
     }

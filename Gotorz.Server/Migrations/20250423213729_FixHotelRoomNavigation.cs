@@ -4,7 +4,7 @@
 
 namespace Gotorz.Server.Migrations
 {
-    public partial class AddHotelBooking : Migration
+    public partial class FixHotelRoomNavigation : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
