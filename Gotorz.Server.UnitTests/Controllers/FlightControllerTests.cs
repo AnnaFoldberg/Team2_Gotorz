@@ -23,6 +23,7 @@ namespace Gotorz.Server.UnitTests.Controllers
         private Mock<IRepository<Airport>> _mockAirportRepository;
         private Mock<IFlightRepository> _mockFlightRepository;
         private Mock<IRepository<FlightTicket>> _mockFlightTicketRepository;
+        private Mock<IRepository<HolidayPackage>> _mockHolidayPackageRepository;
 
         [TestInitialize]
         public void TestInitialize()
@@ -32,9 +33,11 @@ namespace Gotorz.Server.UnitTests.Controllers
             _mockAirportRepository = new Mock<IRepository<Airport>>();
             _mockFlightRepository = new Mock<IFlightRepository>();
             _mockFlightTicketRepository = new Mock<IRepository<FlightTicket>>();
+            _mockHolidayPackageRepository = new Mock<IRepository<HolidayPackage>>();
 
             _flightController = new FlightController(_mockFlightService.Object, _mockMapper.Object,
-                _mockAirportRepository.Object, _mockFlightRepository.Object, _mockFlightTicketRepository.Object);
+                _mockAirportRepository.Object, _mockFlightRepository.Object, _mockFlightTicketRepository.Object,
+                _mockHolidayPackageRepository.Object);
         }
 
         // -------------------- GetAllAirportsAsync --------------------
@@ -531,7 +534,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             // Assert
             Assert.IsNotNull(flights);
             Assert.AreEqual(0, flights.Count);
-            _mockAirportRepository.Verify(r => r.GetAllAsync(), Times.Exactly(1));
+            _mockAirportRepository.Verify(r => r.GetAllAsync(), Times.Once);
             _mockFlightService.Verify(s => s.GetAirportAsync(departureAirportName), Times.Once);
         }
 
@@ -580,18 +583,37 @@ namespace Gotorz.Server.UnitTests.Controllers
             _mockMapper.Setup(m => m.Map<Flight>(mockFlightDto)).Returns(mockFlight);
             _mockFlightRepository.Setup(r => r.GetByFlightNumberAsync(mockFlight.FlightNumber)).ReturnsAsync(mockFlight);
 
+            // HolidayPackages
+            var mockHolidayPackage = new HolidayPackage
+            {
+                HolidayPackageId = 1,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            var mockHolidayPackageDto = new HolidayPackageDto
+            {
+                HolidayPackageId = mockHolidayPackage.HolidayPackageId,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            _mockHolidayPackageRepository.Setup(r => r.GetAllAsync()).ReturnsAsync(new List<HolidayPackage> { mockHolidayPackage });
+
             // Flight tickets
             var mockFlightTicketDtos = new List<FlightTicketDto>
             {
                 new FlightTicketDto
                 {
                     Price = 100.0,
-                    Flight = mockFlightDto
+                    Flight = mockFlightDto,
+                    HolidayPackage = mockHolidayPackageDto
                 },
                 new FlightTicketDto
                 {
                     Price = 100.0,
-                    Flight = mockFlightDto
+                    Flight = mockFlightDto,
+                    HolidayPackage = mockHolidayPackageDto
                 },
             };
 
@@ -601,13 +623,15 @@ namespace Gotorz.Server.UnitTests.Controllers
                 {
                     FlightTicketId = 11,
                     Price = 100.0,
-                    Flight = mockFlight
+                    Flight = mockFlight,
+                    HolidayPackage = mockHolidayPackage
                 },
                 new FlightTicket
                 {
                     FlightTicketId = 12,
                     Price = 100.0,
-                    Flight = mockFlight
+                    Flight = mockFlight,
+                    HolidayPackage = mockHolidayPackage
                 },
             };
 
@@ -668,18 +692,37 @@ namespace Gotorz.Server.UnitTests.Controllers
             _mockFlightRepository.Setup(r => r.GetByFlightNumberAsync(mockFlights[0].FlightNumber)).ReturnsAsync(mockFlights[0]);
             _mockFlightRepository.Setup(r => r.GetByFlightNumberAsync(mockFlights[1].FlightNumber)).ReturnsAsync(mockFlights[1]);
 
+            // HolidayPackages
+            var mockHolidayPackage = new HolidayPackage
+            {
+                HolidayPackageId = 1,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            var mockHolidayPackageDto = new HolidayPackageDto
+            {
+                HolidayPackageId = mockHolidayPackage.HolidayPackageId,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            _mockHolidayPackageRepository.Setup(r => r.GetAllAsync()).ReturnsAsync(new List<HolidayPackage> { mockHolidayPackage });
+
             // Flight tickets
             var mockFlightTicketDtos = new List<FlightTicketDto>
             {
                 new FlightTicketDto
                 {
                     Price = 110.0,
-                    Flight = mockFlightDtos[0]
+                    Flight = mockFlightDtos[0],
+                    HolidayPackage = mockHolidayPackageDto
                 },
                 new FlightTicketDto
                 {
                     Price = 100.0,
-                    Flight = mockFlightDtos[1]
+                    Flight = mockFlightDtos[1],
+                    HolidayPackage = mockHolidayPackageDto
                 }
             };
 
@@ -689,13 +732,15 @@ namespace Gotorz.Server.UnitTests.Controllers
                 {
                     FlightTicketId = 11,
                     Price = 110.0,
-                    Flight = mockFlights[0]
+                    Flight = mockFlights[0],
+                    HolidayPackage = mockHolidayPackage
                 },
                 new FlightTicket
                 {
                     FlightTicketId = 12,
                     Price = 100.0,
-                    Flight = mockFlights[1]
+                    Flight = mockFlights[1],
+                    HolidayPackage = mockHolidayPackage
                 }
             };
 
@@ -786,18 +831,37 @@ namespace Gotorz.Server.UnitTests.Controllers
             _mockFlightRepository.Setup(r => r.GetByFlightNumberAsync(mockFlights[0].FlightNumber)).ReturnsAsync(mockFlights[0]);
             _mockFlightRepository.Setup(r => r.GetByFlightNumberAsync(mockFlights[1].FlightNumber)).ReturnsAsync(mockFlights[1]);
 
+            // HolidayPackages
+            var mockHolidayPackage = new HolidayPackage
+            {
+                HolidayPackageId = 1,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            var mockHolidayPackageDto = new HolidayPackageDto
+            {
+                HolidayPackageId = mockHolidayPackage.HolidayPackageId,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            _mockHolidayPackageRepository.Setup(r => r.GetAllAsync()).ReturnsAsync(new List<HolidayPackage> { mockHolidayPackage });
+
             // Flight tickets
             var mockFlightTicketDtos = new List<FlightTicketDto>
             {
                 new FlightTicketDto
                 {
                     Price = 110.0,
-                    Flight = mockFlightDtos[0]
+                    Flight = mockFlightDtos[0],
+                    HolidayPackage = mockHolidayPackageDto
                 },
                 new FlightTicketDto
                 {
                     Price = 100.0,
-                    Flight = mockFlightDtos[1]
+                    Flight = mockFlightDtos[1],
+                    HolidayPackage = mockHolidayPackageDto
                 }
             };
 
@@ -807,13 +871,15 @@ namespace Gotorz.Server.UnitTests.Controllers
                 {
                     FlightTicketId = 11,
                     Price = 110.0,
-                    Flight = mockFlights[0]
+                    Flight = mockFlights[0],
+                    HolidayPackage = mockHolidayPackage
                 },
                 new FlightTicket
                 {
                     FlightTicketId = 12,
                     Price = 100.0,
-                    Flight = mockFlights[1]
+                    Flight = mockFlights[1],
+                    HolidayPackage = mockHolidayPackage
                 }
             };
 
@@ -920,23 +986,43 @@ namespace Gotorz.Server.UnitTests.Controllers
             _mockFlightRepository.Setup(r => r.GetByFlightNumberAsync(mockFlights[2].FlightNumber)).ReturnsAsync((Flight)null!);
             _mockFlightRepository.Setup(r => r.AddAsync(It.IsAny<Flight>())).Returns(Task.CompletedTask);
 
+            // HolidayPackages
+            var mockHolidayPackage = new HolidayPackage
+            {
+                HolidayPackageId = 1,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            var mockHolidayPackageDto = new HolidayPackageDto
+            {
+                HolidayPackageId = mockHolidayPackage.HolidayPackageId,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            _mockHolidayPackageRepository.Setup(r => r.GetAllAsync()).ReturnsAsync(new List<HolidayPackage> { mockHolidayPackage });
+
             // Flight tickets
             var mockFlightTicketDtos = new List<FlightTicketDto>
             {
                 new FlightTicketDto
                 {
                     Price = 110.0,
-                    Flight = mockFlightDtos[0]
+                    Flight = mockFlightDtos[0],
+                    HolidayPackage = mockHolidayPackageDto
                 },
                 new FlightTicketDto
                 {
                     Price = 100.0,
-                    Flight = mockFlightDtos[1]
+                    Flight = mockFlightDtos[1],
+                    HolidayPackage = mockHolidayPackageDto
                 },
                 new FlightTicketDto
                 {
                     Price = 105.0,
-                    Flight = mockFlightDtos[2]
+                    Flight = mockFlightDtos[2],
+                    HolidayPackage = mockHolidayPackageDto
                 },
             };
 
@@ -946,19 +1032,22 @@ namespace Gotorz.Server.UnitTests.Controllers
                 {
                     FlightTicketId = 11,
                     Price = 110.0,
-                    Flight = mockFlights[0]
+                    Flight = mockFlights[0],
+                    HolidayPackage = mockHolidayPackage
                 },
                 new FlightTicket
                 {
                     FlightTicketId = 12,
                     Price = 100.0,
-                    Flight = mockFlights[1]
+                    Flight = mockFlights[1],
+                    HolidayPackage = mockHolidayPackage
                 },
                 new FlightTicket
                 {
                     FlightTicketId = 12,
                     Price = 100.0,
-                    Flight = mockFlights[2]
+                    Flight = mockFlights[2],
+                    HolidayPackage = mockHolidayPackage
                 },
             };
 
@@ -976,6 +1065,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             Assert.IsNotNull(okResult);
             Assert.AreEqual($"Successfully added 3 flight ticket(s) to database", okResult.Value);
             _mockAirportRepository.Verify(r => r.GetAllAsync(), Times.Once);
+            _mockHolidayPackageRepository.Verify(r => r.GetAllAsync(), Times.Exactly(3));
             _mockFlightRepository.Verify(s => s.GetByFlightNumberAsync(It.IsAny<string>()), Times.Exactly(3));
             _mockFlightRepository.Verify(s => s.AddAsync(It.IsAny<Flight>()), Times.Once);
             _mockFlightTicketRepository.Verify(s => s.AddAsync(It.IsAny<FlightTicket>()), Times.Exactly(3));
@@ -995,18 +1085,37 @@ namespace Gotorz.Server.UnitTests.Controllers
             _mockMapper.Setup(m => m.Map<Flight>(mockFlightDto)).Returns(mockFlight);
             _mockFlightRepository.Setup(r => r.GetByFlightNumberAsync(mockFlight.FlightNumber)).ReturnsAsync(mockFlight);
 
+            // HolidayPackages
+            var mockHolidayPackage = new HolidayPackage
+            {
+                HolidayPackageId = 1,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            var mockHolidayPackageDto = new HolidayPackageDto
+            {
+                HolidayPackageId = mockHolidayPackage.HolidayPackageId,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            _mockHolidayPackageRepository.Setup(r => r.GetAllAsync()).ReturnsAsync(new List<HolidayPackage> { mockHolidayPackage });
+
             // Flight tickets
             var mockFlightTicketDtos = new List<FlightTicketDto>
             {
                 new FlightTicketDto
                 {
                     Price = 110.0,
-                    Flight = mockFlightDto
+                    Flight = mockFlightDto,
+                    HolidayPackage = mockHolidayPackageDto
                 },
                 new FlightTicketDto
                 {
                     Price = 100.0,
-                    Flight = mockFlightDto
+                    Flight = mockFlightDto,
+                    HolidayPackage = mockHolidayPackageDto
                 },
             };
 
@@ -1016,13 +1125,15 @@ namespace Gotorz.Server.UnitTests.Controllers
                 {
                     FlightTicketId = 11,
                     Price = 110.0,
-                    Flight = mockFlight
+                    Flight = mockFlight,
+                    HolidayPackage = mockHolidayPackage
                 },
                 new FlightTicket
                 {
                     FlightTicketId = 12,
                     Price = 100.0,
-                    Flight = mockFlight
+                    Flight = mockFlight,
+                    HolidayPackage = mockHolidayPackage
                 },
             };
 
@@ -1129,23 +1240,43 @@ namespace Gotorz.Server.UnitTests.Controllers
             _mockFlightRepository.Setup(r => r.GetByFlightNumberAsync(mockFlights[2].FlightNumber)).ReturnsAsync((Flight)null!);
             _mockFlightRepository.Setup(r => r.AddAsync(It.IsAny<Flight>())).Returns(Task.CompletedTask);
 
+            // HolidayPackages
+            var mockHolidayPackage = new HolidayPackage
+            {
+                HolidayPackageId = 1,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            var mockHolidayPackageDto = new HolidayPackageDto
+            {
+                HolidayPackageId = mockHolidayPackage.HolidayPackageId,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            _mockHolidayPackageRepository.Setup(r => r.GetAllAsync()).ReturnsAsync(new List<HolidayPackage> { mockHolidayPackage });
+
             // Flight tickets
             var mockFlightTicketDtos = new List<FlightTicketDto>
             {
                 new FlightTicketDto
                 {
                     Price = 110.0,
-                    Flight = mockFlightDtos[0]
+                    Flight = mockFlightDtos[0],
+                    HolidayPackage = mockHolidayPackageDto
                 },
                 new FlightTicketDto
                 {
                     Price = 100.0,
-                    Flight = mockFlightDtos[1]
+                    Flight = mockFlightDtos[1],
+                    HolidayPackage = mockHolidayPackageDto
                 },
                 new FlightTicketDto
                 {
                     Price = 105.0,
-                    Flight = mockFlightDtos[2]
+                    Flight = mockFlightDtos[2],
+                    HolidayPackage = mockHolidayPackageDto
                 },
             };
 
@@ -1155,19 +1286,22 @@ namespace Gotorz.Server.UnitTests.Controllers
                 {
                     FlightTicketId = 11,
                     Price = 110.0,
-                    Flight = mockFlights[0]
+                    Flight = mockFlights[0],
+                    HolidayPackage = mockHolidayPackage
                 },
                 new FlightTicket
                 {
                     FlightTicketId = 12,
                     Price = 100.0,
-                    Flight = mockFlights[1]
+                    Flight = mockFlights[1],
+                    HolidayPackage = mockHolidayPackage
                 },
                 new FlightTicket
                 {
                     FlightTicketId = 12,
                     Price = 100.0,
-                    Flight = mockFlights[2]
+                    Flight = mockFlights[2],
+                    HolidayPackage = mockHolidayPackage
                 },
             };
 
@@ -1185,6 +1319,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             Assert.IsNotNull(okResult);
             Assert.AreEqual($"Successfully added 3 flight ticket(s) to database", okResult.Value);
             _mockAirportRepository.Verify(r => r.GetAllAsync(), Times.Exactly(3));
+            _mockHolidayPackageRepository.Verify(r => r.GetAllAsync(), Times.Exactly(3));
             _mockFlightRepository.Verify(s => s.GetByFlightNumberAsync(It.IsAny<string>()), Times.Exactly(3));
             _mockFlightRepository.Verify(s => s.AddAsync(It.IsAny<Flight>()), Times.Exactly(3));
             _mockFlightTicketRepository.Verify(s => s.AddAsync(It.IsAny<FlightTicket>()), Times.Exactly(3));
@@ -1271,23 +1406,43 @@ namespace Gotorz.Server.UnitTests.Controllers
             _mockFlightRepository.Setup(r => r.GetByFlightNumberAsync(mockFlights[1].FlightNumber)).ReturnsAsync((Flight)null!);
             _mockFlightRepository.Setup(r => r.GetByFlightNumberAsync(mockFlights[2].FlightNumber)).ReturnsAsync((Flight)null!);
 
+            // HolidayPackages
+            var mockHolidayPackage = new HolidayPackage
+            {
+                HolidayPackageId = 1,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            var mockHolidayPackageDto = new HolidayPackageDto
+            {
+                HolidayPackageId = mockHolidayPackage.HolidayPackageId,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            _mockHolidayPackageRepository.Setup(r => r.GetAllAsync()).ReturnsAsync(new List<HolidayPackage> { mockHolidayPackage });
+
             // Flight tickets
             var mockFlightTicketDtos = new List<FlightTicketDto>
             {
                 new FlightTicketDto
                 {
                     Price = 110.0,
-                    Flight = mockFlightDtos[0]
+                    Flight = mockFlightDtos[0],
+                    HolidayPackage = mockHolidayPackageDto
                 },
                 new FlightTicketDto
                 {
                     Price = 100.0,
-                    Flight = mockFlightDtos[1]
+                    Flight = mockFlightDtos[1],
+                    HolidayPackage = mockHolidayPackageDto
                 },
                 new FlightTicketDto
                 {
                     Price = 105.0,
-                    Flight = mockFlightDtos[2]
+                    Flight = mockFlightDtos[2],
+                    HolidayPackage = mockHolidayPackageDto
                 },
             };
 
@@ -1299,8 +1454,81 @@ namespace Gotorz.Server.UnitTests.Controllers
             var badRequestResult = result as BadRequestObjectResult;
             Assert.IsNotNull(badRequestResult);
             Assert.AreEqual($"One or more airports linked to flight do not exist", badRequestResult.Value);
-            _mockAirportRepository.Verify(r => r.GetAllAsync(), Times.Exactly(1));
-            _mockFlightRepository.Verify(s => s.GetByFlightNumberAsync(It.IsAny<string>()), Times.Exactly(1));
+            _mockAirportRepository.Verify(r => r.GetAllAsync(), Times.Once);
+            _mockFlightRepository.Verify(s => s.GetByFlightNumberAsync(It.IsAny<string>()), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task PostFlightTicketsAsync_HolidayPackageLinkedToFlightTicketDoesNotExist_ReturnsBadRequest()
+        {
+            // Arrange
+            // Flights
+            var mockFlightDto = new FlightDto { FlightNumber = "{bl}:202504040709*D*JFK*LHR*20250512*smtf*FI",
+                    DepartureDate = new DateOnly(2025, 5, 12), TicketPrice = 110.0 };
+
+            var mockFlight = new Flight { FlightId = 1, FlightNumber = "{bl}:202504040709*D*JFK*LHR*20250512*smtf*FI",
+                    DepartureDate = new DateOnly(2025, 5, 12)};
+
+            _mockMapper.Setup(m => m.Map<Flight>(mockFlightDto)).Returns(mockFlight);
+            _mockFlightRepository.Setup(r => r.GetByFlightNumberAsync(mockFlight.FlightNumber)).ReturnsAsync(mockFlight);
+
+            // HolidayPackages
+            var mockHolidayPackageDto = new HolidayPackageDto
+            {
+                HolidayPackageId = 1,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            _mockHolidayPackageRepository.Setup(r => r.GetAllAsync()).ReturnsAsync(new List<HolidayPackage>());
+
+            // Flight tickets
+            // Flight tickets
+            var mockFlightTicketDtos = new List<FlightTicketDto>
+            {
+                new FlightTicketDto
+                {
+                    Price = 110.0,
+                    Flight = mockFlightDto,
+                    HolidayPackage = mockHolidayPackageDto
+                },
+                new FlightTicketDto
+                {
+                    Price = 100.0,
+                    Flight = mockFlightDto,
+                    HolidayPackage = mockHolidayPackageDto
+                },
+            };
+
+            var mockFlightTickets = new List<FlightTicket>
+            {
+                new FlightTicket
+                {
+                    FlightTicketId = 11,
+                    Price = 110.0,
+                    Flight = mockFlight
+                },
+                new FlightTicket
+                {
+                    FlightTicketId = 12,
+                    Price = 100.0,
+                    Flight = mockFlight
+                },
+            };
+
+            _mockMapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[0])).Returns(mockFlightTickets[0]);
+            _mockMapper.Setup(m => m.Map<FlightTicket>(mockFlightTicketDtos[1])).Returns(mockFlightTickets[1]);
+            _mockFlightTicketRepository.Setup(r => r.AddAsync(It.IsAny<FlightTicket>())).Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _flightController.PostFlightTicketsAsync(mockFlightTicketDtos);
+
+            // Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+            var badRequestResult = result as BadRequestObjectResult;
+            Assert.IsNotNull(badRequestResult);
+            Assert.AreEqual($"Holiday package linked to flight ticket does not exist", badRequestResult.Value);
+            _mockHolidayPackageRepository.Verify(r => r.GetAllAsync(), Times.Once);
         }
     }
 }

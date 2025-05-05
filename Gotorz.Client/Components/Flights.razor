@@ -1,5 +1,4 @@
-﻿@page "/flights"
-@using Gotorz.Shared.DTOs
+﻿@using Gotorz.Shared.DTOs
 @using System.ComponentModel.DataAnnotations
 @using System.Text.Json
 @using Microsoft.AspNetCore.Mvc
@@ -21,7 +20,7 @@
         }
         else
         {
-            <div class="container d-flex flex-column standard-page-wrapper">
+            <div class="container block-wrapper">
                 <EditForm Model="@searchForm" OnValidSubmit="SearchAsync">
                     <DataAnnotationsValidator />
                     <ValidationSummary />
@@ -87,13 +86,13 @@
                                     <span style="flex: 0 0 10%; text-align: right; padding-right: 10px;">@flight.TicketPrice USD</span>
                                     <div class="d-flex align-items-center ms-auto">
                                         <span class="d-flex justify-content-center align-items-center" style="width: 40px;">
-                                            <button class="btn btn-icon" @onclick="() => RemoveFlightTicket(flight)" disabled="@(GetFlightTicketCount(flight) == 0)">
+                                            <button type="button" class="btn btn-icon" @onclick="() => RemoveFlightTicket(flight)" disabled="@(GetFlightTicketCount(flight) == 0)">
                                                 <i class="bi bi-dash-square-fill bg-purple fs-4"></i>
                                             </button>
                                         </span>
                                         <span class="d-flex justify-content-center align-items-center" style="width: 30px;">@GetFlightTicketCount(flight)</span>
                                         <span class="d-flex justify-content-center align-items-center" style="width: 40px;">
-                                            <button class="btn btn-icon" @onclick="() => AddFlightTicket(flight)">
+                                            <button type="button" class="btn btn-icon" @onclick="() => AddFlightTicket(flight)">
                                                 <i class="bi bi-plus-square-fill bg-purple fs-4"></i>
                                             </button>
                                         </span>
@@ -107,11 +106,11 @@
                         <p>No flights were found</p>
                     }
                 }
-
-                <div class="container mt-auto mb-4">
+                <br><br><br>
+                <div class="container mb-4">
                     <div class="d-flex justify-content-between align-items-center p-3 border rounded bg-white shadow">
                         <p class="mb-0 flex-grow-1">@($"{flightTickets.Count} ticket(s) selected")</p>
-                        <button class="btn btn-light custom-background text-white" @onclick="ConfirmAndPostFlightTicketsAsync">Confirm</button>
+                        <button class="btn btn-light custom-background text-white" @onclick="ConfirmFlightTicketsAsync">Confirm</button>
                     </div>
                 </div>
             </div>
@@ -131,9 +130,12 @@
     private IEnumerable<AirportDto> airports = Enumerable.Empty<AirportDto>();
     private List<FlightDto> flights = new List<FlightDto>();
     private List<FlightTicketDto> flightTickets = new List<FlightTicketDto>();
+
+    [Parameter]
+    public EventCallback<List<FlightTicketDto>> OnFlightTicketsConfirmed { get; set; }
     
     protected override async Task OnInitializedAsync()
-    {
+    {        
         isAuthorizedUser = await UserService.IsUserInRoleAsync("sales");
         if (!isAuthorizedUser) return;
 
@@ -178,14 +180,13 @@
         flightTickets.Remove(flightTicket);
     }
 
-    private async Task ConfirmAndPostFlightTicketsAsync()
+    private async Task ConfirmFlightTicketsAsync()
     {
         try
         {
             if (flightTickets != null && flightTickets.Any())
             {
-                await FlightService.PostFlightTicketsAsync(flightTickets);
-                flightTickets.Clear();
+                await OnFlightTicketsConfirmed.InvokeAsync(flightTickets);
             }
         }
         catch (Exception ex)

@@ -35,8 +35,8 @@ namespace Gotorz.Server.Controllers
         public async Task<IActionResult> Create(HolidayPackageDto dto)
         {
             var package = _mapper.Map<HolidayPackage>(dto);
-            package.CostPrice = 0;  //Slettes
-            package.MarkupPercentage = 0;  //Slettes
+            // package.CostPrice = 0;  //Slettes
+            // package.MarkupPercentage = 0;  //Slettes
             await _repository.AddAsync(package);
 
 
