@@ -85,5 +85,75 @@ namespace Gotorz.Client.UnitTests.Pages
             // Assert
             Assert.IsTrue(component.Markup.Contains("No hotels found."));
         }
+        /// <summary>
+        /// Verifies that booking a hotel triggers success message.
+        /// </summary>
+        [TestMethod]
+        public async Task SubmitBooking_Success_ShowsSuccessMessage()
+        {
+            // Arrange
+            var hotelId = 1;
+            var roomId = 101;
+
+            var mockRooms = new List<HotelRoom>
+    {
+        new HotelRoom
+        {
+            HotelRoomId = roomId,
+            Name = "Test Room",
+            Capacity = 2,
+            Price = 100,
+            MealPlan = "Breakfast",
+            Refundable = true
+        }
+    };
+
+            var mockHotels = new List<Hotel>
+    {
+        new Hotel
+        {
+            HotelId = hotelId,
+            Name = "Test Hotel",
+            Address = "Test Address",
+            Rating = 4,
+            ExternalHotelId = "EXT123",
+        }
+    };
+
+            _mockHotelService.Setup(s => s.GetHotelsByCityName(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                .ReturnsAsync(mockHotels);
+
+            _mockHotelService.Setup(s => s.GetHotelRoomsByHotelId(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                .ReturnsAsync(mockRooms);
+
+            _mockHotelService.Setup(s => s.BookHotelAsync(It.IsAny<HotelBooking>()))
+                .Returns(Task.CompletedTask);
+
+            // Act
+            var component = RenderComponent<Hotels>();
+
+            component.Find("#country").Change("Denmark");
+            component.Find("#city").Change("Copenhagen");
+            component.Find("#arrivalDate").Change(DateTime.Today.ToString("yyyy-MM-dd"));
+            component.Find("#departureDate").Change(DateTime.Today.AddDays(1).ToString("yyyy-MM-dd"));
+
+            component.Find("form").Submit();
+
+            // Ensure component is fully rendered after async methods
+            await component.InvokeAsync(() => { });
+
+            // Expand details
+            component.Find("button.btn-outline-secondary").Click();
+
+            await component.InvokeAsync(() => { });
+
+            // Click Book
+            component.Find("button.btn-success").Click();
+
+            // Assert
+            var successMessage = component.Find("div.alert.alert-success");
+            Assert.IsNotNull(successMessage);
+            Assert.IsTrue(successMessage.InnerHtml.Contains("Booking was successful"));
+        }
     }
 }
