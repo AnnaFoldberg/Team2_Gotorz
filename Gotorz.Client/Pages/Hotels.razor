@@ -13,10 +13,12 @@
             <div class="form-group flex-grow-1">
                 <label for="country" class="form-label">Country</label>
                 <InputText class="form-control" id="country" @bind-Value="searchForm.Country" />
+                <ValidationMessage For="@(() => searchForm.Country)" />
             </div>
             <div class="form-group flex-grow-1">
                 <label for="city" class="form-label">City</label>
                 <InputText class="form-control" id="city" @bind-Value="searchForm.City" />
+                <ValidationMessage For="@(() => searchForm.City)" />
             </div>
             <div class="form-group flex-grow-1">
                 <label for="arrivalDate" class="form-label">Arrival Date</label>
