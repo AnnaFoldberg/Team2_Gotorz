@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Gotorz.Server.Migrations
+namespace Gotorz.Server.Migrations.GotorzDb
 {
     [DbContext(typeof(GotorzDbContext))]
-    [Migration("20250502085702_HolidayBookingChanged")]
-    partial class HolidayBookingChanged
+    [Migration("20250505120951_NewMigration")]
+    partial class NewMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -149,12 +149,17 @@ namespace Gotorz.Server.Migrations
                     b.Property<int>("FlightId")
                         .HasColumnType("int");
 
+                    b.Property<int>("HolidayPackageId")
+                        .HasColumnType("int");
+
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
                     b.HasKey("FlightTicketId");
 
                     b.HasIndex("FlightId");
+
+                    b.HasIndex("HolidayPackageId");
 
                     b.ToTable("FlightTickets");
                 });
@@ -206,7 +211,7 @@ namespace Gotorz.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("MarkupPercentage")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(5,2)");
 
                     b.Property<int>("MaxCapacity")
                         .HasColumnType("int");
@@ -273,10 +278,18 @@ namespace Gotorz.Server.Migrations
                     b.HasOne("Gotorz.Server.Models.Flight", "Flight")
                         .WithMany()
                         .HasForeignKey("FlightId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Gotorz.Server.Models.HolidayPackage", "HolidayPackage")
+                        .WithMany()
+                        .HasForeignKey("HolidayPackageId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Flight");
+
+                    b.Navigation("HolidayPackage");
                 });
 
             modelBuilder.Entity("Gotorz.Server.Models.HolidayBooking", b =>

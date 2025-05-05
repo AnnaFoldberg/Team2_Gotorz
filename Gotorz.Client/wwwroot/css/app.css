@@ -106,14 +106,23 @@ code {
     background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%) !important;
 }
 
+.block-wrapper {
+    display: block;
+}
+
 .standard-page-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.last-element-at-bottom {
     display: flex;
     flex-direction: column;
     min-height: calc(100vh - 5rem);
 }
 
 @media (max-width: 641px) {
-    .standard-page-wrapper {
+    .last-element-at-bottom {
         min-height: calc(100vh - 9rem);
     }
 }

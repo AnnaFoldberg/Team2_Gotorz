@@ -13,6 +13,8 @@ namespace Gotorz.Shared.DTOs
     /// <author>Anna</author>
     public class FlightDto
     {
+        [JsonIgnore]
+        public int FlightId { get; set; }
         public string FlightNumber { get; set; }
         public DateOnly DepartureDate { get; set; }
         public AirportDto DepartureAirport { get; set; }

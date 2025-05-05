@@ -10,5 +10,6 @@ namespace Gotorz.Shared.DTOs
     {
         public double Price { get; set; }
         public FlightDto Flight { get; set; }
+        public HolidayPackageDto HolidayPackage { get; set; }
     }
 }
