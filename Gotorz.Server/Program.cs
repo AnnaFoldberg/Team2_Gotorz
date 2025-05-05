@@ -1,15 +1,14 @@
 using Gotorz.Server.Contexts;
 using Gotorz.Server.DataAccess;
 using Gotorz.Server.Services;
+using Gotorz.Server.Models;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 
 builder.Services.AddDbContext<GotorzDbContext>(options =>
 {
@@ -29,15 +28,19 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connectionString = builder.Configuration.GetConnectionString("AnnaConnection");
 
-builder.Services.AddDbContext<GotorzDbContext>(options =>
-{
-    options.UseSqlServer(connectionString);
-});
+// var connectionString = builder.Configuration.GetConnectionString("AnnaConnection");
+
+// builder.Services.AddDbContext<GotorzDbContext>(options =>
+// {
+//     options.UseSqlServer(connectionString);
+// });
+
+// builder.Services.AddDbContext<AuthDbContext>(options =>
+//     options.UseSqlServer(connectionString));
 
 builder.Services.AddDbContext<AuthDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SayeConnection")));
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
@@ -130,11 +133,9 @@ app.UseHttpsRedirection();
 app.UseCors("MyAllowedOrigins");
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseRouting(); //Bruges tiL??
+app.UseRouting();
 
 app.MapControllers();
-
-
-app.MapFallbackToFile("index.html"); // <-- Sørg for Blazor fallback virker
+app.MapFallbackToFile("index.html");
 
 app.Run();

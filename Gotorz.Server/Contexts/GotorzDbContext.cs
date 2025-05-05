@@ -40,7 +40,7 @@ namespace Gotorz.Server.Contexts
         /// Initializes a new instance of the <see cref="GotorzDbContext"/> class.
         /// </summary>
         /// <param name="options">The options to configure the <see cref="GotorzDbContext"/> instance with.</param>
-        public GotorzDbContext(DbContextOptions<GotorzDbContext> options) : base(options) {}
+        public GotorzDbContext(DbContextOptions<GotorzDbContext> options) : base(options) { }
 
         /// <summary>
         /// Applies all entity configurations that implement <see cref="IEntityTypeConfiguration{TEntity}"/>.
@@ -50,28 +50,24 @@ namespace Gotorz.Server.Contexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(GotorzDbContext).Assembly);
+            modelBuilder.Entity<HotelRoom>()
+                    .Property(r => r.Price)
+                    .HasPrecision(10, 2);
+
+            modelBuilder.Entity<HotelBooking>()
+            .HasOne(b => b.HotelRoom)
+            .WithMany(r => r.HotelBookings)
+            .HasForeignKey(b => b.HotelRoomId);
+
+            modelBuilder.Entity<HotelBooking>()
+                .Property(b => b.Price)
+                .HasPrecision(10, 2);
         }
         public DbSet<Hotel> Hotels { get; set; }
         public DbSet<HotelBooking> HotelBookings { get; set; }
         public DbSet<HotelRoom> HotelRooms { get; set; }
         public DbSet<HotelSearchHistory> HotelSearchHistories { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-                modelBuilder.Entity<HotelRoom>()
-                    .Property(r => r.Price)
-                    .HasPrecision(10, 2);
-
-                    modelBuilder.Entity<HotelBooking>()
-                    .HasOne(b => b.HotelRoom)
-                    .WithMany(r => r.HotelBookings)
-                    .HasForeignKey(b => b.HotelRoomId);
-
-                modelBuilder.Entity<HotelBooking>()
-                    .Property(b => b.Price)
-                    .HasPrecision(10, 2);
-                    
-        }
     }
-    
+
 }

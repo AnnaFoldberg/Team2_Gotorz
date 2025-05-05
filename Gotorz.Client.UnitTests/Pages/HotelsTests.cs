@@ -1,10 +1,10 @@
 using Bunit;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Gotorz.Client.Pages;
 using Moq;
 using Gotorz.Client.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Gotorz.Shared.Models;
+using Gotorz.Client.Pages;
 
 namespace Gotorz.Client.UnitTests.Pages
 {
