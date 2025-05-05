@@ -1,4 +1,5 @@
 ﻿using Gotorz.Shared.DTOs;
+using static System.Net.WebRequestMethods;
 
 namespace Gotorz.Client.Services
 {
@@ -72,5 +73,12 @@ namespace Gotorz.Client.Services
         /// </summary>
         /// <returns>The email address of the current user, or <c>null</c> if not set.</returns>
         Task<string?> GetEmailAsync();
+
+        Task LogoutAsync();
+
+        Task<bool> DeleteUserAsync(string userId);
+
+        Task<bool> DeleteCurrentUserAsync();
+
     }
 }

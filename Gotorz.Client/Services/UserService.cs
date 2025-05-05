@@ -128,5 +128,22 @@ namespace Gotorz.Client.Services
             var user = await GetCurrentUserAsync();
             return user?.Email;
         }
+
+        public async Task LogoutAsync()
+        {
+            await _http.PostAsync("api/account/logout", null);
+        }
+
+        public async Task<bool> DeleteUserAsync(string userId)
+        {
+            var response = await _http.DeleteAsync($"api/account/user/{userId}");
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeleteCurrentUserAsync()
+        {
+            var response = await _http.DeleteAsync("api/account/user/self");
+            return response.IsSuccessStatusCode;
+        }
     }
 }

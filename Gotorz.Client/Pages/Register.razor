@@ -30,13 +30,13 @@ else
                                @bind-Value="registerModel.Password"
                                class="form-control"
                                placeholder="Kodeord"
-                               type="@(_showPassword ? "text" : "password")" />
+                               type="@(showPassword ? "text" : "password")" />
 
                     <button type="button"
                             class="btn btn-outline-secondary"
                             @onclick="TogglePasswordVisibility"
                             tabindex="-1">
-                        <i class="bi @( _showPassword ? "bi-eye-slash" : "bi-eye")"></i>
+                        <i class="bi @( showPassword ? "bi-eye-slash" : "bi-eye")"></i>
                     </button>
                 </div>
                 <ValidationMessage For="@(() => registerModel.Password)" />
@@ -78,19 +78,60 @@ else
                 </div>
             }
 
+            <div class="form-check">
+                <InputCheckbox @bind-Value="registerModel.AcceptTerms" class="form-check-input" />
+                <label class="form-check-label">
+                    I agree to the <button type="button" class="btn btn-link p-0" @onclick="OpenTerms">Terms of Service</button>
+                </label>
+                @if (!string.IsNullOrEmpty(termsError))
+                {
+                    <div class="text-danger">@termsError</div>
+                }
+            </div>
+
             <button type="submit" class="btn btn-primary w-100">Register</button>
         </EditForm>
     </div>
+
+    <div class="modal fade @(showTerms ? "show d-block" : "")" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Terms of Service</h5>
+                    <button type="button" class="btn-close" @onclick="CloseTerms"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Welcome to Gotorz! These Terms of Service govern your use of our application...
+                        Something about admin are able to with the user data... etc.
+						By using our application, you agree to these terms. If you do not agree, please do not use our application.
+                        @* TODO: Write something that makes sense *@
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CloseTerms">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 }
 
 @code {
 	private bool isCheckingAccess = true;
     private RegisterDto registerModel = new();
     private string? ErrorMessage;
+	private string? termsError;
     private bool isAdmin;
-	private bool _showPassword = false;
+	private bool showPassword = false;
+    private bool showTerms = false;
 
-	private void TogglePasswordVisibility() => _showPassword = !_showPassword;
+    // TODO: Write something that makes sense in the above
+
+    private void OpenTerms() => showTerms = true;
+    private void CloseTerms() => showTerms = false;
+
+	private void TogglePasswordVisibility() => showPassword = !showPassword;
 
     protected override async Task OnInitializedAsync()
     {
@@ -110,11 +151,20 @@ else
 
     private async Task HandleRegister()
     {
+        ErrorMessage = null;
+		termsError = null;
+
         if (isAdmin && string.IsNullOrWhiteSpace(registerModel.Role))
         {
 			ErrorMessage = "Please select a role";
             return;
         }
+        if (!registerModel.AcceptTerms)
+        {
+            termsError = "You must accept the terms and conditions";
+            return;
+        }
+
 
         var response = await Http.PostAsJsonAsync("api/account/register", registerModel);
         var errorJson = await response.Content.ReadAsStringAsync();

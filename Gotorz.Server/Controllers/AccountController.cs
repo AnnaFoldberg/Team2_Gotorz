@@ -141,4 +141,30 @@ public class AccountController : ControllerBase
         return Ok(userDto);
     }
 
+
+    [HttpDelete("user/{id}")]
+    [Authorize(Roles = "admin")]
+    public async Task<IActionResult> DeleteUser(string id)
+    {
+        var result = await _userRepository.DeleteUserAsync(id);
+        if (result.Succeeded)
+            return Ok("User deleted");
+
+        return BadRequest("Deletion failed");
+    }
+
+    [HttpDelete("user/self")]
+    [Authorize]
+    public async Task<IActionResult> DeleteCurrentUser()
+    {
+        var currentUser = await _userRepository.GetCurrentUserAsync(User);
+        if (currentUser == null) return Unauthorized();
+
+        var result = await _userRepository.DeleteUserAsync(currentUser.Id);
+        if (result.Succeeded)
+            return Ok("Account deleted");
+
+        return BadRequest("Failed to delete account");
+    }
+
 }

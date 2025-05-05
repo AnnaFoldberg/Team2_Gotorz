@@ -33,5 +33,8 @@ namespace Gotorz.Shared.DTOs
         public string Password { get; set; } = string.Empty;
 
         public string Role { get; set; } = string.Empty;
+
+        public bool AcceptTerms { get; set; }
+
     }
 }
