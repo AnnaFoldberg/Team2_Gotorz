@@ -105,3 +105,36 @@ code {
 .custom-background {
     background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%) !important;
 }
+
+.standard-page-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 5rem);
+}
+
+@media (max-width: 641px) {
+    .standard-page-wrapper {
+        min-height: calc(100vh - 9rem);
+    }
+}
+
+.request-confirmation-page-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 5rem);
+    max-width: 600px;
+}
+
+@media (max-width: 641px) {
+    .request-confirmation-page-wrapper {
+        min-height: calc(100vh - 9rem);
+    }
+}
+
+.bg-purple {
+    color: #3a0647 !important;
+}
+
+.bg-purple:hover {
+    color: #592368 !important;
+}

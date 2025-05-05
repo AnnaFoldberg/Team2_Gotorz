@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Gotorz.Shared.DTO
+namespace Gotorz.Shared.DTOs
 {
     /// <summary>
     /// Represents a flight used for data transfer between the client and server.
@@ -17,5 +17,6 @@ namespace Gotorz.Shared.DTO
         public DateOnly DepartureDate { get; set; }
         public AirportDto DepartureAirport { get; set; }
         public AirportDto ArrivalAirport { get; set; }
+        public double TicketPrice { get; set; }
     }
 }

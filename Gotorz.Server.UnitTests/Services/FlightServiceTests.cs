@@ -5,7 +5,7 @@ using Moq.Protected;
 using System.Net;
 using Microsoft.Extensions.Configuration;
 using System.Text;
-using Gotorz.Shared.DTO;
+using Gotorz.Shared.DTOs;
 
 namespace Gotorz.Server.UnitTests.Services
 {
@@ -375,7 +375,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 110.0
                                 },
                                 ""id"": ""{bl}:202504040709*I*JFK*LHR*20250512*smtf*FI""
                             },
@@ -397,7 +398,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 105.0
                                 },
                                 ""id"": ""{bl}:202504040246*D*JFK*LHR*20250502*airf*AF""
                             },
@@ -419,7 +421,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 100.0
                                 },
                                 ""id"": ""{bl}:202504040539*D*JFK*LHR*20250505*airf*AF""
                             }
@@ -472,7 +475,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 110.0
                                 },
                                 ""id"": ""{bl}:202504040709*I*JFK*LHR*20250512*smtf*FI""
                             },
@@ -494,7 +498,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 105.0
                                 },
                                 ""id"": ""{bl}:202504040246*D*JFK*LHR*20250502*airf*AF""
                             },
@@ -516,7 +521,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 100.0
                                 },
                                 ""id"": ""{bl}:202504040539*D*JFK*LHR*20250505*airf*AF""
                             }
@@ -567,7 +573,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 110.0
                                 },
                                 ""id"": ""{bl}:202504040709*I*JFK*LHR*20250512*smtf*FI""
                             },
@@ -589,7 +596,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 105.0
                                 },
                                 ""id"": ""{bl}:202504040246*D*JFK*LHR*20250502*airf*AF""
                             },
@@ -611,7 +619,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 110.0
                                 },
                                 ""id"": ""{bl}:202504040539*D*JFK*LHR*20250505*airf*AF""
                             }
@@ -661,7 +670,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 110.0
                                 },
                                 ""id"": ""{bl}:202504040709*I*JFK*LHR*20250512*smtf*FI""
                             },
@@ -683,7 +693,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 105.0
                                 },
                                 ""id"": ""{bl}:202504040246*D*JFK*LHR*20250502*airf*AF""
                             },
@@ -705,7 +716,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 100.0
                                 },
                                 ""id"": ""{bl}:202504040539*D*JFK*LHR*20250505*airf*AF""
                             }
@@ -754,7 +766,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 110.0
                                 },
                                 ""id"": ""{bl}:202504040709*I*JFK*LHR*20250512*smtf*FI""
                             },
@@ -776,7 +789,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 105.0
                                 },
                                 ""id"": ""{bl}:202504040246*D*JFK*LHR*20250502*airf*AF""
                             },
@@ -798,7 +812,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 100.0
                                 },
                                 ""id"": ""{bl}:202504040539*D*JFK*LHR*20250505*airf*AF""
                             }
@@ -847,7 +862,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 110.0
                                 },
                                 ""id"": ""{bl}:202504040709*I*JFK*LHR*20250512*smtf*FI""
                             },
@@ -869,7 +885,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 105.0
                                 },
                                 ""id"": ""{bl}:202504040246*D*JFK*LHR*20250502*airf*AF""
                             },
@@ -891,7 +908,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 100.0
                                 },
                                 ""id"": ""{bl}:202504040539*D*JFK*LHR*20250505*airf*AF""
                             }
@@ -940,7 +958,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 110.0
                                 },
                                 ""id"": ""{bl}:202504040709*I*JFK*LHR*20250512*smtf*FI""
                             },
@@ -962,7 +981,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 105.0
                                 },
                                 ""id"": ""{bl}:202504040246*D*JFK*LHR*20250502*airf*AF""
                             },
@@ -984,7 +1004,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 100.0
                                 },
                                 ""id"": ""{bl}:202504040539*D*JFK*LHR*20250505*airf*AF""
                             }
@@ -1126,7 +1147,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 110.0
                                 },
                                 ""id"": ""{bl}:202504040709*I*JFK*LHR*20250512*smtf*FI""
                             },
@@ -1148,7 +1170,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 105.0
                                 },
                                 ""id"": ""{bl}:202504040246*D*JFK*LHR*20250502*airf*AF""
                             },
@@ -1170,7 +1193,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 100.0
                                 },
                                 ""id"": ""{bl}:202504040539*D*JFK*LHR*20250505*airf*AF""
                             }
@@ -1219,7 +1243,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 110.0
                                 },
                                 ""id"": ""{bl}:202504040709*I*JFK*LHR*20250512*smtf*FI""
                             },
@@ -1241,7 +1266,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 105.0
                                 },
                                 ""id"": ""{bl}:202504040246*D*JFK*LHR*20250502*airf*AF""
                             },
@@ -1263,7 +1289,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 100.0
                                 },
                                 ""id"": ""{bl}:202504040539*D*JFK*LHR*20250505*airf*AF""
                             }
@@ -1310,7 +1337,8 @@ namespace Gotorz.Server.UnitTests.Services
                                         ""skyCode"": ""JFK"",
                                         ""type"": ""Airport""
                                     }
-                                }
+                                },
+                                ""rawPrice"": 110.0
                             },
                             ""id"": ""{bl}:202504040709*I*JFK*LHR*20250512*smtf*FI""
                         },
@@ -1332,7 +1360,8 @@ namespace Gotorz.Server.UnitTests.Services
                                         ""skyCode"": ""JFK"",
                                         ""type"": ""Airport""
                                     }
-                                }
+                                },
+                                ""rawPrice"": 105.0
                             },
                             ""id"": ""{bl}:202504040246*D*JFK*LHR*20250502*airf*AF""
                         },
@@ -1354,7 +1383,8 @@ namespace Gotorz.Server.UnitTests.Services
                                         ""skyCode"": ""JFK"",
                                         ""type"": ""Airport""
                                     }
-                                }
+                                },
+                                ""rawPrice"": 100.0
                             },
                             ""id"": ""{bl}:202504040539*D*JFK*LHR*20250505*airf*AF""
                         }
@@ -1402,7 +1432,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 110.0
                                 },
                                 ""id"": ""{bl}:202504040709*I*JFK*LHR*20250512*smtf*FI""
                             },
@@ -1424,7 +1455,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 105.0
                                 },
                                 ""id"": ""{bl}:202504040246*D*JFK*LHR*20250502*airf*AF""
                             },
@@ -1446,7 +1478,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 100.0
                                 },
                                 ""id"": ""{bl}:202504040539*D*JFK*LHR*20250505*airf*AF""
                             }
@@ -1495,7 +1528,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 110.0
                                 },
                                 ""id"": ""{bl}:202504040709*I*JFK*LHR*20250512*smtf*FI""
                             },
@@ -1517,7 +1551,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 105.0
                                 },
                                 ""id"": ""{bl}:202504040246*D*JFK*LHR*20250502*airf*AF""
                             },
@@ -1539,7 +1574,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 100.0
                                 },
                                 ""id"": ""{bl}:202504040539*D*JFK*LHR*20250505*airf*AF""
                             }
@@ -1587,7 +1623,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 110.0
                                 },
                                 ""id"": ""{bl}:202504040709*I*JFK*LHR*20250512*smtf*FI""
                             },
@@ -1608,7 +1645,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 105.0
                                 },
                                 ""id"": ""{bl}:202504040246*D*JFK*LHR*20250502*airf*AF""
                             },
@@ -1629,7 +1667,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 100.0
                                 },
                                 ""id"": ""{bl}:202504040539*D*JFK*LHR*20250505*airf*AF""
                             }
@@ -1678,7 +1717,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 110.0
                                 },
                                 ""id"": ""{bl}:202504040709*I*JFK*LHR*20250512*smtf*FI""
                             },
@@ -1700,7 +1740,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 105.0
                                 },
                                 ""id"": ""{bl}:202504040246*D*JFK*LHR*20250502*airf*AF""
                             },
@@ -1722,7 +1763,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 100.0
                                 },
                                 ""id"": ""{bl}:202504040539*D*JFK*LHR*20250505*airf*AF""
                             }
@@ -1771,7 +1813,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 110.0
                                 },
                                 ""id"": ""{bl}:202504040709*I*JFK*LHR*20250512*smtf*FI""
                             },
@@ -1793,7 +1836,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 105.0
                                 },
                                 ""id"": ""{bl}:202504040246*D*JFK*LHR*20250502*airf*AF""
                             },
@@ -1815,7 +1859,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 100.0
                                 },
                                 ""id"": ""{bl}:202504040539*D*JFK*LHR*20250505*airf*AF""
                             }
@@ -1864,7 +1909,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 110.0
                                 },
                                 ""id"": ""{bl}:202504040709*I*JFK*LHR*20250512*smtf*FI""
                             },
@@ -1886,7 +1932,8 @@ namespace Gotorz.Server.UnitTests.Services
                                             ""skyCode"": ""JFK"",
                                             ""type"": ""Airport""
                                         }
-                                    }
+                                    },
+                                    ""rawPrice"": 105.0
                                 },
                                 ""id"": ""{bl}:202504040246*D*JFK*LHR*20250502*airf*AF""
                             },
@@ -1895,6 +1942,100 @@ namespace Gotorz.Server.UnitTests.Services
                                     ""direct"": true,
                                     ""outboundLeg"": {
                                         ""arrivalAirport"": {
+                                            ""id"": ""95565050"",
+                                            ""name"": ""LHR"",
+                                            ""skyCode"": ""LHR"",
+                                            ""type"": ""Airport""
+                                        },
+                                        ""localDepartureDate"": ""2025-05-05"",
+                                        ""localDepartureDateLabel"": ""Mon, May 5"",
+                                        ""originAirport"": {
+                                            ""id"": ""95565058"",
+                                            ""name"": ""JFK"",
+                                            ""skyCode"": ""JFK"",
+                                            ""type"": ""Airport""
+                                        }
+                                    },
+                                    ""rawPrice"": 100.0
+                                },
+                                ""id"": ""{bl}:202504040539*D*JFK*LHR*20250505*airf*AF""
+                            }
+                        ]
+                    }
+                }
+            }";
+            Setup(json);
+            AirportDto departureAirport = new AirportDto { EntityId = "95565058", LocalizedName = "New York John F. Kennedy", SkyId = "JFK" };
+            AirportDto arrivalAirport = new AirportDto { EntityId = "95565050", LocalizedName = "London Heathrow", SkyId = "LHR" };
+
+            // Act
+            var flights = await _flightService.GetFlightsAsync(null, departureAirport, arrivalAirport);
+
+            // Assert
+            Assert.IsNotNull(flights);
+            Assert.AreEqual(0, flights.Count);
+        }
+
+        [TestMethod]
+        public async Task GetFlightsAsync_RawPriceNodeMissing_ReturnsEmptyList()
+        {
+            // Arrange
+            string json = @"
+                {
+                    ""data"":
+                    {
+                        ""flightQuotes"":
+                        {
+                            ""results"":
+                            [{
+                                ""content"": {
+                                    ""direct"": false,
+                                    ""outboundLeg"": {
+                                        ""destinationAirport"": {
+                                            ""id"": ""95565050"",
+                                            ""name"": ""LHR"",
+                                            ""skyCode"": ""LHR"",
+                                            ""type"": ""Airport""
+                                        },
+                                        ""localDepartureDate"": ""2025-05-12"",
+                                        ""localDepartureDateLabel"": ""Mon, May 12"",
+                                        ""originAirport"": {
+                                            ""id"": ""95565058"",
+                                            ""name"": ""JFK"",
+                                            ""skyCode"": ""JFK"",
+                                            ""type"": ""Airport""
+                                        }
+                                    }
+                                },
+                                ""id"": ""{bl}:202504040709*I*JFK*LHR*20250512*smtf*FI""
+                            },
+                            {
+                                ""content"": {
+                                    ""direct"": true,
+                                    ""outboundLeg"": {
+                                        ""destinationAirport"": {
+                                            ""id"": ""95565050"",
+                                            ""name"": ""LHR"",
+                                            ""skyCode"": ""LHR"",
+                                            ""type"": ""Airport""
+                                        },
+                                        ""localDepartureDate"": ""2025-05-02"",
+                                        ""localDepartureDateLabel"": ""Fri, May 2"",
+                                        ""originAirport"": {
+                                            ""id"": ""95565058"",
+                                            ""name"": ""JFK"",
+                                            ""skyCode"": ""JFK"",
+                                            ""type"": ""Airport""
+                                        }
+                                    }
+                                },
+                                ""id"": ""{bl}:202504040246*D*JFK*LHR*20250502*airf*AF""
+                            },
+                            {
+                                ""content"": {
+                                    ""direct"": true,
+                                    ""outboundLeg"": {
+                                        ""destinationAirport"": {
                                             ""id"": ""95565050"",
                                             ""name"": ""LHR"",
                                             ""skyCode"": ""LHR"",

@@ -1,6 +1,6 @@
 using AutoMapper;
 using Gotorz.Server.Models;
-using Gotorz.Shared.DTO;
+using Gotorz.Shared.DTOs;
 
 /// <summary>
 /// AutoMapper profile for mapping between domain models and DTOs.
@@ -12,14 +12,35 @@ public class MappingProfile : Profile
     /// </summary>
     public MappingProfile()
     {
-        CreateMap<Airport, AirportDto>().ReverseMap();
+        CreateMap<AirportDto, Airport>().ReverseMap();
 
         // Structure from ChatGPT. Customized for this project.
-        CreateMap<Flight, FlightDto>()
-            .ForMember(dest => dest.DepartureAirport, opt => opt.MapFrom(src => src.DepartureAirport))
-            .ForMember(dest => dest.ArrivalAirport, opt => opt.MapFrom(src => src.ArrivalAirport))
-            .ReverseMap()
+        CreateMap<FlightDto, Flight>()
             .ForMember(dest => dest.DepartureAirportId, opt => opt.MapFrom(src => src.DepartureAirport.AirportId))
-            .ForMember(dest => dest.ArrivalAirportId, opt => opt.MapFrom(src => src.ArrivalAirport.AirportId));
+            .ForMember(dest => dest.ArrivalAirportId, opt => opt.MapFrom(src => src.ArrivalAirport.AirportId))
+            .ForMember(dest => dest.DepartureAirport, opt => opt.Ignore())
+            .ForMember(dest => dest.ArrivalAirport, opt => opt.Ignore())
+            .ReverseMap()
+            .ForMember(dest => dest.DepartureAirport, opt => opt.MapFrom(src => src.DepartureAirport))
+            .ForMember(dest => dest.ArrivalAirport, opt => opt.MapFrom(src => src.ArrivalAirport));
+
+        CreateMap<FlightTicketDto, FlightTicket>()
+            .ForMember(dest => dest.Flight, opt => opt.Ignore()).ReverseMap();
+
+        CreateMap<HolidayPackageDto, HolidayPackage>().ReverseMap();
+
+        CreateMap<UserDto, ApplicationUser>().ReverseMap();
+
+        CreateMap<HolidayBookingDto, HolidayBooking>()
+            .ForMember(dest => dest.HolidayPackageId, opt => opt.MapFrom(src => src.HolidayPackage.HolidayPackageId))
+            .ForMember(dest => dest.HolidayPackage, opt => opt.Ignore())
+            .ForMember(dest => dest.CustomerId, opt => opt.MapFrom(src => src.Customer.UserId))
+            .ForMember(dest => dest.CustomerId, opt => opt.Ignore())
+            .ReverseMap()
+            .ForMember(dest => dest.HolidayPackage, opt => opt.MapFrom(src => src.HolidayPackage))
+            .ForMember(dest => dest.Customer, opt => opt.MapFrom(src => src.Customer));
+
+        CreateMap<TravellerDto, Traveller>()
+            .ForMember(dest => dest.HolidayBooking, opt => opt.Ignore()).ReverseMap();
     }
 }
