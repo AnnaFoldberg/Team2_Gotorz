@@ -5,6 +5,7 @@ using Gotorz.Server.DataAccess;
 using Gotorz.Shared.DTOs;
 using AutoMapper;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Gotorz.Server.Controllers;
 
@@ -44,6 +45,44 @@ public class BookingController : ControllerBase
         _holidayBookingRepository = holidayBookingRepository;
         _travellerRepository = travellerRepository;
         _userRepository = userRepository;
+    }
+
+    /// <summary>
+    /// Defines an API endpoint for HTTP GET that retrieves all <see cref="HolidayBooking"/>
+    /// entities from the database.
+    /// </summary>
+    /// <returns>A collection of <see cref="HolidayBookingDto"/> entities.</returns>
+    [HttpGet("holiday-bookings")]
+    public async Task<IEnumerable<HolidayBookingDto>?> GetAllHolidayBookingsAsync()
+    {
+        var holidayBookings = await _holidayBookingRepository.GetAllAsync();
+
+        if (holidayBookings == null) return null;
+ 
+        var holidayBookingDtos = _mapper.Map<List<HolidayBookingDto>>(holidayBookings);
+        return holidayBookingDtos;
+    }
+
+    /// <summary>
+    /// Defines an API endpoint for HTTP GET that retrieves a collection of <see cref="HolidayBooking"/>
+    /// entities matching the specified <paramref name="email"/> from the database.
+    /// </summary>
+    /// <param name="email">The <c>Email</c> to match holiday bookings against.</param>
+    /// <returns>A collection of <see cref="HolidayBookingDto"/> entities matching the specified <paramref name="email"</>.</returns>
+    [HttpGet("customer-holiday-bookings")]
+    public async Task<IEnumerable<HolidayBookingDto>?> GetCustomerHolidayBookingsAsync(string email)
+    {
+        var customer = await _userRepository.GetUserByEmailAsync(email);
+
+        if (customer == null) return null;
+
+        var allHolidayBookings = await _holidayBookingRepository.GetAllAsync();
+        var userHolidayBookings = allHolidayBookings.Where(b => b.Customer.Email == customer.Email);
+        System.Console.WriteLine($"CUSTOMER EMAIL: {customer.Email}");
+        if (userHolidayBookings == null) return null;
+
+        var userHolidayBookingDtos = _mapper.Map<List<HolidayBookingDto>>(userHolidayBookings);
+        return userHolidayBookingDtos;
     }
 
     /// <summary>

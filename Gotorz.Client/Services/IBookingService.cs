@@ -9,6 +9,19 @@ namespace Gotorz.Client.Services
     public interface IBookingService
     {
         /// <summary>
+        /// Retrieves all <see cref="HolidayBooking"/> entities from the database.
+        /// </summary>
+        /// <returns>A collection of <see cref="HolidayBookingDto"/> entities.</returns>
+        Task<IEnumerable<HolidayBookingDto>> GetAllHolidayBookingsAsync();
+
+        /// <summary>
+        /// Retrieves a collection of holiday bookings matching the specified <paramref name="userDto"/> from the database.
+        /// </summary>
+        /// <param name="userDto">The <c>UserDto</c> to match holiday bookings against.</param>
+        /// <returns>A collection of <see cref="HolidayBookingDto"/> entities matching the specified <paramref name="userDto"</>.</returns>
+        Task<IEnumerable<HolidayBookingDto>> GetCustomerHolidayBookingsAsync(string email);
+
+        /// <summary>
         /// Retrieves the next available booking reference.
         /// </summary>
         /// <returns>A <c>string</c> representing the next available booking reference.</returns>

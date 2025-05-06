@@ -1,0 +1,96 @@
+﻿@page "/booking/customer/holiday-bookings"
+@using Gotorz.Client.Components
+@using Gotorz.Shared.DTOs
+@using Gotorz.Shared.Enums;
+@using Gotorz.Client.Services
+@using Microsoft.AspNetCore.Authorization
+@using System.Reflection
+@using System.ComponentModel.DataAnnotations
+@inject IUserService UserService
+@inject IBookingService BookingService
+@inject ILogger<HolidayBooking> Logger
+@inject NavigationManager Navigation
+
+<AuthorizeView>
+    <Authorized Context="auth">
+        @if (!isAuthorizedUser)
+        {
+          <p>Page not found.</p>
+        }
+        else if (holidayBookings == null)
+        {
+          <p>Loading...</p>
+        }
+        else
+        {
+          <div class="container d-flex flex-column standard-page-wrapper ">
+            <h3>Holiday Bookings</h3>
+            <br>
+            @foreach (HolidayBookingDto holidayBooking in holidayBookings)
+            {
+                <div class="p-3 border rounded bg-white shadow">
+                <HolidayBooking BookingReference="@holidayBooking.BookingReference" />
+                <br><br>
+                @if (isSales)
+                {
+                    <div class="container mt-auto mb-4">
+                        <div class="d-flex justify-content-between align-items-center p-3 border rounded bg-white shadow">
+                            <p class="mb-0 flex-grow-1"></p>
+                            <button type="button" class="btn btn-light custom-background text-white"
+                                @onclick="() => NavigateToHolidayBooking(holidayBooking.BookingReference)">Edit</button>
+                        </div>
+                    </div>
+                }
+                </div>
+                <br><br><br>
+            }
+          </div>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <div class="mt-5 standard-page-wrapper">
+            <Login/>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private bool isAuthorizedUser;
+    private bool isSales;
+    private IEnumerable<HolidayBookingDto> holidayBookings;
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? UserEmail { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(UserEmail))
+            {
+                var currentUser = await UserService.GetCurrentUserAsync();
+                UserEmail = currentUser.Email;
+            }
+
+            holidayBookings = await BookingService.GetCustomerHolidayBookingsAsync(UserEmail);
+
+            if (holidayBookings == null) return;
+
+            isSales = await UserService.IsUserInRoleAsync("sales");
+
+            isAuthorizedUser = ((await UserService.IsUserInRoleAsync("customer")) &&
+                holidayBookings.First().Customer.Email == UserEmail) ||
+                isSales;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error initializing customer's holiday bookings");
+        }
+    }
+    private async Task NavigateToHolidayBooking(string bookingReference)
+    {
+        string from = $"customer/holiday-bookings?UserEmail={UserEmail}";
+        Navigation.NavigateTo($"/booking/holiday-booking/{bookingReference}/edit/?From={Uri.EscapeDataString(from)}");
+    }
+}

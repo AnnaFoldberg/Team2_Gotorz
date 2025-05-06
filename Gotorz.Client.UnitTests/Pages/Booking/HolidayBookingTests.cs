@@ -125,7 +125,9 @@ namespace Gotorz.Client.UnitTests.Pages
             _mockBookingService.Setup(s => s.GetHolidayBookingAsync(mockHolidayBooking.BookingReference)).ReturnsAsync(mockHolidayBooking);
 
             // Act
-            var component = RenderComponent<HolidayBooking>(parameters => parameters.Add(c => c.BookingReference, mockHolidayBooking.BookingReference));
+            var component = RenderComponent<HolidayBooking>(parameters => parameters
+                .Add(c => c.BookingReference, mockHolidayBooking.BookingReference)
+                .Add(c => c.Mode, "edit"));
 
             // Assert
             Assert.IsTrue(component.Markup.Contains($"Booking Reference: #{mockHolidayBooking.BookingReference}"));
@@ -281,7 +283,9 @@ namespace Gotorz.Client.UnitTests.Pages
             _mockBookingService.Setup(s => s.GetHolidayBookingAsync(mockHolidayBooking.BookingReference)).ReturnsAsync(mockHolidayBooking);
 
             // Act
-            var component = RenderComponent<HolidayBooking>(parameters => parameters.Add(c => c.BookingReference, mockHolidayBooking.BookingReference));
+            var component = RenderComponent<HolidayBooking>(parameters => parameters
+                .Add(c => c.BookingReference, mockHolidayBooking.BookingReference)
+                .Add(c => c.Mode, "edit"));
 
             // Assert
             Assert.IsTrue(component.Markup.Contains($"Booking Reference: #{mockHolidayBooking.BookingReference}"));

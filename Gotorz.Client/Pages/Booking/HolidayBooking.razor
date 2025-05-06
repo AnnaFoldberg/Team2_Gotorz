@@ -1,4 +1,4 @@
-﻿@page "/booking/holiday-booking/{BookingReference}"
+﻿@page "/booking/holiday-booking/{BookingReference}/{Mode?}"
 @using Gotorz.Client.Components
 @using Gotorz.Shared.DTOs
 @using Gotorz.Shared.Enums;
@@ -9,6 +9,7 @@
 @inject IUserService UserService
 @inject IBookingService BookingService
 @inject ILogger<HolidayBooking> Logger
+@inject NavigationManager Navigation
 
 <AuthorizeView>
     <Authorized Context="auth">
@@ -30,14 +31,14 @@
             <EditForm Model="@holidayBooking" OnValidSubmit="ConfirmChangesAsync">
                 <div class="form-group flex-grow-1">
                     <label for="status" class="form-label">Status</label>
-                    <InputSelect class="form-control" id="status" @bind-Value="holidayBooking.Status" disabled="@(!isSales)">
+                    <InputSelect class="form-control" id="status" @bind-Value="holidayBooking.Status" disabled="@(!isSales || Mode != "edit")">
                         @foreach (var s in bookingStatusEnums)
                         {
                             <option value="@s">@s</option>
                         }
                     </InputSelect>
                 </div>
-                @if (isSales)
+                @if (isSales && Mode == "edit")
                 {
                     <br><br><br><br>
                     <div class="container mt-auto mb-4">
@@ -68,6 +69,13 @@
     [Parameter]
     public string BookingReference { get; set; }
 
+    [Parameter]
+    public string? Mode { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? From { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -96,6 +104,7 @@
         try
         {
             await BookingService.PatchHolidayBookingStatusAsync(holidayBooking);
+            Navigation.NavigateTo($"/booking/{From}");
         }
         catch (Exception ex)
         {

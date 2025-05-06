@@ -4,16 +4,24 @@ using Gotorz.Server.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Gotorz.Server.Migrations
+namespace Gotorz.Server.Migrations.GotorzDb
 {
     [DbContext(typeof(GotorzDbContext))]
-    partial class GotorzDbContextModelSnapshot : ModelSnapshot
+<<<<<<<< HEAD:Gotorz.Server/Migrations/20250505195341_CleanStart.Designer.cs
+    [Migration("20250505195341_CleanStart")]
+    partial class CleanStart
+========
+    [Migration("20250505120951_NewMigration")]
+    partial class NewMigration
+>>>>>>>> 74fdaef64f6649b7a7d0491728b55218801e3baa:Gotorz.Server/Migrations/GotorzDb/20250505120951_NewMigration.Designer.cs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -146,12 +154,17 @@ namespace Gotorz.Server.Migrations
                     b.Property<int>("FlightId")
                         .HasColumnType("int");
 
+                    b.Property<int>("HolidayPackageId")
+                        .HasColumnType("int");
+
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
                     b.HasKey("FlightTicketId");
 
                     b.HasIndex("FlightId");
+
+                    b.HasIndex("HolidayPackageId");
 
                     b.ToTable("FlightTickets");
                 });
@@ -203,7 +216,7 @@ namespace Gotorz.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("MarkupPercentage")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(5,2)");
 
                     b.Property<int>("MaxCapacity")
                         .HasColumnType("int");
@@ -420,10 +433,18 @@ namespace Gotorz.Server.Migrations
                     b.HasOne("Gotorz.Server.Models.Flight", "Flight")
                         .WithMany()
                         .HasForeignKey("FlightId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Gotorz.Server.Models.HolidayPackage", "HolidayPackage")
+                        .WithMany()
+                        .HasForeignKey("HolidayPackageId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Flight");
+
+                    b.Navigation("HolidayPackage");
                 });
 
             modelBuilder.Entity("Gotorz.Server.Models.HolidayBooking", b =>

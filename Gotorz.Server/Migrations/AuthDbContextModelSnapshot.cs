@@ -4,19 +4,16 @@ using Gotorz.Server.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Gotorz.Server.Migrations.Auth
+namespace Gotorz.Server.Migrations
 {
     [DbContext(typeof(AuthDbContext))]
-    [Migration("20250501110025_InitialIdentityMigration")]
-    partial class InitialIdentityMigration
+    partial class AuthDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

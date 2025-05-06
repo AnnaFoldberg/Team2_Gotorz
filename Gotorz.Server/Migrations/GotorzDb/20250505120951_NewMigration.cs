@@ -3,10 +3,14 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Gotorz.Server.Migrations
+namespace Gotorz.Server.Migrations.GotorzDb
 {
     /// <inheritdoc />
+<<<<<<<< HEAD:Gotorz.Server/Migrations/20250505195341_CleanStart.cs
     public partial class CleanStart : Migration
+========
+    public partial class NewMigration : Migration
+>>>>>>>> 74fdaef64f6649b7a7d0491728b55218801e3baa:Gotorz.Server/Migrations/GotorzDb/20250505120951_NewMigration.cs
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -35,7 +39,55 @@ namespace Gotorz.Server.Migrations
                 },
                 constraints: table =>
                 {
+<<<<<<<< HEAD:Gotorz.Server/Migrations/20250505195341_CleanStart.cs
                     table.PrimaryKey("PK_ApplicationUser", x => x.Id);
+========
+                    table.PrimaryKey("PK_Airports", x => x.AirportId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ApplicationUser",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ApplicationUser", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "HolidayPackages",
+                columns: table => new
+                {
+                    HolidayPackageId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MaxCapacity = table.Column<int>(type: "int", nullable: false),
+                    CostPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    MarkupPercentage = table.Column<decimal>(type: "decimal(5,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HolidayPackages", x => x.HolidayPackageId);
+>>>>>>>> 74fdaef64f6649b7a7d0491728b55218801e3baa:Gotorz.Server/Migrations/GotorzDb/20250505120951_NewMigration.cs
                 });
 
             migrationBuilder.CreateTable(
@@ -70,6 +122,14 @@ namespace Gotorz.Server.Migrations
                 name: "HolidayPackages",
                 columns: table => new
                 {
+<<<<<<<< HEAD:Gotorz.Server/Migrations/20250505195341_CleanStart.cs
+========
+                    HolidayBookingId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BookingReference = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    CustomerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+>>>>>>>> 74fdaef64f6649b7a7d0491728b55218801e3baa:Gotorz.Server/Migrations/GotorzDb/20250505120951_NewMigration.cs
                     HolidayPackageId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -80,7 +140,23 @@ namespace Gotorz.Server.Migrations
                 },
                 constraints: table =>
                 {
+<<<<<<<< HEAD:Gotorz.Server/Migrations/20250505195341_CleanStart.cs
                     table.PrimaryKey("PK_HolidayPackages", x => x.HolidayPackageId);
+========
+                    table.PrimaryKey("PK_HolidayBookings", x => x.HolidayBookingId);
+                    table.ForeignKey(
+                        name: "FK_HolidayBookings_ApplicationUser_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "ApplicationUser",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_HolidayBookings_HolidayPackages_HolidayPackageId",
+                        column: x => x.HolidayPackageId,
+                        principalTable: "HolidayPackages",
+                        principalColumn: "HolidayPackageId",
+                        onDelete: ReferentialAction.Cascade);
+>>>>>>>> 74fdaef64f6649b7a7d0491728b55218801e3baa:Gotorz.Server/Migrations/GotorzDb/20250505120951_NewMigration.cs
                 });
 
             migrationBuilder.CreateTable(
@@ -90,7 +166,8 @@ namespace Gotorz.Server.Migrations
                     FlightTicketId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Price = table.Column<double>(type: "float", nullable: false),
-                    FlightId = table.Column<int>(type: "int", nullable: false)
+                    FlightId = table.Column<int>(type: "int", nullable: false),
+                    HolidayPackageId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -100,7 +177,13 @@ namespace Gotorz.Server.Migrations
                         column: x => x.FlightId,
                         principalTable: "Flights",
                         principalColumn: "FlightId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_FlightTickets_HolidayPackages_HolidayPackageId",
+                        column: x => x.HolidayPackageId,
+                        principalTable: "HolidayPackages",
+                        principalColumn: "HolidayPackageId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -169,6 +252,14 @@ namespace Gotorz.Server.Migrations
                 column: "FlightId");
 
             migrationBuilder.CreateIndex(
+<<<<<<<< HEAD:Gotorz.Server/Migrations/20250505195341_CleanStart.cs
+========
+                name: "IX_FlightTickets_HolidayPackageId",
+                table: "FlightTickets",
+                column: "HolidayPackageId");
+
+            migrationBuilder.CreateIndex(
+>>>>>>>> 74fdaef64f6649b7a7d0491728b55218801e3baa:Gotorz.Server/Migrations/GotorzDb/20250505120951_NewMigration.cs
                 name: "IX_HolidayBookings_CustomerId",
                 table: "HolidayBookings",
                 column: "CustomerId");
@@ -198,6 +289,9 @@ namespace Gotorz.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "HolidayBookings");
+
+            migrationBuilder.DropTable(
+                name: "ApplicationUser");
 
             migrationBuilder.DropTable(
                 name: "ApplicationUser");

@@ -24,6 +24,7 @@ public class FlightController : ControllerBase
     private readonly IRepository<Airport> _airportRepository;
     private readonly IFlightRepository _flightRepository;
     private readonly IRepository<FlightTicket> _flightTicketRepository;
+    private readonly IRepository<HolidayPackage> _holidayPackageRepository;
     
     /// <summary>
     /// Initializes a new instance of the <see cref="FlightController"/> class.
@@ -37,13 +38,15 @@ public class FlightController : ControllerBase
     /// /// <param name="flightTicketRepository">The <see cref="IRepository<FlightTicket>"/> used to access
     /// <see cref="FlightTicket"/> data in the database.</param>
     public FlightController(IFlightService flightService, IMapper mapper,
-        IRepository<Airport> airportRepository, IFlightRepository flightRepository, IRepository<FlightTicket> flightTicketRepository)
+        IRepository<Airport> airportRepository, IFlightRepository flightRepository,
+        IRepository<FlightTicket> flightTicketRepository, IRepository<HolidayPackage> holidayPackageRepository)
     {
         _flightService = flightService;
         _mapper = mapper;
         _airportRepository = airportRepository;
         _flightRepository = flightRepository;
         _flightTicketRepository = flightTicketRepository;
+        _holidayPackageRepository = holidayPackageRepository;
     }
 
     /// <summary>
@@ -172,9 +175,21 @@ public class FlightController : ControllerBase
                 await _flightRepository.AddAsync(flight);
             }
 
+            // Ensure holiday package exists in database. If not, return bad request.
+            var holidayPackages = await _holidayPackageRepository.GetAllAsync();
+            var holidayPackage = holidayPackages
+                .FirstOrDefault(p => p.Title == flightTicket.HolidayPackage.Title &&
+                p.Description == flightTicket.HolidayPackage.Description);
+
+            if (holidayPackage == null )
+            {
+                return BadRequest("Holiday package linked to flight ticket does not exist");
+            }
+
             // Add flight ticket to the database
             var _flightTicket = _mapper.Map<FlightTicket>(flightTicket);
             _flightTicket.FlightId = flight.FlightId;
+            _flightTicket.HolidayPackageId = holidayPackage.HolidayPackageId;
             await _flightTicketRepository.AddAsync(_flightTicket);
         }
         return Ok($"Successfully added {flightTickets.Count()} flight ticket(s) to database");

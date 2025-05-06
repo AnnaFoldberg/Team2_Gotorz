@@ -25,7 +25,13 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.ArrivalAirport, opt => opt.MapFrom(src => src.ArrivalAirport));
 
         CreateMap<FlightTicketDto, FlightTicket>()
-            .ForMember(dest => dest.Flight, opt => opt.Ignore()).ReverseMap();
+            .ForMember(dest => dest.FlightId, opt => opt.MapFrom(src => src.Flight.FlightId))
+            .ForMember(dest => dest.HolidayPackageId, opt => opt.MapFrom(src => src.HolidayPackage.HolidayPackageId))
+            .ForMember(dest => dest.Flight, opt => opt.Ignore())
+            .ForMember(dest => dest.HolidayPackage, opt => opt.Ignore())
+            .ReverseMap()
+            .ForMember(dest => dest.Flight, opt => opt.MapFrom(src => src.Flight))
+            .ForMember(dest => dest.HolidayPackage, opt => opt.MapFrom(src => src.HolidayPackage));            
 
         CreateMap<HolidayPackageDto, HolidayPackage>().ReverseMap();
 

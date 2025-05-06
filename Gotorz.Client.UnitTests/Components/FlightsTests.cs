@@ -1,6 +1,5 @@
 using Bunit;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Gotorz.Client.Pages;
 using Moq;
 using Gotorz.Client.Services;
 using Microsoft.Extensions.Logging;
@@ -11,8 +10,10 @@ using Gotorz.Shared.DTOs;
 using Bunit.TestDoubles;
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Components;
+using Gotorz.Client.Components;
 
-namespace Gotorz.Client.UnitTests.Pages
+namespace Gotorz.Client.UnitTests.Components
 {
     /// <summary>
     /// Contains unit tests for the <see cref="Flights"/> page.
@@ -359,15 +360,26 @@ namespace Gotorz.Client.UnitTests.Pages
                 Times.Once);
         }
         
-        // -------------------- ConfirmAndPostFlightTicketsAsync --------------------
+        // -------------------- ConfirmFlightTicketsAsync --------------------
         [TestMethod]
-        public async Task ConfirmAndPostFlightTicketsAsync_FlightTicketsHaveBeenAdded_CallsPostFlightTicketsAsync()
+        public async Task ConfirmFlightTicketsAsync_FlightTicketsHaveBeenAdded_InvokesOnFlightTicketsConfirmed()
         {
             // Arrange
             SetUser("sales");
 
+            bool wasInvoked = false;
+            var eventCallback = EventCallback.Factory.Create<List<FlightTicketDto>>(this, (args) => 
+                {
+                    wasInvoked = true;
+                    return Task.CompletedTask;
+                });
+
             var (mockFlights, component) = RenderFlightsWithFlights();
 
+            component.SetParametersAndRender(parameters => parameters
+                .Add(p => p.OnFlightTicketsConfirmed, eventCallback));
+
+            // Add flight tickets
             component.Find("#departureAirport").Change("New York John F. Kennedy");
             component.Find("#arrivalAirport").Change("London Heathrow");
             component.Find("form").Submit();
@@ -397,20 +409,26 @@ namespace Gotorz.Client.UnitTests.Pages
             });
 
             // Assert
-            Assert.IsTrue(component.Markup.Contains("0 ticket(s) selected"));
-            _mockFlightService.Verify(s =>
-                s.PostFlightTicketsAsync(It.IsAny<List<FlightTicketDto>>()), Times.Once());
+            Assert.IsTrue(wasInvoked);
         }
         
         [TestMethod]
-        public async Task ConfirmAndPostFlightTicketsAsync_NoFlightTicketsAdded_DoesNotCallPostFlightTicketsAsync()
+        public async Task ConfirmFlightTicketsAsync_NoFlightTicketsAdded_DoesNotInvokeOnFlightTicketsConfirmed()
         {
             // Arrange
             SetUser("sales");
 
+            bool wasInvoked = false;
+            var eventCallback = EventCallback.Factory.Create<List<FlightTicketDto>>(this, (args) => 
+                {
+                    wasInvoked = true;
+                    return Task.CompletedTask;
+                });
+
             var (mockFlights, component) = RenderFlightsWithFlights();
 
-            var mockFlightTickets = new List<FlightTicketDto>();
+            component.SetParametersAndRender(parameters => parameters
+                .Add(p => p.OnFlightTicketsConfirmed, eventCallback));
 
             component.Find("#departureAirport").Change("New York John F. Kennedy");
             component.Find("#arrivalAirport").Change("London Heathrow");
@@ -436,22 +454,25 @@ namespace Gotorz.Client.UnitTests.Pages
             });
 
             // Assert
-            Assert.IsTrue(component.Markup.Contains("0 ticket(s) selected"));
-            _mockFlightService.Verify(s => s
-                .PostFlightTicketsAsync(mockFlightTickets), Times.Never());
+            Assert.IsFalse(wasInvoked);
         }
 
         [TestMethod]
-        public async Task ConfirmAndPostFlightTicketsAsync_ThrowsException_LogsError()
+        public async Task ConfirmFlightTicketsAsync_ThrowsException_LogsError()
         {
             // Arrange
             SetUser("sales");
 
+            bool wasInvoked = false;
+            var eventCallback = EventCallback.Factory.Create<List<FlightTicketDto>>(this, (args) =>
+            {
+                throw new InvalidOperationException("Callback failed");
+            });
+
             var (mockFlights, component) = RenderFlightsWithFlights();
 
-
-            _mockFlightService.Setup(s => s.PostFlightTicketsAsync(It.IsAny<List<FlightTicketDto>>()))
-                      .ThrowsAsync(new Exception("Mocked flight service failure"));
+            component.SetParametersAndRender(parameters => parameters
+                .Add(p => p.OnFlightTicketsConfirmed, eventCallback));
 
             component.Find("#departureAirport").Change("New York John F. Kennedy");
             component.Find("#arrivalAirport").Change("London Heathrow");
@@ -478,10 +499,6 @@ namespace Gotorz.Client.UnitTests.Pages
             });
 
             // Assert
-            Assert.IsFalse(component.Markup.Contains("No flights were found"));
-            Assert.IsFalse(component.Markup.Contains("<ul>"));
-            Assert.IsTrue(component.Markup.Contains("2 ticket(s) selected"));
-
             // Structure from ChatGPT. Customized for this project.
             logger.Verify(
                 l => l.Log(

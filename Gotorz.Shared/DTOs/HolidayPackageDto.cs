@@ -14,7 +14,7 @@ namespace Gotorz.Shared.DTOs
         public string Title { get; set; }
         public string Description { get; set; }
         public int MaxCapacity { get; set; }
-        // public decimal CostPrice { get; set; }
-        // public decimal MarkupPercentage { get; set; }
+        public decimal CostPrice { get; set; }
+        public decimal MarkupPercentage { get; set; } = 0.1M;
     }
 }
