@@ -17,13 +17,21 @@
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
             </NavLink>
         </div>
-        @if (userRole == "sales")
+        @if (userRole == "sales" || userRole == "admin")
         {
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="holiday-package-with-flights">
                     <span class="bi bi-luggage-fill-nav-menu" aria-hidden="true"></span> Holiday Packages
                 </NavLink>
             </div>
+            @if (userRole == "sales")
+            {
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/booking/all-holiday-bookings">
+                        <span class="bi bi-luggage-fill-nav-menu" aria-hidden="true"></span> Holiday Bookings
+                    </NavLink>
+                </div>
+            }
         }
         else if (userRole == "customer" || userRole == null)
         {
@@ -35,10 +43,10 @@
             @if (userRole != null)
             {
                 <div class="nav-item px-3">
-                <NavLink class="nav-link" href="@bookingUrl">
-                    <span class="bi bi-luggage-fill-nav-menu" aria-hidden="true"></span> Holiday Bookings
-                </NavLink>
-            </div>
+                    <NavLink class="nav-link" href="/booking/customer/holiday-bookings">
+                        <span class="bi bi-luggage-fill-nav-menu" aria-hidden="true"></span> Holiday Bookings
+                    </NavLink>
+                </div>
             }
         }
     </nav>
@@ -46,8 +54,6 @@
 
 @code {
     private string? userRole;
-    private string? bookingReference; // Temporary until we have HolidayBookingList
-    private string? bookingUrl; // Temporary until we have HolidayBookingList
     private bool collapseNavMenu = true;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
@@ -55,8 +61,6 @@
     protected override async Task OnInitializedAsync()
     {
         userRole = await UserService.GetUserRoleAsync();
-        bookingReference = "G0001";
-        bookingUrl = $"booking/holiday-booking/{bookingReference}";
     }
 
     private void ToggleNavMenu()

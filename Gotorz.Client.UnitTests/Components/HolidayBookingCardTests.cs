@@ -15,7 +15,7 @@ using Microsoft.Extensions.Options;
 using Gotorz.Client.Pages.Booking;
 using Gotorz.Shared.Enums;
 
-namespace Gotorz.Client.UnitTests.Pages
+namespace Gotorz.Client.UnitTests.Components
 {
     /// <summary>
     /// Contains unit tests for the <see cref="HolidayBookingCard"/> component.
