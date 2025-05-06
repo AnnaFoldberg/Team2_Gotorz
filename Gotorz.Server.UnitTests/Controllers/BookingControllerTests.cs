@@ -103,6 +103,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             };
 
             _mockHolidayBookingRepository.Setup(r => r.GetByBookingReferenceAsync(bookingReference)).ReturnsAsync(mockHolidayBooking);
+            _mockUserRepository.Setup(r => r.GetUserByIdAsync(mockHolidayBookingDto.Customer.UserId)).ReturnsAsync(mockHolidayBooking.Customer);
             _mockMapper.Setup(m => m.Map<HolidayBookingDto>(mockHolidayBooking)).Returns(mockHolidayBookingDto);
 
             // Act

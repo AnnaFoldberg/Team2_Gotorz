@@ -48,6 +48,18 @@ public class BookingController : ControllerBase
     }
 
     /// <summary>
+    /// Defines an API endpoint for HTTP GET that generates the next booking reference
+    /// for <see cref="HolidayBooking"/> entities.
+    /// </summary>
+    /// <returns>A <c>string</c> representing the next available booking reference.</returns>
+    [HttpGet("booking-reference")]
+    public async Task<string> GetNextBookingReferenceAsync()
+    {
+        var bookingReference = await _bookingService.GenerateNextBookingReferenceAsync();
+        return bookingReference;
+    }
+
+    /// <summary>
     /// Defines an API endpoint for HTTP GET that retrieves all <see cref="HolidayBooking"/>
     /// entities from the database.
     /// </summary>
@@ -58,6 +70,14 @@ public class BookingController : ControllerBase
         var holidayBookings = await _holidayBookingRepository.GetAllAsync();
 
         if (holidayBookings == null) return null;
+
+        // Attach customer
+        foreach (var holidayBooking in holidayBookings)
+        {
+            var customer = await _userRepository.GetUserByIdAsync(holidayBooking.CustomerId);
+            if (customer == null) return null;
+            holidayBooking.Customer = customer;
+        }
  
         var holidayBookingDtos = _mapper.Map<List<HolidayBookingDto>>(holidayBookings);
         return holidayBookingDtos;
@@ -73,28 +93,16 @@ public class BookingController : ControllerBase
     public async Task<IEnumerable<HolidayBookingDto>?> GetCustomerHolidayBookingsAsync(string email)
     {
         var customer = await _userRepository.GetUserByEmailAsync(email);
-
         if (customer == null) return null;
 
-        var allHolidayBookings = await _holidayBookingRepository.GetAllAsync();
-        var userHolidayBookings = allHolidayBookings.Where(b => b.Customer.Email == customer.Email);
-        System.Console.WriteLine($"CUSTOMER EMAIL: {customer.Email}");
+        var userHolidayBookings = await _holidayBookingRepository.GetByCustomerIdAsync(customer.Id);
         if (userHolidayBookings == null) return null;
+
+        // Attach customer
+        foreach (var holidayBooking in userHolidayBookings) holidayBooking.Customer = customer;
 
         var userHolidayBookingDtos = _mapper.Map<List<HolidayBookingDto>>(userHolidayBookings);
         return userHolidayBookingDtos;
-    }
-
-    /// <summary>
-    /// Defines an API endpoint for HTTP GET that generates the next booking reference
-    /// for <see cref="HolidayBooking"/> entities.
-    /// </summary>
-    /// <returns>A <c>string</c> representing the next available booking reference.</returns>
-    [HttpGet("booking-reference")]
-    public async Task<string> GetNextBookingReferenceAsync()
-    {
-        var bookingReference = await _bookingService.GenerateNextBookingReferenceAsync();
-        return bookingReference;
     }
 
     /// <summary>
@@ -108,6 +116,12 @@ public class BookingController : ControllerBase
     {
         var holidayBooking = await _holidayBookingRepository.GetByBookingReferenceAsync(bookingReference);
         if (holidayBooking == null) return null;
+
+        // Attach customer
+        var customer = await _userRepository.GetUserByIdAsync(holidayBooking.CustomerId);
+        if (customer == null) return null;
+        holidayBooking.Customer = customer;
+
         var holidayBookingDto = _mapper.Map<HolidayBookingDto>(holidayBooking);
         return holidayBookingDto;
     }
@@ -142,50 +156,50 @@ public class BookingController : ControllerBase
     /// <summary>
     /// Defines an API endpoint for HTTP POST that adds a <see cref="HolidayBooking"/> entity to the database.
     /// </summary>
-    /// <param name="holidayBooking">The <see cref="HolidayBookingDto"/> object representing the holiday booking to be added.</param>
+    /// <param name="holidayBookingDto">The <see cref="HolidayBookingDto"/> object representing the holiday booking to be added.</param>
     /// <returns>An <see cref="IActionResult"/> that contains <c>Ok</c> if the <see cref="HolidayBooking"/> entity was
     /// added to the database successfully, otherwise <c>BadRequest</c>.</returns>
     [HttpPost("holiday-booking")]
-    public async Task<IActionResult> PostHolidayBookingAsync(HolidayBookingDto holidayBooking)
+    public async Task<IActionResult> PostHolidayBookingAsync(HolidayBookingDto holidayBookingDto)
     {
-        if (holidayBooking == null)
+        if (holidayBookingDto == null)
         {
             return BadRequest("No holiday booking was provided");
         }
 
         // Check if a holiday booking with the same booking reference already exists
-        var matchingHolidayBooking = await _holidayBookingRepository.GetByBookingReferenceAsync(holidayBooking.BookingReference);
+        var matchingHolidayBooking = await _holidayBookingRepository.GetByBookingReferenceAsync(holidayBookingDto.BookingReference);
         if (matchingHolidayBooking != null)
         {
             return BadRequest("A holiday booking with the same booking reference already exists in the database");
         }
 
-        var _holidayBooking = _mapper.Map<HolidayBooking>(holidayBooking);
+        var holidayBooking = _mapper.Map<HolidayBooking>(holidayBookingDto);
 
         // Ensure holiday booking contains the correct HolidayPackageId 
         var holidayPackages = await _holidayPackageRepository.GetAllAsync();
         var holidayPackage = holidayPackages
-            .FirstOrDefault(p => p.Title == holidayBooking.HolidayPackage.Title &&
-            p.Description == holidayBooking.HolidayPackage.Description);
+            .FirstOrDefault(p => p.Title == holidayBookingDto.HolidayPackage.Title &&
+            p.Description == holidayBookingDto.HolidayPackage.Description);
 
         if (holidayPackage == null )
         {
             return BadRequest("Holiday package linked to booking does not exist");
         }
 
-        _holidayBooking.HolidayPackageId = holidayPackage.HolidayPackageId;
+        holidayBooking.HolidayPackageId = holidayPackage.HolidayPackageId;
 
         // Ensure holiday booking contains the correct CustomerId
-        var user = await _userRepository.GetUserByEmailAsync(holidayBooking.Customer.Email);
+        var user = await _userRepository.GetUserByEmailAsync(holidayBookingDto.Customer.Email);
 
         if (user == null)
         {
             return BadRequest("Customer linked to booking does not exist");
         }
 
-        _holidayBooking.CustomerId = user.Id;
+        holidayBooking.CustomerId = user.Id;
 
-        await _holidayBookingRepository.AddAsync(_holidayBooking);
+        await _holidayBookingRepository.AddAsync(holidayBooking);
         return Ok($"Successfully added holiday booking {holidayBooking.BookingReference} to database");
     }
 

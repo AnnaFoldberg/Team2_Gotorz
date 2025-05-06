@@ -1,3 +1,4 @@
+using Gotorz.Server.Configurations;
 using Gotorz.Server.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -45,13 +46,18 @@ namespace Gotorz.Server.Contexts
         public GotorzDbContext(DbContextOptions<GotorzDbContext> options) : base(options) {}
 
         /// <summary>
-        /// Applies all entity configurations that implement <see cref="IEntityTypeConfiguration{TEntity}"/>.
+        /// Applies all entity configurations that implement <see cref="IEntityTypeConfiguration{TEntity}"/>,
+        /// except the <see cref="ApplicationUserConfiguration"/>.
         /// </summary>
         /// <param name="modelBuilder">The <see cref="ModelBuilder"/> used to configure entity relationships.</param>
         /// <remarks>Based on suggestion from ChatGPT. Customized for this project.</remarks>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(GotorzDbContext).Assembly);
+                modelBuilder.ApplyConfigurationsFromAssembly(
+                    typeof(GotorzDbContext).Assembly,
+                    type => type != typeof(ApplicationUserConfiguration)
+                );
+                modelBuilder.Ignore<ApplicationUser>();
         }
     }
 }
