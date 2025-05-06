@@ -30,7 +30,6 @@ namespace Gotorz.Server.DataAccess
         {
             return await _context.HolidayBookings
                 .Include(b => b.HolidayPackage)
-                .Include(b => b.Customer)
                 .ToListAsync();
         }
 
@@ -43,7 +42,6 @@ namespace Gotorz.Server.DataAccess
         {
             return await _context.HolidayBookings
             .Include(b => b.HolidayPackage)
-            .Include(b => b.Customer)
             .FirstOrDefaultAsync(b => b.HolidayBookingId == key);
         }
 
@@ -56,8 +54,19 @@ namespace Gotorz.Server.DataAccess
         {
             return await _context.HolidayBookings
                 .Include(b => b.HolidayPackage)
-                .Include(b => b.Customer)
                 .FirstOrDefaultAsync(b => b.BookingReference == bookingReference);
+        }
+
+        /// <summary>
+        /// Retrieves <see cref="HolidayBooking"/> entites by their <c>CustomerId</c>.
+        /// </summary>
+        /// <param name="customerId">The <c>CustomerId</c> of the <see cref="HolidayBooking"/> entity to retrieve.</param>
+        /// <returns>The matching <see cref="HolidayBooking"/> entities or <c>null</c> if not found.</returns>
+        public async Task<IEnumerable<HolidayBooking>?> GetByCustomerIdAsync(string customerId)
+        {
+            return await _context.HolidayBookings
+                .Where(b => b.CustomerId == customerId)
+                .ToListAsync();
         }
 
         /// <summary>
