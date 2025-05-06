@@ -1,6 +1,5 @@
 using Bunit;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Gotorz.Client.Components;
 using Moq;
 using Gotorz.Client.Services;
 using Microsoft.Extensions.Logging;
@@ -12,8 +11,9 @@ using Bunit.TestDoubles;
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Components;
+using Gotorz.Client.Components;
 
-namespace Gotorz.Client.UnitTests.Pages
+namespace Gotorz.Client.UnitTests.Components
 {
     /// <summary>
     /// Contains unit tests for the <see cref="Flights"/> page.

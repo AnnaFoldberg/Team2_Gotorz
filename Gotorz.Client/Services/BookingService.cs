@@ -18,6 +18,18 @@ namespace Gotorz.Client.Services
         }
 
         /// <inheritdoc />
+        public async Task<IEnumerable<HolidayBookingDto>> GetAllHolidayBookingsAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<HolidayBookingDto>>($"/Booking/holiday-bookings");
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<HolidayBookingDto>> GetCustomerHolidayBookingsAsync(string email)
+        {
+            return await _httpClient.GetFromJsonAsync<IEnumerable<HolidayBookingDto>>($"/Booking/customer-holiday-bookings?email={email}");
+        }
+
+        /// <inheritdoc />
         public async Task<string> GetNextBookingReferenceAsync()
         {
             return await _httpClient.GetStringAsync($"/Booking/booking-reference");

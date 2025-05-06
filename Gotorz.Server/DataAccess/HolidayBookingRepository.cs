@@ -28,7 +28,10 @@ namespace Gotorz.Server.DataAccess
         /// <returns>A collection of <see cref="HolidayBooking"/> entities.</returns>
         public async Task<IEnumerable<HolidayBooking>> GetAllAsync()
         {
-            return await _context.HolidayBookings.ToListAsync();
+            return await _context.HolidayBookings
+                .Include(b => b.HolidayPackage)
+                .Include(b => b.Customer)
+                .ToListAsync();
         }
 
         /// <summary>
