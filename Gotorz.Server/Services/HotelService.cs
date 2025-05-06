@@ -155,8 +155,11 @@ namespace Gotorz.Server.Services
             {
                 var name = room?["name"]?.ToString() ?? "Unknown";
                 var description = room?["description"]?.ToString();
-                var maxGuests = room?["max_occupancy"]?.GetValue<int>() ?? 0;
-                var price = room?["product_price_breakdown"]?["gross_amount"]?["value"]?.GetValue<decimal>() ?? 0;                var roomId = room?["room_id"]?.GetValue<int>().ToString() ?? "0";
+                //var maxGuests = room?["max_occupancy"]?.GetValue<int>() ?? 0;
+                var maxGuestsString = room?["max_occupancy"]?.ToString();
+                int.TryParse(maxGuestsString, out var maxGuests);
+                var price = room?["product_price_breakdown"]?["gross_amount"]?["value"]?.GetValue<decimal>() ?? 0;                
+                var roomId = room?["room_id"]?.GetValue<int>().ToString() ?? "0";
                 var mealPlan = room?["mealplan"]?.ToString();
                 var surface = room?["room_surface_in_m2"]?.GetValue<int?>();
                 var breakfast = room?["breakfast_included"]?.GetValue<int?>() == 1;
