@@ -6,6 +6,7 @@ namespace Gotorz.Server.DataAccess
     /// A repository interface for managing holiday booking entities.
     /// Extends the functionality of the <see cref="IRepository{T}"/> interface.
     /// </summary>
+    /// <author>Anna</author>
     public interface IHolidayBookingRepository : IRepository<HolidayBooking>
     {
         /// <summary>

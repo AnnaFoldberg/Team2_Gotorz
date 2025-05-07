@@ -17,9 +17,9 @@ public class AuthDbContext : IdentityDbContext<ApplicationUser>
     /// </summary>
     /// <param name="modelBuilder">The <see cref="ModelBuilder"/> used to configure entity relationships.</param>
     /// <remarks>Based on suggestion from ChatGPT. Customized for this project.</remarks>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder builder)
     {
-        base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfiguration(new ApplicationUserConfiguration());
+        base.OnModelCreating(builder);
+        builder.ApplyConfiguration(new ApplicationUserConfiguration());
     }
 }

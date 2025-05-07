@@ -121,11 +121,11 @@
 @code {
     private HolidayPackageDto newPackage = new();
     private bool showSuccessMessage = false;
-    private EditContext editContext;
+    private bool showFlightsOutbound;
+    private bool showFlightsInbound;
     private List<FlightTicketDto> outboundFlightTickets;
     private List<FlightTicketDto> inboundFlightTickets;
-    private bool showFlightsInbound;
-    private bool showFlightsOutbound;
+    private EditContext editContext;
 
     protected override async Task OnInitializedAsync()
     {
