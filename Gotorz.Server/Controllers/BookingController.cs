@@ -33,8 +33,10 @@ public class BookingController : ControllerBase
     /// <see cref="HolidayPackage"/> data in the database.</param>
     /// <param name="holidayBookingRepository">The <see cref="IHolidayBookingRepository"/> used to access
     /// <see cref="HolidayBooking"/> data in the database.</param>
-    /// /// <param name="travellerRepository">The <see cref="IRepository<Traveller>"/> used to access
+    /// <param name="travellerRepository">The <see cref="IRepository<Traveller>"/> used to access
     /// <see cref="Traveller"/> data in the database.</param>
+    /// <param name="userRepository">The <see cref="IUserRepository"/> used to access
+    /// <see cref="ApplicationUser"/> data in the database.</param>
     public BookingController(IMapper mapper, IBookingService bookingService,
         IRepository<HolidayPackage> holidayPackageRepository, IHolidayBookingRepository holidayBookingRepository,
         IRepository<Traveller> travellerRepository, IUserRepository userRepository)

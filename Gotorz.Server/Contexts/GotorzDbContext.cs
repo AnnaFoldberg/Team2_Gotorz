@@ -51,13 +51,13 @@ namespace Gotorz.Server.Contexts
         /// </summary>
         /// <param name="modelBuilder">The <see cref="ModelBuilder"/> used to configure entity relationships.</param>
         /// <remarks>Based on suggestion from ChatGPT. Customized for this project.</remarks>
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-                modelBuilder.ApplyConfigurationsFromAssembly(
+                builder.ApplyConfigurationsFromAssembly(
                     typeof(GotorzDbContext).Assembly,
                     type => type != typeof(ApplicationUserConfiguration)
                 );
-                modelBuilder.Ignore<ApplicationUser>();
+                builder.Ignore<ApplicationUser>();
         }
     }
 }
