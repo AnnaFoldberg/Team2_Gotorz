@@ -126,7 +126,8 @@ public class AccountController : ControllerBase
         var user = await _userRepository.GetUserByIdAsync(id);
         if (user == null) return NotFound();
 
-        var claims = await _userRepository.GetClaimsAsync(user);
+        var rawClaims = await _userRepository.GetClaimsAsync(user);
+        var claims = rawClaims.Select(c => new ClaimDto { Type = c.Type, Value = c.Value }).ToList();
 
         var userDto = new UserDto
         {
@@ -222,7 +223,25 @@ public class AccountController : ControllerBase
     public async Task<ActionResult<List<UserDto>>> GetAllUsers()
     {
         var users = await _userRepository.GetAllUsersAsync();
-        return Ok(users);
+        var result = new List<UserDto>();
+
+        foreach (var user in users)
+        {
+            var rawClaims = await _userRepository.GetClaimsAsync(user);
+            var claims = rawClaims.Select(c => new ClaimDto { Type = c.Type, Value = c.Value }).ToList();
+
+            result.Add(new UserDto
+            {
+                UserId = user.Id,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                PhoneNumber = user.PhoneNumber,
+                Claims = claims.Select(c => new ClaimDto { Type = c.Type, Value = c.Value }).ToList()
+            });
+        }
+
+        return Ok(result);
     }
 
 

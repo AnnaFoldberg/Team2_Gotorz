@@ -64,7 +64,7 @@ namespace Gotorz.Server.DataAccess
         /// <returns>
         /// A list of <see cref="ClaimDto"/> containing claims and roles.
         /// </returns>
-        Task<List<ClaimDto>> GetClaimsAsync(ApplicationUser user);
+        Task<List<Claim>> GetClaimsAsync(ApplicationUser user);
 
         /// <summary>
         /// Retrieves a user by their email address.
@@ -95,7 +95,7 @@ namespace Gotorz.Server.DataAccess
         /// Retrieves all users in the system.
         /// </summary>
         /// <returns></returns>
-        Task<List<UserDto>> GetAllUsersAsync();
+        Task<List<ApplicationUser>> GetAllUsersAsync();
 
 
     }

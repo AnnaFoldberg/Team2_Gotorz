@@ -113,24 +113,18 @@ namespace Gotorz.Server.DataAccess
         /// Retrieves the claims associated with a user, including roles.
         /// </summary>
         /// <param name="user"></param>
-        /// <returns>
-        /// A list of <see cref="ClaimDto"/> containing claims and roles.
-        /// </returns>
-        public async Task<List<ClaimDto>> GetClaimsAsync(ApplicationUser user)
+        /// <returns></returns>
+        public async Task<List<Claim>> GetClaimsAsync(ApplicationUser user)
         {
             var claims = await _userManager.GetClaimsAsync(user);
             var roles = await _userManager.GetRolesAsync(user);
 
-            var allClaims = claims.Select(c => new ClaimDto { Type = c.Type, Value = c.Value }).ToList();
-
-            allClaims.AddRange(roles.Select(r => new ClaimDto
-            {
-                Type = ClaimTypes.Role,
-                Value = r
-            }));
+            var allClaims = claims.ToList();
+            allClaims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
             return allClaims;
         }
+
 
         /// <summary>
         /// Retrieves a user by their email address.
@@ -190,29 +184,9 @@ namespace Gotorz.Server.DataAccess
         /// Retrieves all users in the system.
         /// </summary>
         /// <returns></returns>
-        public async Task<List<UserDto>> GetAllUsersAsync()
+        public async Task<List<ApplicationUser>> GetAllUsersAsync()
         {
-            var users = await _userManager.Users.ToListAsync();
-
-            var result = new List<UserDto>();
-            foreach (var user in users)
-            {
-                var claims = await _userManager.GetClaimsAsync(user);
-                result.Add(new UserDto
-                {
-                    UserId = user.Id,
-                    Email = user.Email,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    PhoneNumber = user.PhoneNumber,
-                    Claims = claims.Select(c => new ClaimDto { Type = c.Type, Value = c.Value }).ToList()
-                });
-            }
-
-            return result;
+            return await _userManager.Users.ToListAsync();
         }
-
-
-
     }
 }
