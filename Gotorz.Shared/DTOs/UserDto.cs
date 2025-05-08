@@ -13,7 +13,7 @@ namespace Gotorz.Shared.DTOs;
 /// <author>Eske</author>
 public class UserDto
 {
-    [JsonIgnore]
+    //[JsonIgnore]
     public string? UserId { get; set; }
     public string? Email { get; set; }
     public bool IsAuthenticated { get; set; }
@@ -22,4 +22,3 @@ public class UserDto
     public string? PhoneNumber { get; set; }
     public List<ClaimDto> Claims { get; set; } = new();
 }
-

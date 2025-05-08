@@ -74,18 +74,29 @@ namespace Gotorz.Server.DataAccess
         Task<ApplicationUser?> GetUserByEmailAsync(string email);
 
         /// <summary>
-        /// Updates a user's email and username based on their ID.
-        /// </summary>
-        /// <param name="userId">The ID of the user to update.</param>
-        /// <param name="newEmail">The new email address to assign to the user.</param>
-        /// <returns>An <see cref="IdentityResult"/> indicating whether the update succeeded.</returns>
-        Task<IdentityResult> UpdateUserAsync(string userId, string newEmail);
-
-        /// <summary>
         /// Deletes a user from the system based on their ID.
         /// </summary>
         /// <param name="userId">The ID of the user to delete.</param>
         /// <returns>An <see cref="IdentityResult"/> indicating whether the deletion succeeded.</returns>
         Task<IdentityResult> DeleteUserAsync(string userId);
+
+        /// <summary>
+        /// Updates the user information for a given user ID, and based on the given parameters.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="email"></param>
+        /// <param name="firstName"></param>
+        /// <param name="lastName"></param>
+        /// <param name="phoneNumber"></param>
+        /// <returns></returns>
+        Task<(bool Success, string? Error)> UpdateUserAsync(string userId, string email, string firstName, string lastName, string phoneNumber);
+
+        /// <summary>
+        /// Retrieves all users in the system.
+        /// </summary>
+        /// <returns></returns>
+        Task<List<UserDto>> GetAllUsersAsync();
+
+
     }
 }

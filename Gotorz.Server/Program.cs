@@ -5,6 +5,7 @@ using Gotorz.Server.Models;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +24,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connectionString = builder.Configuration.GetConnectionString("AnnaConnection");
+var connectionString = builder.Configuration.GetConnectionString("EskeConnection");
 
 builder.Services.AddDbContext<GotorzDbContext>(options =>
 {
@@ -103,6 +104,8 @@ using (var scope = app.Services.CreateScope())
         if (result.Succeeded)
         {
             await userManager.AddToRoleAsync(adminUser, "admin");
+            await userManager.AddClaimAsync(adminUser, new Claim(ClaimTypes.Role, "admin"));
+
         }
     }
 }
@@ -119,9 +122,9 @@ app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 app.UseCors("MyAllowedOrigins");
+app.UseRouting(); //Bruges tiL??
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseRouting(); //Bruges tiL??
 
 app.MapControllers();
 

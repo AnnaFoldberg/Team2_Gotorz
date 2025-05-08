@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 namespace Gotorz.Shared.DTOs
 {
     /// <summary>
-    /// Represents a registration request used for data transfer between the client and server.
+    /// Represents a user update request used for data transfer between the client and server.
     /// </summary>
     /// <author>Eske</author>
-    public class RegisterDto
+    public class UpdateUserDto
     {
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Invalid email")]
@@ -23,18 +23,9 @@ namespace Gotorz.Shared.DTOs
         [Required(ErrorMessage = "Last name is required")]
         public string LastName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Phonenumber is required")]
-        [Phone(ErrorMessage = "Invalid phonenumber")]
+        [Required(ErrorMessage = "Phone number is required")]
+        [Phone(ErrorMessage = "Invalid phone number")]
         public string PhoneNumber { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Password is required")]
-        [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters long")]
-        [RegularExpression(@"^(?=.*[a-zæøå])(?=.*[A-ZÆØÅ]).+$", ErrorMessage = "Password must include both uppercase and lowercase letters")]
-        public string Password { get; set; } = string.Empty;
-
-        public string Role { get; set; } = string.Empty;
-
-        public bool AcceptTerms { get; set; }
-
     }
+
 }
