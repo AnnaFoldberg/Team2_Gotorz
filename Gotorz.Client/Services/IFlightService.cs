@@ -1,4 +1,4 @@
-using Gotorz.Shared.DTOs;
+using Gotorz.Shared.DTO;
 
 namespace Gotorz.Client.Services
 {

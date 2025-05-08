@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Gotorz.Server.Models
 {
@@ -8,10 +8,9 @@ namespace Gotorz.Server.Models
         public int HolidayPackageId { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
+        //public List<Flight>? Flights { get; set; }
         // public Hotel? Hotel { get; set; }
-        public int MaxCapacity { get; set; }
-        public decimal CostPrice { get; set; }
-        public decimal MarkupPercentage { get; set; }
+        public Decimal CostPrice { get; set; }
+        public Decimal MarkupPercentage { get; set; }
     }
 }
-

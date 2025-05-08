@@ -1,5 +1,5 @@
 ﻿using System.Net.Http.Json;
-using Gotorz.Shared.DTOs;
+using Gotorz.Shared.DTO;
 
 namespace Gotorz.Client.Services
 {
