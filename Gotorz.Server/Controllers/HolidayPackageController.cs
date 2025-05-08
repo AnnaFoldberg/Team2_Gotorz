@@ -13,12 +13,6 @@ namespace Gotorz.Server.Controllers
         private readonly IRepository<HolidayPackage>? _repository;
         private IMapper _mapper;
 
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HolidayPackageController"/> class.
-        /// </summary>
-        /// <param name="repository">The repository for managing holiday package entities.</param>
-        /// <param name="mapper">The mapper for converting between DTOs and domain models.</param>
         public HolidayPackageController(IRepository<HolidayPackage> repository, IMapper mapper)
         {
             _repository = repository;
@@ -36,11 +30,7 @@ namespace Gotorz.Server.Controllers
         }
         */
 
-        /// <summary>
-        /// Creates a new holiday package based on the provided DTO.
-        /// </summary>
-        /// <param name="dto">The data transfer object containing holiday package details.</param>
-        /// <returns>An <see cref="IActionResult"/> indicating the result of the operation.</returns>
+
         [HttpPost]
         public async Task<IActionResult> Create(HolidayPackageDto dto)
         {
