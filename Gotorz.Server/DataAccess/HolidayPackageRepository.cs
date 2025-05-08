@@ -8,6 +8,7 @@ namespace Gotorz.Server.DataAccess
     {
         private readonly GotorzDbContext _context;
 
+
         /// <summary>
         /// Initializes a new instance of the <see cref="HolidayPackageRepository"/> class.
         /// </summary>
