@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Nodes;
-using Gotorz.Shared.DTOs;
+using Gotorz.Shared.DTO;
 
 namespace Gotorz.Server.Services
 {
@@ -21,7 +21,7 @@ namespace Gotorz.Server.Services
         }
 
         /// <inheritdoc />
-        public async Task<List<AirportDto>> GetAirportsAsync(string airportName)
+        public async Task<List<AirportDto>> GetAirportAsync(string airportName)
         {
             var request = new HttpRequestMessage
             {

@@ -7,8 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq.Protected;
 using Moq;
 using System.Net;
-using Gotorz.Client.Services;
-using Gotorz.Shared.DTOs;
 
 namespace Gotorz.Client.UnitTests.Pages
 {
@@ -23,17 +21,30 @@ namespace Gotorz.Client.UnitTests.Pages
         public void Setup()
         {
             var authContext = this.AddTestAuthorization();
-            authContext.SetNotAuthorized(); // simulate a logged-out user
+            authContext.SetAuthorized("Test user");
+            authContext.SetClaims(new Claim(ClaimTypes.Name, "Test user"));
 
-            if (!Services.Any(s => s.ServiceType == typeof(IUserService)))
+            var mockHandler = new Mock<HttpMessageHandler>();
+            mockHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                .ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent("{\"result\":true}")
+                });
+
+            var client = new HttpClient(mockHandler.Object)
             {
-                var defaultUserService = new Mock<IUserService>();
-                defaultUserService.Setup(x => x.LoginAsync(It.IsAny<LoginDto>()))
-                    .ReturnsAsync((true, null));
+                BaseAddress = new Uri("https://localhost")
+            };
 
-                Services.AddSingleton(defaultUserService.Object);
-            }
+            Services.AddSingleton<HttpClient>(client);
         }
+
 
         [TestMethod]
         public void Submit_MissingFields_ShowsValidationMessages()
@@ -46,8 +57,8 @@ namespace Gotorz.Client.UnitTests.Pages
 
             // Assert
             var markup = component.Markup;
-            Assert.IsTrue(markup.Contains("Email is required"));
-            Assert.IsTrue(markup.Contains("Password is required"));
+            Assert.IsTrue(markup.Contains("Email er påkrævet"));
+            Assert.IsTrue(markup.Contains("Adgangskode er påkrævet"));
         }
 
         [TestMethod]
@@ -58,7 +69,7 @@ namespace Gotorz.Client.UnitTests.Pages
             component.Find("input[id=password]").Change("ValidPass1");
             component.Find("form").Submit();
 
-            Assert.IsTrue(component.Markup.Contains("Invalid email"));
+            Assert.IsTrue(component.Markup.Contains("Ugyldig email"));
         }
 
         [TestMethod]
@@ -66,10 +77,10 @@ namespace Gotorz.Client.UnitTests.Pages
         {
             var component = RenderComponent<Login>();
             component.Find("input[id=email]").Change("test@example.com");
-            component.Find("input[id=password]").Change("");
+            component.Find("input[id=password]").Change(""); // empty triggers [Required]
             component.Find("form").Submit();
 
-            Assert.IsTrue(component.Markup.Contains("Password is required"));
+            Assert.IsTrue(component.Markup.Contains("Adgangskode er påkrævet"));
         }
 
         [TestMethod]
@@ -90,11 +101,24 @@ namespace Gotorz.Client.UnitTests.Pages
             // Arrange
             var errorText = "Forkert email eller adgangskode";
 
-            var mockUserService = new Mock<IUserService>();
-            mockUserService.Setup(x => x.LoginAsync(It.IsAny<LoginDto>()))
-                .ReturnsAsync((false, errorText));
+            var mockHandler = new Mock<HttpMessageHandler>();
+            mockHandler.Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                .ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.Unauthorized,
+                    Content = new StringContent(errorText)
+                });
 
-            Services.AddSingleton(mockUserService.Object);
+            var client = new HttpClient(mockHandler.Object)
+            {
+                BaseAddress = new Uri("https://localhost")
+            };
+            Services.AddSingleton<HttpClient>(client);
 
             var component = RenderComponent<Login>();
             component.Find("input[id=email]").Change("wrong@example.com");
@@ -107,5 +131,6 @@ namespace Gotorz.Client.UnitTests.Pages
             // Assert
             Assert.IsTrue(markup.Contains(errorText));
         }
+
     }
 }

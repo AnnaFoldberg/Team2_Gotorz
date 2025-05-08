@@ -1,7 +1,4 @@
-﻿@using Gotorz.Client.Services
-@inject IUserService UserService
-
-<div class="top-row ps-3 navbar navbar-dark">
+﻿<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Gotorz.Client</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -17,51 +14,23 @@
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
             </NavLink>
         </div>
-        @if (userRole == "sales" || userRole == "admin")
-        {
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="holiday-package-with-flights">
-                    <span class="bi bi-luggage-fill-nav-menu" aria-hidden="true"></span> Holiday Packages
-                </NavLink>
-            </div>
-            @if (userRole == "sales")
-            {
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="/booking/all-holiday-bookings">
-                        <span class="bi bi-luggage-fill-nav-menu" aria-hidden="true"></span> Holiday Bookings
-                    </NavLink>
-                </div>
-            }
-        }
-        else if (userRole == "customer" || userRole == null)
-        {
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="holiday-package">
-                    <span class="bi bi-luggage-fill-nav-menu" aria-hidden="true"></span> Holiday Packages
-                </NavLink>
-            </div>
-            @if (userRole != null)
-            {
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="/booking/customer/holiday-bookings">
-                        <span class="bi bi-luggage-fill-nav-menu" aria-hidden="true"></span> Holiday Bookings
-                    </NavLink>
-                </div>
-            }
-        }
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="counter">
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="flights">
+                <span class="bi bi-airplane-fill-nav-menu" aria-hidden="true"></span> Flights
+            </NavLink>
+        </div>
     </nav>
 </div>
 
 @code {
-    private string? userRole;
     private bool collapseNavMenu = true;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    protected override async Task OnInitializedAsync()
-    {
-        userRole = await UserService.GetUserRoleAsync();
-    }
 
     private void ToggleNavMenu()
     {
