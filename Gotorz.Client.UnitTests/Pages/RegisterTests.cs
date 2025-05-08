@@ -1,6 +1,10 @@
 ﻿using Bunit;
 using Bunit.TestDoubles;
 using Gotorz.Client.Pages;
+using Gotorz.Client.Services;
+using Gotorz.Shared.DTOs;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using System.Security.Claims;
 
 
@@ -18,11 +22,15 @@ namespace Gotorz.Client.UnitTests.Pages
         {
             var authContext = this.AddTestAuthorization();
             authContext.SetAuthorized("Test user");
-            authContext.SetClaims(
-                new Claim(ClaimTypes.Name, "Test user"),
-                new Claim(ClaimTypes.Role, "admin")
-            );
+            authContext.SetClaims(new Claim(ClaimTypes.Name, "Test user"), new Claim(ClaimTypes.Role, "admin"));
+
+            var mockUserService = new Mock<IUserService>();
+            mockUserService.Setup(x => x.RegisterAsync(It.IsAny<RegisterDto>()))
+                .ReturnsAsync((true, null));
+
+            Services.AddSingleton(mockUserService.Object);
         }
+
 
         [TestMethod]
         public void Submit_MissingEmail_ShowsValidationMessage()

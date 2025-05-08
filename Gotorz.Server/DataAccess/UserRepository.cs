@@ -1,6 +1,8 @@
 ﻿using Gotorz.Server.Models;
 using Gotorz.Shared.DTOs;
+using Humanizer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Gotorz.Server.DataAccess
@@ -61,6 +63,8 @@ namespace Gotorz.Server.DataAccess
                     return roleResult;
             }
 
+            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, role));
+
             return result;
         }
 
@@ -72,7 +76,7 @@ namespace Gotorz.Server.DataAccess
         /// <returns>A <see cref="SignInResult"/> indicating the outcome of the login attempt.</returns>
         public async Task<SignInResult> LoginAsync(string email, string password)
         {
-            return await _signInManager.PasswordSignInAsync(email, password, false, false);
+            return await _signInManager.PasswordSignInAsync(email, password, true, false);
         }
 
         /// <summary>
@@ -128,7 +132,6 @@ namespace Gotorz.Server.DataAccess
             return allClaims;
         }
 
-
         /// <summary>
         /// Retrieves a user by their email address.
         /// </summary>
@@ -137,25 +140,6 @@ namespace Gotorz.Server.DataAccess
         public async Task<ApplicationUser?> GetUserByEmailAsync(string email)
         {
             return await _userManager.FindByEmailAsync(email);
-        }
-
-        /// <summary>
-        /// Updates a user's email and username based on their user ID.
-        /// </summary>
-        /// <param name="userId">The ID of the user to update.</param>
-        /// <param name="newEmail">The new email address to assign.</param>
-        /// <returns>
-        /// An <see cref="IdentityResult"/> indicating whether the update succeeded or failed.
-        /// </returns>
-        public async Task<IdentityResult> UpdateUserAsync(string userId, string newEmail)
-        {
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null) return IdentityResult.Failed();
-
-            user.Email = newEmail;
-            user.UserName = newEmail;
-
-            return await _userManager.UpdateAsync(user);
         }
 
         /// <summary>
@@ -172,5 +156,63 @@ namespace Gotorz.Server.DataAccess
 
             return await _userManager.DeleteAsync(user);
         }
+
+        /// <summary>
+        /// Updates the user information for a given user ID, and based on the given parameters
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="email"></param>
+        /// <param name="firstName"></param>
+        /// <param name="lastName"></param>
+        /// <param name="phoneNumber"></param>
+        /// <returns></returns>
+        public async Task<(bool Success, string? Error)> UpdateUserAsync(string userId, string email, string firstName, string lastName, string phoneNumber)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return (false, "User not found.");
+
+            var existingUser = await _userManager.FindByEmailAsync(email);
+            if (existingUser != null && existingUser.Id != user.Id)
+                return (false, "Email is already in use.");
+
+            user.Email = email;
+            user.UserName = email;
+            user.FirstName = firstName;
+            user.LastName = lastName;
+            user.PhoneNumber = phoneNumber;
+
+            var result = await _userManager.UpdateAsync(user);
+            return result.Succeeded ? (true, null) : (false, result.Errors.FirstOrDefault()?.Description ?? "Update failed.");
+        }
+
+        /// <summary>
+        /// Retrieves all users in the system.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<UserDto>> GetAllUsersAsync()
+        {
+            var users = await _userManager.Users.ToListAsync();
+
+            var result = new List<UserDto>();
+            foreach (var user in users)
+            {
+                var claims = await _userManager.GetClaimsAsync(user);
+                result.Add(new UserDto
+                {
+                    UserId = user.Id,
+                    Email = user.Email,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    PhoneNumber = user.PhoneNumber,
+                    Claims = claims.Select(c => new ClaimDto { Type = c.Type, Value = c.Value }).ToList()
+                });
+            }
+
+            return result;
+        }
+
+
+
     }
 }

@@ -129,21 +129,115 @@ namespace Gotorz.Client.Services
             return user?.Email;
         }
 
+        /// <summary>
+        /// Registers a new user with the provided registration model.
+        /// </summary>
+        /// <param name="registerModel"></param>
+        /// <returns></returns>
+        public async Task<(bool Success, string? ErrorMessage)> RegisterAsync(RegisterDto registerModel)
+        {
+            var response = await _http.PostAsJsonAsync("api/account/register", registerModel);
+
+            if (response.IsSuccessStatusCode)
+                return (true, null);
+
+            var errorJson = await response.Content.ReadAsStringAsync();
+
+            if (errorJson.Contains("DuplicateEmail") || errorJson.Contains("DuplicateUserName"))
+                return (false, "This email is already in use");
+
+            return (false, "Something unexpected happened");
+        }
+
+        /// <summary>
+        /// Authenticates the user with the provided login credentials.
+        /// </summary>
+        /// <param name="loginModel"></param>
+        /// <returns></returns>
+        public async Task<(bool Success, string? ErrorMessage)> LoginAsync(LoginDto loginModel)
+        {
+            var response = await _http.PostAsJsonAsync("api/account/login", loginModel);
+
+            if (response.IsSuccessStatusCode)
+                return (true, null);
+
+            var error = await response.Content.ReadAsStringAsync();
+            return (false, error);
+        }
+
+        /// <summary>
+        /// Signs out the currently logged-in user.
+        /// </summary>
+        /// <returns></returns>
         public async Task LogoutAsync()
         {
             await _http.PostAsync("api/account/logout", null);
         }
 
+        /// <summary>
+        /// Deletes the user with the specified unique identifier.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public async Task<bool> DeleteUserAsync(string userId)
         {
             var response = await _http.DeleteAsync($"api/account/user/{userId}");
             return response.IsSuccessStatusCode;
         }
 
+        /// <summary>
+        /// Deletes the currently logged-in user.
+        /// </summary>
+        /// <returns></returns>
         public async Task<bool> DeleteCurrentUserAsync()
         {
             var response = await _http.DeleteAsync("api/account/user/self");
             return response.IsSuccessStatusCode;
         }
+
+        /// <summary>
+        /// Updates the profile of the currently logged-in user.
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        public async Task<(bool Success, string? ErrorMessage)> UpdateProfileAsync(UpdateUserDto dto)
+        {
+            var response = await _http.PutAsJsonAsync("api/account/update-profile", dto);
+
+            if (response.IsSuccessStatusCode)
+                return (true, null);
+
+            var error = await response.Content.ReadAsStringAsync();
+            return (false, error);
+        }
+
+        /// <summary>
+        /// Updates the user information for a given user ID, and based on the given parameters.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        public async Task<(bool Success, string? ErrorMessage)> UpdateUserByIdAsync(string userId, UpdateUserDto dto)
+        {
+            var response = await _http.PutAsJsonAsync($"api/account/update-user/{userId}", dto);
+
+            if (response.IsSuccessStatusCode)
+                return (true, null);
+
+            var error = await response.Content.ReadAsStringAsync();
+            return (false, error);
+        }
+
+        /// <summary>
+        /// Retrieves a list of all users in the system.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<UserDto>> GetAllUsersAsync()
+        {
+            return await _http.GetFromJsonAsync<List<UserDto>>("api/account/users")
+                ?? new List<UserDto>();
+        }
+
+
     }
 }
