@@ -4,16 +4,19 @@ using Gotorz.Server.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Gotorz.Server.Migrations
+namespace Gotorz.Server.Migrations.GotorzDb
 {
     [DbContext(typeof(GotorzDbContext))]
-    partial class GotorzDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250414150336_FlightTickets")]
+    partial class FlightTickets
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -68,16 +71,11 @@ namespace Gotorz.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("HolidayPackageId")
-                        .HasColumnType("int");
-
                     b.HasKey("FlightId");
 
                     b.HasIndex("ArrivalAirportId");
 
                     b.HasIndex("DepartureAirportId");
-
-                    b.HasIndex("HolidayPackageId");
 
                     b.ToTable("Flights");
                 });
@@ -103,33 +101,6 @@ namespace Gotorz.Server.Migrations
                     b.ToTable("FlightTickets");
                 });
 
-            modelBuilder.Entity("Gotorz.Server.Models.HolidayPackage", b =>
-                {
-                    b.Property<int>("HolidayPackageId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HolidayPackageId"));
-
-                    b.Property<decimal>("CostPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("MarkupPercentage")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("HolidayPackageId");
-
-                    b.ToTable("HolidayPackages");
-                });
-
             modelBuilder.Entity("Gotorz.Server.Models.Flight", b =>
                 {
                     b.HasOne("Gotorz.Server.Models.Airport", "ArrivalAirport")
@@ -143,10 +114,6 @@ namespace Gotorz.Server.Migrations
                         .HasForeignKey("DepartureAirportId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("Gotorz.Server.Models.HolidayPackage", null)
-                        .WithMany("Flights")
-                        .HasForeignKey("HolidayPackageId");
 
                     b.Navigation("ArrivalAirport");
 
@@ -162,11 +129,6 @@ namespace Gotorz.Server.Migrations
                         .IsRequired();
 
                     b.Navigation("Flight");
-                });
-
-            modelBuilder.Entity("Gotorz.Server.Models.HolidayPackage", b =>
-                {
-                    b.Navigation("Flights");
                 });
 #pragma warning restore 612, 618
         }

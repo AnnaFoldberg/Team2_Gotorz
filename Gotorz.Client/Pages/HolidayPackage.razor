@@ -1,0 +1,47 @@
+﻿@page "/holiday-package"
+
+<h3>Create Holiday Package</h3>
+
+<div style="max-width: 400px;">
+    <label for="title">Title:</label>
+    <input type="text" id="title" @bind="Title" class="form-control" style="width: 100%;" />
+</div>
+
+<div style="max-width: 400px;">
+    <label for="description">Description:</label>
+    <textarea id="description" @bind="Description" class="form-control" rows="5" style="width: 100%;"></textarea>
+</div>
+
+<div class="button-group">
+    <button class="btn btn-primary" @onclick="CreatePackage">Create</button>
+    <button class="btn btn-danger" @onclick="ClearFields">Clear</button>
+    <button class="btn btn-secondary" @onclick="AddFlights">Add Flights</button>
+    <button class="btn btn-secondary" @onclick="AddHotels">Add Hotels</button>
+</div>
+
+@code {
+    private string Title { get; set; } = "";
+    private string Description { get; set; } = "";
+
+    private void CreatePackage()
+    {
+        // Implementeres når database er OK
+    }
+
+    private void ClearFields()
+    {
+        Title = "";
+        Description = "";
+    }
+
+    private void AddFlights()
+    {
+        // Implementeres i anden feature "Tilføj fly til rejsepakken"
+    }
+
+    private void AddHotels()
+    {
+        // Implementeres i anden feature "Tilføj hotel til rejsepakken"
+    }
+}
+

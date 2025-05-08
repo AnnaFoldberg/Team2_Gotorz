@@ -12,5 +12,7 @@ namespace Gotorz.Server.Contexts
         // public DbSet<Flight> Flights { get; set; }
 
         // public DbSet<AirportFlight> AirportFlights { get; set; }
+
+        public DbSet<HolidayPackage> HolidayPackages { get; set; }
     }
 }
