@@ -1,0 +1,25 @@
+﻿@page "/HPList"
+@using Gotorz.Shared.DTO
+@using Services
+@inject HolidayPackageService HolidayPackageService
+
+<h2 class="text-2xl font-bold mb-4">Holiday Packages</h2>
+
+<ul class="space-y-2">
+    @foreach (var package in packages)
+    {
+        <li class="p-4 border rounded shadow-sm">
+            <strong>@package.Title</strong><br />
+            @package.Description
+        </li>
+    }
+</ul>
+
+@code {
+    private List<HolidayPackageDto> packages = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        packages = await HolidayPackageService.GetAllAsync();
+    }
+}
