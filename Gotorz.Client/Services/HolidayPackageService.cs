@@ -1,5 +1,5 @@
 ﻿using System.Net.Http.Json;
-using Gotorz.Shared.DTO;
+using Gotorz.Shared.DTOs;
 
 namespace Gotorz.Client.Services
 {
@@ -7,29 +7,18 @@ namespace Gotorz.Client.Services
     {
         private readonly HttpClient _http;
 
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HolidayPackageService"/> class.
-        /// </summary>
-        /// <param name="http">The HTTP client used for sending API requests.</param>
         public HolidayPackageService(HttpClient http)
         {
             _http = http;
         }
 
+        /*
         public async Task<List<HolidayPackageDto>> GetAllAsync()
         {
-            try
-            {
-                var result = await _http.GetFromJsonAsync<List<HolidayPackageDto>>("HolidayPackage");
-                return result ?? new List<HolidayPackageDto>();
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"Error fetching holiday packages: {ex.Message}");
-                return new List<HolidayPackageDto>();
-            }
+            var result = await _http.GetFromJsonAsync<List<HolidayPackageDto>>("HolidayPackage");
+            return result ?? new List<HolidayPackageDto>();
         }
+        */
         /*
         public async Task<HolidayPackageDto?> GetByIdAsync(int id)
         {
@@ -37,11 +26,6 @@ namespace Gotorz.Client.Services
         }
         */
 
-        /// <summary>
-        /// Sends a request to create a new holiday package using the provided data.
-        /// </summary>
-        /// <param name="dto">The holiday package data transfer object containing package details.</param>
-        /// <returns>A task representing the asynchronous operation.</returns>
         public async Task CreateAsync(HolidayPackageDto dto)
         {
             await _http.PostAsJsonAsync("HolidayPackage", dto);

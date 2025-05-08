@@ -5,7 +5,7 @@ using Moq.Protected;
 using System.Net;
 using Microsoft.Extensions.Configuration;
 using System.Text;
-using Gotorz.Shared.DTO;
+using Gotorz.Shared.DTOs;
 
 namespace Gotorz.Server.UnitTests.Services
 {
@@ -40,9 +40,9 @@ namespace Gotorz.Server.UnitTests.Services
             _mockConfig.Setup(c => c.GetSection("RapidAPI:Host")).Returns(hostSection.Object);
         }
 
-        // -------------------- GetAirportAsync --------------------
+        // -------------------- GetAirportsAsync --------------------
         [TestMethod]
-        public async Task GetAirportAsync_FoundMatchingAirports_ReturnsAirports()
+        public async Task GetAirportsAsync_FoundMatchingAirports_ReturnsAirports()
         {
             // Arrange
             string json = @"
@@ -109,7 +109,7 @@ namespace Gotorz.Server.UnitTests.Services
             Setup(json);
 
             // Act
-            var airports = await _flightService.GetAirportAsync("London");
+            var airports = await _flightService.GetAirportsAsync("London");
 
             // Assert
             Assert.IsNotNull(airports);
@@ -120,7 +120,7 @@ namespace Gotorz.Server.UnitTests.Services
         }
 
         [TestMethod]
-        public async Task GetAirportAsync_FoundSingleMatchingAirport_ReturnsAirports()
+        public async Task GetAirportsAsync_FoundSingleMatchingAirport_ReturnsAirports()
         {
             // Arrange
             string json = @"
@@ -159,7 +159,7 @@ namespace Gotorz.Server.UnitTests.Services
             Setup(json);
 
             // Act
-            var airports = await _flightService.GetAirportAsync("London Heathrow");
+            var airports = await _flightService.GetAirportsAsync("London Heathrow");
 
             // Assert
             Assert.IsNotNull(airports);
@@ -168,7 +168,7 @@ namespace Gotorz.Server.UnitTests.Services
         }
 
         [TestMethod]
-        public async Task GetAirportAsync_FoundNoMatchingAirport_ReturnsEmptyList()
+        public async Task GetAirportsAsync_FoundNoMatchingAirport_ReturnsEmptyList()
         {
             // Arrange
             string json = @"
@@ -207,7 +207,7 @@ namespace Gotorz.Server.UnitTests.Services
             Setup(json);
 
             // Act
-            var airports = await _flightService.GetAirportAsync("Rome Fiumicino");
+            var airports = await _flightService.GetAirportsAsync("Rome Fiumicino");
 
             // Assert
             Assert.IsNotNull(airports);
@@ -215,7 +215,7 @@ namespace Gotorz.Server.UnitTests.Services
         }
 
         [TestMethod]
-        public async Task GetAirportAsync_InputSuggestNodeMissing_ReturnsEmptyList()
+        public async Task GetAirportsAsync_InputSuggestNodeMissing_ReturnsEmptyList()
         {
             // Arrange
             string json = @"
@@ -254,7 +254,7 @@ namespace Gotorz.Server.UnitTests.Services
             Setup(json);
 
             // Act
-            var airports = await _flightService.GetAirportAsync("London Heathrow");
+            var airports = await _flightService.GetAirportsAsync("London Heathrow");
 
             // Assert
             Assert.IsNotNull(airports);
@@ -262,7 +262,7 @@ namespace Gotorz.Server.UnitTests.Services
         }
 
         [TestMethod]
-        public async Task GetAirportAsync_NavigationNodeMissing_ReturnsEmptyList()
+        public async Task GetAirportsAsync_NavigationNodeMissing_ReturnsEmptyList()
         {
             // Arrange
             string json = @"
@@ -301,7 +301,7 @@ namespace Gotorz.Server.UnitTests.Services
             Setup(json);
 
             // Act
-            var airports = await _flightService.GetAirportAsync("London Heathrow");
+            var airports = await _flightService.GetAirportsAsync("London Heathrow");
 
             // Assert
             Assert.IsNotNull(airports);
@@ -309,7 +309,7 @@ namespace Gotorz.Server.UnitTests.Services
         }
 
         [TestMethod]
-        public async Task GetAirportAsync_RelevantFlightParamsNodeMissing_ReturnsEmptyList()
+        public async Task GetAirportsAsync_RelevantFlightParamsNodeMissing_ReturnsEmptyList()
         {
             // Arrange
             string json = @"
@@ -338,7 +338,7 @@ namespace Gotorz.Server.UnitTests.Services
             Setup(json);
 
             // Act
-            var airports = await _flightService.GetAirportAsync("London Heathrow");
+            var airports = await _flightService.GetAirportsAsync("London Heathrow");
 
             // Assert
             Assert.IsNotNull(airports);

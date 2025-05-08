@@ -5,12 +5,13 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json;
-using Gotorz.Shared.DTO;
+using Gotorz.Shared.DTOs;
 using Microsoft.AspNetCore.Components.Authorization;
 using Moq;
 using Moq.Protected;
 using System.Threading;
 using System.Threading.Tasks;
+using Gotorz.Client.Services;
 
 namespace Gotorz.Client.UnitTests.Services
 {
@@ -45,7 +46,7 @@ namespace Gotorz.Client.UnitTests.Services
         public async Task GetAuthenticationStateAsync_ReturnsAuthenticatedUserWithClaims()
         {
             // Arrange
-            var user = new CurrentUserDto
+            var user = new UserDto
             {
                 Email = "test@example.com",
                 IsAuthenticated = true,
@@ -80,7 +81,7 @@ namespace Gotorz.Client.UnitTests.Services
         public async Task GetAuthenticationStateAsync_ReturnsEmptyIdentity_WhenUserIsNotAuthenticated()
         {
             // Arrange
-            var user = new CurrentUserDto
+            var user = new UserDto
             {
                 Email = "test@example.com",
                 IsAuthenticated = false,

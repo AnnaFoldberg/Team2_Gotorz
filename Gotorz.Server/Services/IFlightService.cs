@@ -1,4 +1,4 @@
-using Gotorz.Shared.DTO;
+using Gotorz.Shared.DTOs;
 
 namespace Gotorz.Server.Services
 {
@@ -13,7 +13,7 @@ namespace Gotorz.Server.Services
         /// </summary>
         /// <param name="airportName">The search term to match airport names against.</param>
         /// <returns>A list of <see cref="AirportDto"/> entities matching the specified <paramref name="airportName"/>.</returns>
-        Task<List<AirportDto>> GetAirportAsync(string airportName);
+        Task<List<AirportDto>> GetAirportsAsync(string airportName);
 
         /// <summary>
         /// Retrieves a list of <see cref="FlightDto"/> entities flying from the specified <paramref name="departureAirport"/> to 

@@ -2,7 +2,7 @@
 using Gotorz.Server.Models;
 using Gotorz.Server.Services;
 using Gotorz.Server.DataAccess;
-using Gotorz.Shared.DTO;
+using Gotorz.Shared.DTOs;
 using AutoMapper;
 
 namespace Gotorz.Server.Controllers;
@@ -19,30 +19,34 @@ namespace Gotorz.Server.Controllers;
 [Route("[controller]")]
 public class FlightController : ControllerBase
 {
-    private IFlightService _flightService;
     private readonly IMapper _mapper;
+    private IFlightService _flightService;
     private readonly IRepository<Airport> _airportRepository;
     private readonly IFlightRepository _flightRepository;
     private readonly IRepository<FlightTicket> _flightTicketRepository;
+    private readonly IRepository<HolidayPackage> _holidayPackageRepository;
     
     /// <summary>
     /// Initializes a new instance of the <see cref="FlightController"/> class.
     /// </summary>
     /// <param name="flightService">The <see cref="IFlightService"/> used for fetching flight-related data.</param>
+    /// <param name="mapper">The <see cref="IMapper"/> used for mapping DTOs to Models.</param>
     /// <param name="airportRepository">The <see cref="IRepository<Airport>"/> used to access
     /// <see cref="Airport"/> data in the database.</param>
     /// /// <param name="flightRepository">The <see cref="IFlightRepository"/> used to access
     /// <see cref="Flight"/> data in the database.</param>
     /// /// <param name="flightTicketRepository">The <see cref="IRepository<FlightTicket>"/> used to access
     /// <see cref="FlightTicket"/> data in the database.</param>
-    public FlightController(IFlightService flightService, IMapper mapper,
-        IRepository<Airport> airportRepository, IFlightRepository flightRepository, IRepository<FlightTicket> flightTicketRepository)
+    public FlightController(IMapper mapper, IFlightService flightService,
+        IRepository<Airport> airportRepository, IFlightRepository flightRepository,
+        IRepository<FlightTicket> flightTicketRepository, IRepository<HolidayPackage> holidayPackageRepository)
     {
         _flightService = flightService;
         _mapper = mapper;
         _airportRepository = airportRepository;
         _flightRepository = flightRepository;
         _flightTicketRepository = flightTicketRepository;
+        _holidayPackageRepository = holidayPackageRepository;
     }
 
     /// <summary>
@@ -59,15 +63,15 @@ public class FlightController : ControllerBase
     }
 
     /// <summary>
-    /// Defines an API endpoint for HTTP GET that calls <see cref="FlightService.GetAirport(string)"/>
+    /// Defines an API endpoint for HTTP GET that calls <see cref="FlightService.GetAirportsAsync(string)"/>
     /// to retrieve a single matching <see cref="Airport"/>.
     /// </summary>
-    /// <param name="airport">The search term to match airport names against in <see cref="FlightService.GetAirport(string)"/>.</param>
+    /// <param name="airport">The search term to match airport names against in <see cref="FlightService.GetAirportAsync(string)"/>.</param>
     /// <returns>An <see cref="IActionResult"/> that contains <c>Ok</c> if exactly one airport was found, otherwise <c>BadRequest</c>.</returns>
     [HttpGet("airport")]
     public async Task<IActionResult> GetAirportAsync(string airportName)
     {
-        var airports = await _flightService.GetAirportAsync(airportName);
+        var airports = await _flightService.GetAirportsAsync(airportName);
 
         if (airports == null) return BadRequest("Something went wrong");
         else if ( airports.Count == 0 ) return BadRequest("No airports were found");
@@ -81,12 +85,12 @@ public class FlightController : ControllerBase
     }
 
     /// <summary>
-    /// Defines an API endpoint for HTTP GET that calls <see cref="FlightService.GetFlights(string, string, string)"/>
+    /// Defines an API endpoint for HTTP GET that calls <see cref="FlightService.GetFlightsAsync(string, string, string)"/>
     /// to retrieve a list of matching <see cref="FlightDto"/> entities.
     /// </summary>
-    /// <param name="date">The departure date to match the flight against in <see cref="FlightService.GetFlights(string, string, string)"/>.</param>
-    /// <param name="departureAirport">The departure airport to match the flight against in <see cref="FlightService.GetFlights(string, string, string)"/>.</param>
-    /// <param name="arrivalAirport">The arrival airport to match the flight against in <see cref="FlightService.GetFlights(string, string, string)"/>.</param>
+    /// <param name="date">The departure date to match the flight against in <see cref="FlightService.GetFlightsAsync(string, string, string)"/>.</param>
+    /// <param name="departureAirport">The departure airport to match the flight against in <see cref="FlightService.GetFlightsAsync(string, string, string)"/>.</param>
+    /// <param name="arrivalAirport">The arrival airport to match the flight against in <see cref="FlightService.GetFlightsAsync(string, string, string)"/>.</param>
     /// <returns>A list of <see cref="FlightDto"/> entities matching the specified parameters.</returns>
     [HttpGet("flights")]
     public async Task<List<FlightDto>> GetFlightsAsync([FromQuery] string? date, [FromQuery] string departureAirport, [FromQuery] string arrivalAirport)
@@ -171,9 +175,21 @@ public class FlightController : ControllerBase
                 await _flightRepository.AddAsync(flight);
             }
 
+            // Ensure holiday package exists in database. If not, return bad request.
+            var holidayPackages = await _holidayPackageRepository.GetAllAsync();
+            var holidayPackage = holidayPackages
+                .FirstOrDefault(p => p.Title == flightTicket.HolidayPackage.Title &&
+                p.Description == flightTicket.HolidayPackage.Description);
+
+            if (holidayPackage == null )
+            {
+                return BadRequest("Holiday package linked to flight ticket does not exist");
+            }
+
             // Add flight ticket to the database
             var _flightTicket = _mapper.Map<FlightTicket>(flightTicket);
             _flightTicket.FlightId = flight.FlightId;
+            _flightTicket.HolidayPackageId = holidayPackage.HolidayPackageId;
             await _flightTicketRepository.AddAsync(_flightTicket);
         }
         return Ok($"Successfully added {flightTickets.Count()} flight ticket(s) to database");

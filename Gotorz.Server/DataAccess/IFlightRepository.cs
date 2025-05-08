@@ -6,6 +6,7 @@ namespace Gotorz.Server.DataAccess
     /// A repository interface for managing flight entities.
     /// Extends the functionality of the <see cref="IRepository{T}"/> interface.
     /// </summary>
+    /// <author>Anna</author>
     public interface IFlightRepository : IRepository<Flight>
     {
         /// <summary>

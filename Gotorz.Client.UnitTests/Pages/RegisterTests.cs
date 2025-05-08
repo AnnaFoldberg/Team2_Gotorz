@@ -1,6 +1,10 @@
 ﻿using Bunit;
 using Bunit.TestDoubles;
 using Gotorz.Client.Pages;
+using Gotorz.Client.Services;
+using Gotorz.Shared.DTOs;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using System.Security.Claims;
 
 
@@ -18,11 +22,15 @@ namespace Gotorz.Client.UnitTests.Pages
         {
             var authContext = this.AddTestAuthorization();
             authContext.SetAuthorized("Test user");
-            authContext.SetClaims(
-                new Claim(ClaimTypes.Name, "Test user"),
-                new Claim(ClaimTypes.Role, "admin")
-            );
+            authContext.SetClaims(new Claim(ClaimTypes.Name, "Test user"), new Claim(ClaimTypes.Role, "admin"));
+
+            var mockUserService = new Mock<IUserService>();
+            mockUserService.Setup(x => x.RegisterAsync(It.IsAny<RegisterDto>()))
+                .ReturnsAsync((true, null));
+
+            Services.AddSingleton(mockUserService.Object);
         }
+
 
         [TestMethod]
         public void Submit_MissingEmail_ShowsValidationMessage()
@@ -36,7 +44,7 @@ namespace Gotorz.Client.UnitTests.Pages
             // Assert
             var messages = component.FindAll("div.validation-message, .validation-summary-errors");
             Assert.IsTrue(messages.Count > 0);
-            Assert.IsTrue(component.Markup.Contains("Email er påkrævet"));
+            Assert.IsTrue(component.Markup.Contains("Email is required"));
         }
 
         [TestMethod]
@@ -51,7 +59,7 @@ namespace Gotorz.Client.UnitTests.Pages
             component.Find("form").Submit();
 
             // Assert
-            Assert.IsTrue(component.Markup.Contains("Ugyldig email"));
+            Assert.IsTrue(component.Markup.Contains("Invalid email"));
         }
 
         [TestMethod]
@@ -65,11 +73,11 @@ namespace Gotorz.Client.UnitTests.Pages
 
             // Assert
             var markup = component.Markup;
-            Assert.IsTrue(markup.Contains("Email er påkrævet"));
-            Assert.IsTrue(markup.Contains("Fornavn er påkrævet"));
-            Assert.IsTrue(markup.Contains("Efternavn er påkrævet"));
-            Assert.IsTrue(markup.Contains("Telefonnummer er påkrævet"));
-            Assert.IsTrue(markup.Contains("Adgangskode er påkrævet"));
+            Assert.IsTrue(markup.Contains("Email is required"));
+            Assert.IsTrue(markup.Contains("First name is required"));
+            Assert.IsTrue(markup.Contains("Last name is required"));
+            Assert.IsTrue(markup.Contains("Phonenumber is required"));
+            Assert.IsTrue(markup.Contains("Password is required"));
         }
 
         [TestMethod]
@@ -89,8 +97,8 @@ namespace Gotorz.Client.UnitTests.Pages
 
             // Assert
             var markup = component.Markup;
-            Assert.IsTrue(markup.Contains("Adgangskoden skal være mindst 6 tegn."));
-            Assert.IsTrue(markup.Contains("Adgangskoden skal indeholde både store og små bogstaver."));
+            Assert.IsTrue(markup.Contains("Password must be at least 6 characters long"));
+            Assert.IsTrue(markup.Contains("Password must include both uppercase and lowercase letters"));
         }
 
         [TestMethod]

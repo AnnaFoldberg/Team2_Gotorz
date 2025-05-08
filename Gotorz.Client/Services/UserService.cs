@@ -1,4 +1,4 @@
-﻿using Gotorz.Shared.DTO;
+﻿using Gotorz.Shared.DTOs;
 using System.Net.Http.Json;
 using System.Security.Claims;
 
@@ -24,12 +24,12 @@ namespace Gotorz.Client.Services
         /// <summary>
         /// Retrieves the full current user object from the backend.
         /// </summary>
-        /// <returns>A <see cref="CurrentUserDto"/> containing user details and claims, or <c>null</c> if unauthenticated.</returns>
-        public async Task<CurrentUserDto?> GetCurrentUserAsync()
+        /// <returns>A <see cref="UserDto"/> containing user details and claims, or <c>null</c> if unauthenticated.</returns>
+        public async Task<UserDto?> GetCurrentUserAsync()
         {
             try
             {
-                return await _http.GetFromJsonAsync<CurrentUserDto>("api/account/currentuser");
+                return await _http.GetFromJsonAsync<UserDto>("api/account/currentuser");
             }
             catch
             {
@@ -56,6 +56,37 @@ namespace Gotorz.Client.Services
         {
             var user = await GetCurrentUserAsync();
             return user?.Claims?.Any(c => c.Type == ClaimTypes.Role && c.Value == role) == true;
+        }
+
+        /// <summary>
+        /// Retrieves the role of the currently authenticated user based on claims.
+        /// </summary>
+        /// <returns>
+        /// The user's role as a string if available; otherwise, <c>null</c>.
+        /// </returns>
+        public async Task<string?> GetUserRoleAsync()
+        {
+            var user = await GetCurrentUserAsync();
+            return user?.Claims?.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+        }
+
+        /// <summary>
+        /// Retrieves a user's profile information by their unique identifier
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns>
+        /// A <see cref="UserDto"/> containing user details if successful; otherwise, <c>null</c>.
+        /// </returns>
+        public async Task<UserDto?> GetUserByIdAsync(string userId)
+        {
+            try
+            {
+                return await _http.GetFromJsonAsync<UserDto>($"api/account/user/{userId}");
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -97,5 +128,116 @@ namespace Gotorz.Client.Services
             var user = await GetCurrentUserAsync();
             return user?.Email;
         }
+
+        /// <summary>
+        /// Registers a new user with the provided registration model.
+        /// </summary>
+        /// <param name="registerModel"></param>
+        /// <returns></returns>
+        public async Task<(bool Success, string? ErrorMessage)> RegisterAsync(RegisterDto registerModel)
+        {
+            var response = await _http.PostAsJsonAsync("api/account/register", registerModel);
+
+            if (response.IsSuccessStatusCode)
+                return (true, null);
+
+            var errorJson = await response.Content.ReadAsStringAsync();
+
+            if (errorJson.Contains("DuplicateEmail") || errorJson.Contains("DuplicateUserName"))
+                return (false, "This email is already in use");
+
+            return (false, "Something unexpected happened");
+        }
+
+        /// <summary>
+        /// Authenticates the user with the provided login credentials.
+        /// </summary>
+        /// <param name="loginModel"></param>
+        /// <returns></returns>
+        public async Task<(bool Success, string? ErrorMessage)> LoginAsync(LoginDto loginModel)
+        {
+            var response = await _http.PostAsJsonAsync("api/account/login", loginModel);
+
+            if (response.IsSuccessStatusCode)
+                return (true, null);
+
+            var error = await response.Content.ReadAsStringAsync();
+            return (false, error);
+        }
+
+        /// <summary>
+        /// Signs out the currently logged-in user.
+        /// </summary>
+        /// <returns></returns>
+        public async Task LogoutAsync()
+        {
+            await _http.PostAsync("api/account/logout", null);
+        }
+
+        /// <summary>
+        /// Deletes the user with the specified unique identifier.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<bool> DeleteUserAsync(string userId)
+        {
+            var response = await _http.DeleteAsync($"api/account/user/{userId}");
+            return response.IsSuccessStatusCode;
+        }
+
+        /// <summary>
+        /// Deletes the currently logged-in user.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> DeleteCurrentUserAsync()
+        {
+            var response = await _http.DeleteAsync("api/account/user/self");
+            return response.IsSuccessStatusCode;
+        }
+
+        /// <summary>
+        /// Updates the profile of the currently logged-in user.
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        public async Task<(bool Success, string? ErrorMessage)> UpdateProfileAsync(UpdateUserDto dto)
+        {
+            var response = await _http.PutAsJsonAsync("api/account/update-profile", dto);
+
+            if (response.IsSuccessStatusCode)
+                return (true, null);
+
+            var error = await response.Content.ReadAsStringAsync();
+            return (false, error);
+        }
+
+        /// <summary>
+        /// Updates the user information for a given user ID, and based on the given parameters.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        public async Task<(bool Success, string? ErrorMessage)> UpdateUserByIdAsync(string userId, UpdateUserDto dto)
+        {
+            var response = await _http.PutAsJsonAsync($"api/account/update-user/{userId}", dto);
+
+            if (response.IsSuccessStatusCode)
+                return (true, null);
+
+            var error = await response.Content.ReadAsStringAsync();
+            return (false, error);
+        }
+
+        /// <summary>
+        /// Retrieves a list of all users in the system.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<UserDto>> GetAllUsersAsync()
+        {
+            return await _http.GetFromJsonAsync<List<UserDto>>("api/account/users")
+                ?? new List<UserDto>();
+        }
+
+
     }
 }
