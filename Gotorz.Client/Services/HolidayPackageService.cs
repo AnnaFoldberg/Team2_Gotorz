@@ -7,6 +7,7 @@ namespace Gotorz.Client.Services
     {
         private readonly HttpClient _http;
 
+
         /// <summary>
         /// Initializes a new instance of the <see cref="HolidayPackageService"/> class.
         /// </summary>
@@ -16,13 +17,19 @@ namespace Gotorz.Client.Services
             _http = http;
         }
 
-        /*
         public async Task<List<HolidayPackageDto>> GetAllAsync()
         {
-            var result = await _http.GetFromJsonAsync<List<HolidayPackageDto>>("HolidayPackage");
-            return result ?? new List<HolidayPackageDto>();
+            try
+            {
+                var result = await _http.GetFromJsonAsync<List<HolidayPackageDto>>("HolidayPackage");
+                return result ?? new List<HolidayPackageDto>();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error fetching holiday packages: {ex.Message}");
+                return new List<HolidayPackageDto>();
+            }
         }
-        */
         /*
         public async Task<HolidayPackageDto?> GetByIdAsync(int id)
         {
