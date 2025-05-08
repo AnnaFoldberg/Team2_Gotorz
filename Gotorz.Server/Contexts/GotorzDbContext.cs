@@ -62,6 +62,13 @@ namespace Gotorz.Server.Contexts
             modelBuilder.Entity<HotelBooking>()
                 .Property(b => b.Price)
                 .HasPrecision(10, 2);
+
+            modelBuilder.Entity<HotelBooking>()
+            .HasOne(b => b.HolidayPackage)
+            .WithMany(p => p.HotelBookings)
+            .HasForeignKey(b => b.HolidayPackageId)
+            .OnDelete(DeleteBehavior.Cascade);
+            
         }
         public DbSet<Hotel> Hotels { get; set; }
         public DbSet<HotelBooking> HotelBookings { get; set; }

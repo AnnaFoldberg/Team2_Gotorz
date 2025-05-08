@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Gotorz.Server.Contexts;
 using Gotorz.Shared.Models;
-using Gotorz.Shared.DTO;
+using Gotorz.Shared.DTOs;
 
 namespace Gotorz.Server.Controllers
 {

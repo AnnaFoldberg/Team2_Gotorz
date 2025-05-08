@@ -1,4 +1,4 @@
-namespace Gotorz.Shared.DTO
+namespace Gotorz.Shared.DTOs
 {
     /// <summary>
     /// Represents a room used for data transfer between the client and server.

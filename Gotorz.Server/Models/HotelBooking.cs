@@ -1,4 +1,7 @@
-namespace Gotorz.Shared.Models
+using Gotorz.Shared.DTOs;
+using Gotorz.Server.Models; 
+
+namespace Gotorz.Server.Models
 {
    public class HotelBooking
 {
@@ -16,7 +19,7 @@ namespace Gotorz.Shared.Models
     public int HotelRoomId { get; set; }      
     public HotelRoom? HotelRoom { get; set; } 
 
-    //public int RejsepakkeId { get; set; }
-   // public Rejsepakke? Rejsepakke { get; set; }
+    public int HolidayPackageId { get; set; }
+    public HolidayPackage? HolidayPackage { get; set; }
     }
 }

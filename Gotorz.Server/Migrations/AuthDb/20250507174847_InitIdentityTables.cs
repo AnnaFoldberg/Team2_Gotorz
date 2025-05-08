@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Gotorz.Server.Migrations
+namespace Gotorz.Server.Migrations.AuthDb
 {
     /// <inheritdoc />
-    public partial class InitialIdentity : Migration
+    public partial class InitIdentityTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

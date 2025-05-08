@@ -4,7 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Gotorz.Server.Controllers;
 using Gotorz.Server.Services;
-using Gotorz.Shared.Models;
+using Gotorz.Shared.DTOs;
+using Gotorz.Server.Models;
 
 namespace Gotorz.Server.UnitTests.Controllers
 {
@@ -22,21 +23,25 @@ namespace Gotorz.Server.UnitTests.Controllers
         }
 
         [TestMethod]
-        public async Task AddHotelBooking_ValidBooking_ReturnsOk()
+        public async Task AddHotelBooking_ValidBookingDto_ReturnsOk()
         {
             // Arrange
-            var booking = new HotelBooking
+            var bookingDto = new HotelBookingDto
             {
                 CheckIn = DateTime.Today,
                 CheckOut = DateTime.Today.AddDays(1),
                 HotelId = 1,
                 HotelRoomId = 1,
                 Price = 100,
-                RoomCapacity = 2
+                RoomCapacity = 2,
+                HolidayPackageId = 10
             };
 
+            _mockService.Setup(s => s.AddHotelBookingAsync(It.IsAny<HotelBooking>()))
+                        .Returns(Task.CompletedTask);
+
             // Act
-            var result = await _controller.AddBooking(booking);
+            var result = await _controller.AddBooking(bookingDto);
 
             // Assert
             Assert.IsInstanceOfType(result, typeof(OkResult));

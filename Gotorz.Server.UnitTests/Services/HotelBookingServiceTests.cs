@@ -2,7 +2,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Gotorz.Server.Services;
 using Gotorz.Server.Contexts;
-using Gotorz.Shared.Models;
+using Gotorz.Shared.DTOs;
+using Gotorz.Server.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
@@ -23,6 +24,10 @@ namespace Gotorz.Server.UnitTests.Services
 
             _context = new GotorzDbContext(options);
             _service = new HotelBookingService(_context);
+
+            // Ensure database is clean before each test
+            _context.HotelBookings.RemoveRange(_context.HotelBookings);
+            _context.SaveChanges();
         }
 
         [TestMethod]
@@ -36,7 +41,8 @@ namespace Gotorz.Server.UnitTests.Services
                 HotelId = 1,
                 HotelRoomId = 1,
                 Price = 500.00m,
-                RoomCapacity = 2
+                RoomCapacity = 2,
+                HolidayPackageId = 10
             };
 
             // Act

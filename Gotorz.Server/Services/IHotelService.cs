@@ -1,4 +1,5 @@
 using Gotorz.Shared.Models;
+using Gotorz.Server.Models;
 
 namespace Gotorz.Server.Services
 {

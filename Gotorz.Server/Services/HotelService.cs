@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using Gotorz.Shared.Models;
+using Gotorz.Server.Models;
 using Gotorz.Server.Contexts;
 using Microsoft.EntityFrameworkCore;
 

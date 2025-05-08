@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace Gotorz.Shared.Models
+namespace Gotorz.Server.Models
 {
     public class HotelRoom
     {
