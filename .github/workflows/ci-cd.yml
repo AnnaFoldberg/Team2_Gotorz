@@ -41,10 +41,31 @@ jobs:
         dotnet-version: 8.0.x
     
     - name: Publish
-      run: dotnet publish -c Release -o ./publish
-    
+      run: dotnet publish ./Server/Server.csproj -c Release -o ./publish
+
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: gotorz-app
         path: ./publish
+
+  # Structure from ChatGPT. Customized for this project.
+  deploy:
+    needs: publish
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: gotorz-app
+        path: ./publish
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: team2-gotorz
+        slot-name: Production
+        publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
+        package: ./publish
