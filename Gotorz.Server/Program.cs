@@ -24,7 +24,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connectionString = builder.Configuration.GetConnectionString("EskeConnection");
+var connectionString = builder.Configuration.GetConnectionString("AzureConnection");
 
 builder.Services.AddDbContext<GotorzDbContext>(options =>
 {

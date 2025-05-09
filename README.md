@@ -1,12 +1,15 @@
 # Gotorz
-Blazor Web Application for creating and booking holidays.
+Blazor Web Application for creating and booking holiday packages.
 
-## Prerequisites
+## Access as Web App
+Visit https://team2-gotorz-bdd8h9bratemd2cc.northeurope-01.azurewebsites.net
+
+## Running Application with Local Server
+___
+### Prerequisites
 Before performing the steps below, ensure the following are in place:
 1. **SQL Server Management Studio (SSMS)** is installed.
 2. **SQL Server instance is running** via SSMS.
-
-## Running Application with Server
 ___
 ### Step 1: Clone git repository
 1. Open terminal or Git Bash
