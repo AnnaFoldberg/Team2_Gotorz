@@ -2,7 +2,8 @@
 Blazor Web Application for creating and booking holiday packages.
 
 ## Access as Web App
-Visit https://team2-gotorz-bdd8h9bratemd2cc.northeurope-01.azurewebsites.net
+[Visit the Web App] (https://team2-gotorz-bdd8h9bratemd2cc.northeurope-01.azurewebsites.net)
+> **Note:** The web app is currently unavailable because the Azure server has been shut down.
 
 ## Running Application with Local Server
 ___
