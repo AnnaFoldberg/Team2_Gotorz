@@ -16,7 +16,7 @@ ___
 1. Open terminal or Git Bash
 2. Run the following command to clone the project:
    ```bash
-   git clone https://github.com/Longmose/Team2_Gotorz.git```
+   git clone https://github.com/Longmose/Team2_Gotorz.git
 
 ### Step 2: Set up connection to server
 1. Open `Gotorz.sln`
