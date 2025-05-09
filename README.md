@@ -3,8 +3,8 @@ Blazor Web Application for creating and booking holidays.
 
 ## Prerequisites
 Before performing the steps below, ensure the following are in place:
-- **SQL Server Management Studio (SSMS)** is installed.
-- **SQL Server instance is running** via SSMS.
+1. **SQL Server Management Studio (SSMS)** is installed.
+2. **SQL Server instance is running** via SSMS.
 
 ## Running Application with Server
 ___
