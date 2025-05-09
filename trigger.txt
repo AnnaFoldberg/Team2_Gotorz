@@ -1,2 +1,0 @@
-activate CI/CD
-activate CI/CD
