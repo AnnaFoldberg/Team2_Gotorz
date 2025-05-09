@@ -61,16 +61,16 @@
 
     [Parameter]
     [SupplyParameterFromQuery]
-    public string? UserId { get; set; }
+    public string? UserEmail { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(UserId))
+            if (string.IsNullOrWhiteSpace(UserEmail))
             {
                 var currentUser = await UserService.GetCurrentUserAsync();
-                UserId = currentUser.UserId;
+                UserEmail = currentUser.Email;
             }
 
             holidayBookings = await BookingService.GetCustomerHolidayBookingsAsync(UserEmail);
