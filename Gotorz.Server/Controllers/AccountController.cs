@@ -101,6 +101,7 @@ public class AccountController : ControllerBase
 
         var userDto = new UserDto
         {
+            UserId = user?.Id,
             Email = user?.UserName,
             IsAuthenticated = User.Identity?.IsAuthenticated ?? false,
             FirstName = user?.FirstName,
@@ -131,6 +132,7 @@ public class AccountController : ControllerBase
 
         var userDto = new UserDto
         {
+            UserId = user?.Id,
             Email = user.Email,
             FirstName = user.FirstName,
             LastName = user.LastName,

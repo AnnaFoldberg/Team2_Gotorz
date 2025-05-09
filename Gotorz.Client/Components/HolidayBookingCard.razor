@@ -61,7 +61,7 @@
             currentUser = await UserService.GetCurrentUserAsync();
 
             isAuthorizedUser = ((await UserService.IsUserInRoleAsync("customer")) &&
-                HolidayBookingDto.Customer.Email == currentUser.Email ) ||
+                HolidayBookingDto.Customer.UserId == currentUser.UserId ) ||
                 (await UserService.IsUserInRoleAsync("sales")) ||
                 (await UserService.IsUserInRoleAsync("admin"));
 

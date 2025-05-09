@@ -70,7 +70,7 @@ else
                                 <div class="d-flex gap-2">
                                     <a class="btn btn-sm btn-primary" href="@($"/profile/{user.UserId}")">Profile</a>
                                     <a class="btn btn-sm btn-outline-secondary"
-                                       href="@($"/booking/customer/holiday-bookings?UserEmail={Uri.EscapeDataString(user.Email)}")">
+                                       href="@($"/booking/customer/holiday-bookings?User={Uri.EscapeDataString(user.UserId)}")">
                                         Bookings
                                     </a>
                                 </div>

@@ -61,26 +61,26 @@
 
     [Parameter]
     [SupplyParameterFromQuery]
-    public string? UserEmail { get; set; }
+    public string? UserId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(UserEmail))
+            if (string.IsNullOrWhiteSpace(UserId))
             {
                 var currentUser = await UserService.GetCurrentUserAsync();
-                UserEmail = currentUser.Email;
+                UserId = currentUser.UserId;
             }
 
-            holidayBookings = await BookingService.GetCustomerHolidayBookingsAsync(UserEmail);
+            holidayBookings = await BookingService.GetCustomerHolidayBookingsAsync(UserId);
 
             if (holidayBookings == null) return;
 
             isSales = await UserService.IsUserInRoleAsync("sales");
 
             isAuthorizedUser = ((await UserService.IsUserInRoleAsync("customer")) &&
-                holidayBookings.First().Customer.Email == UserEmail) ||
+                holidayBookings.First().Customer.UserId == UserId) ||
                 isSales;
         }
         catch (Exception ex)
@@ -90,7 +90,7 @@
     }
     private async Task NavigateToHolidayBooking(string bookingReference)
     {
-        string from = $"customer/holiday-bookings?UserEmail={UserEmail}";
+        string from = $"customer/holiday-bookings?User={UserId}";
         Navigation.NavigateTo($"/booking/holiday-booking/{bookingReference}/edit/?From={Uri.EscapeDataString(from)}");
     }
 }

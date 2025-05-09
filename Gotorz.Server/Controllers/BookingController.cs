@@ -87,17 +87,17 @@ public class BookingController : ControllerBase
 
     /// <summary>
     /// Defines an API endpoint for HTTP GET that retrieves a collection of <see cref="HolidayBooking"/>
-    /// entities matching the specified <paramref name="email"/> from the database.
+    /// entities matching the specified <paramref name="userId"/> from the database.
     /// </summary>
-    /// <param name="email">The <c>Email</c> to match holiday bookings against.</param>
-    /// <returns>A collection of <see cref="HolidayBookingDto"/> entities matching the specified <paramref name="email"</>.</returns>
+    /// <param name="userId">The <c>UserId</c> to match holiday bookings against.</param>
+    /// <returns>A collection of <see cref="HolidayBookingDto"/> entities matching the specified <paramref name="userId"</>.</returns>
     [HttpGet("customer-holiday-bookings")]
-    public async Task<IEnumerable<HolidayBookingDto>?> GetCustomerHolidayBookingsAsync(string email)
+    public async Task<IEnumerable<HolidayBookingDto>?> GetCustomerHolidayBookingsAsync(string userId)
     {
-        var customer = await _userRepository.GetUserByEmailAsync(email);
+        var customer = await _userRepository.GetUserByIdAsync(userId);
         if (customer == null) return null;
 
-        var userHolidayBookings = await _holidayBookingRepository.GetByCustomerIdAsync(customer.Id);
+        var userHolidayBookings = await _holidayBookingRepository.GetByCustomerIdAsync(userId);
         if (userHolidayBookings == null) return null;
 
         // Attach customer
@@ -192,7 +192,7 @@ public class BookingController : ControllerBase
         holidayBooking.HolidayPackageId = holidayPackage.HolidayPackageId;
 
         // Ensure holiday booking contains the correct CustomerId
-        var user = await _userRepository.GetUserByEmailAsync(holidayBookingDto.Customer.Email);
+        var user = await _userRepository.GetUserByIdAsync(holidayBookingDto.Customer.UserId);
 
         if (user == null)
         {

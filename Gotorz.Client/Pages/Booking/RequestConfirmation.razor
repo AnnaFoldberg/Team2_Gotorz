@@ -66,7 +66,7 @@
         currentUser = await UserService.GetCurrentUserAsync();
 
         isAuthorizedUser = (await UserService.IsUserInRoleAsync("customer")) &&
-          holidayBooking.Customer.Email == currentUser.Email;
+          holidayBooking.Customer.UserId == currentUser.UserId;
       }
       catch (Exception ex)
       {
