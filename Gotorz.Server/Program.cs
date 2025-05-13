@@ -10,10 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddDbContext<GotorzDbContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SayeConnection"));
-});
+// builder.Services.AddDbContext<GotorzDbContext>(options =>
+// {
+//     options.UseSqlServer(builder.Configuration.GetConnectionString("SayeConnection"));
+// });
 builder.Services.AddScoped<IRepository<Airport>, AirportRepository>();
 builder.Services.AddScoped<IFlightRepository, FlightRepository>();
 builder.Services.AddScoped<IRepository<FlightTicket>, FlightTicketRepository>();
@@ -29,18 +29,18 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
-// var connectionString = builder.Configuration.GetConnectionString("AnnaConnection");
+var connectionString = builder.Configuration.GetConnectionString("SayeConnection");
 
-// builder.Services.AddDbContext<GotorzDbContext>(options =>
-// {
-//     options.UseSqlServer(connectionString);
-// });
-
-// builder.Services.AddDbContext<AuthDbContext>(options =>
-//     options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<GotorzDbContext>(options =>
+{
+    options.UseSqlServer(connectionString);
+});
 
 builder.Services.AddDbContext<AuthDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SayeConnection")));
+    options.UseSqlServer(connectionString));
+
+// builder.Services.AddDbContext<AuthDbContext>(options =>
+//     options.UseSqlServer(builder.Configuration.GetConnectionString("AuthConnection")));
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {

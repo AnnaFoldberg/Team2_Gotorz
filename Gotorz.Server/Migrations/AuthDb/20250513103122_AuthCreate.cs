@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Gotorz.Server.Migrations.AuthDb
 {
     /// <inheritdoc />
-    public partial class InitIdentityTables : Migration
+    public partial class AuthCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
