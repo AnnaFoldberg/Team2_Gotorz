@@ -28,14 +28,14 @@ namespace Gotorz.Server.UnitTests.Controllers
         [TestInitialize]
         public void TestInitialize()
         {
-            _mockFlightService = new Mock<IFlightService>();
             _mockMapper = new Mock<IMapper>();
+            _mockFlightService = new Mock<IFlightService>();
             _mockAirportRepository = new Mock<IRepository<Airport>>();
             _mockFlightRepository = new Mock<IFlightRepository>();
             _mockFlightTicketRepository = new Mock<IRepository<FlightTicket>>();
             _mockHolidayPackageRepository = new Mock<IRepository<HolidayPackage>>();
 
-            _flightController = new FlightController(_mockFlightService.Object, _mockMapper.Object,
+            _flightController = new FlightController(_mockMapper.Object, _mockFlightService.Object,
                 _mockAirportRepository.Object, _mockFlightRepository.Object, _mockFlightTicketRepository.Object,
                 _mockHolidayPackageRepository.Object);
         }
@@ -125,7 +125,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             var airportDto = new AirportDto { AirportId = 1, EntityId = "95565058", LocalizedName = "New York John F. Kennedy", SkyId = "JFK" };
             var airport = new Airport { AirportId = 1, EntityId = "95565058", LocalizedName = "New York John F. Kennedy", SkyId = "JFK" };
 
-            _mockFlightService.Setup(s => s.GetAirportAsync(airportName))
+            _mockFlightService.Setup(s => s.GetAirportsAsync(airportName))
                       .ReturnsAsync( new List<AirportDto> { airportDto } );
 
             _mockMapper.Setup(m => m.Map<Airport>(airportDto)).Returns(airport);
@@ -155,7 +155,7 @@ namespace Gotorz.Server.UnitTests.Controllers
                 new AirportDto { AirportId = 2, EntityId = "95565050", LocalizedName = "London Heathrow", SkyId = "LHR" },
             };
 
-            _mockFlightService.Setup(s => s.GetAirportAsync(airportName))
+            _mockFlightService.Setup(s => s.GetAirportsAsync(airportName))
                 .ReturnsAsync( mockAirportDtos );
 
             // Act
@@ -174,7 +174,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             // Arrange
             string airportName = "Airport";
 
-            _mockFlightService.Setup(s => s.GetAirportAsync(airportName))
+            _mockFlightService.Setup(s => s.GetAirportsAsync(airportName))
                       .ReturnsAsync( new List<AirportDto>() );
 
             // Act
@@ -193,7 +193,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             // Arrange
             string airportName = "Airport";
 
-            _mockFlightService.Setup(s => s.GetAirportAsync(airportName))
+            _mockFlightService.Setup(s => s.GetAirportsAsync(airportName))
                       .ReturnsAsync( (List<AirportDto>?) null );
 
             // Act
@@ -262,7 +262,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             Assert.AreEqual(3, flights.Count);
             Assert.AreEqual("{bl}:202504040539*D*JFK*LHR*20250505*airf*AF", flights[2].FlightNumber);
             _mockAirportRepository.Verify(r => r.GetAllAsync(), Times.Once);
-            _mockFlightService.Verify(s => s.GetAirportAsync(It.IsAny<string>()), Times.Never);
+            _mockFlightService.Verify(s => s.GetAirportsAsync(It.IsAny<string>()), Times.Never);
         }
 
         [TestMethod]
@@ -314,7 +314,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             Assert.AreEqual(2, flights.Count);
             Assert.AreEqual("{bl}:202504040709*D*JFK*LHR*20250512*smtf*FI", flights[0].FlightNumber);
             _mockAirportRepository.Verify(r => r.GetAllAsync(), Times.Once);
-            _mockFlightService.Verify(s => s.GetAirportAsync(It.IsAny<string>()), Times.Never);
+            _mockFlightService.Verify(s => s.GetAirportsAsync(It.IsAny<string>()), Times.Never);
         }
 
         [TestMethod]
@@ -346,7 +346,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             Assert.IsNotNull(flights);
             Assert.AreEqual(0, flights.Count);
             _mockAirportRepository.Verify(r => r.GetAllAsync(), Times.Once);
-            _mockFlightService.Verify(s => s.GetAirportAsync(It.IsAny<string>()), Times.Never);
+            _mockFlightService.Verify(s => s.GetAirportsAsync(It.IsAny<string>()), Times.Never);
         }
 
         [TestMethod]
@@ -398,7 +398,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             var departureAirportDto = new AirportDto { EntityId = "95565058", LocalizedName = "New York John F. Kennedy", SkyId = "JFK" };
             var arrivalAirportDto = new AirportDto { EntityId = "95565050", LocalizedName = "London Heathrow", SkyId = "LHR" };
 
-            _mockFlightService.Setup(s => s.GetAirportAsync(departureAirportName))
+            _mockFlightService.Setup(s => s.GetAirportsAsync(departureAirportName))
                     .ReturnsAsync( new List<AirportDto> { departureAirportDto } );
 
             _mockMapper.Setup(m => m.Map<AirportDto>(arrivalAirport)).Returns(arrivalAirportDto);
@@ -441,7 +441,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             Assert.AreEqual(3, flights.Count);
             _mockAirportRepository.Verify(r => r.AddAsync(It.Is<Airport>(a => a.LocalizedName == departureAirportName)), Times.Once);
             _mockAirportRepository.Verify(r => r.GetAllAsync(), Times.Exactly(2));
-            _mockFlightService.Verify(s => s.GetAirportAsync(departureAirportName), Times.Once);
+            _mockFlightService.Verify(s => s.GetAirportsAsync(departureAirportName), Times.Once);
         }
 
         [TestMethod]
@@ -462,7 +462,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             var departureAirportDto = new AirportDto { EntityId = "95565058", LocalizedName = "New York John F. Kennedy", SkyId = "JFK" };
             var arrivalAirportDto = new AirportDto { EntityId = "95565050", LocalizedName = "London Heathrow", SkyId = "LHR" };
 
-            _mockFlightService.Setup(s => s.GetAirportAsync(arrivalAirportName))
+            _mockFlightService.Setup(s => s.GetAirportsAsync(arrivalAirportName))
                       .ReturnsAsync( new List<AirportDto> { arrivalAirportDto } );
 
             _mockMapper.Setup(m => m.Map<AirportDto>(departureAirport)).Returns(departureAirportDto);
@@ -505,7 +505,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             Assert.AreEqual(3, flights.Count);
             _mockAirportRepository.Verify(r => r.AddAsync(It.Is<Airport>(a => a.LocalizedName == arrivalAirportName)), Times.Once);
             _mockAirportRepository.Verify(r => r.GetAllAsync(), Times.Exactly(2));
-            _mockFlightService.Verify(s => s.GetAirportAsync(arrivalAirportName), Times.Once);
+            _mockFlightService.Verify(s => s.GetAirportsAsync(arrivalAirportName), Times.Once);
         }
 
         [TestMethod]
@@ -523,7 +523,7 @@ namespace Gotorz.Server.UnitTests.Controllers
 
             var arrivalAirportDto = new AirportDto { EntityId = "95565050", LocalizedName = "London Heathrow", SkyId = "LHR" };
 
-            _mockFlightService.Setup(s => s.GetAirportAsync(departureAirportName))
+            _mockFlightService.Setup(s => s.GetAirportsAsync(departureAirportName))
                       .ReturnsAsync( new List<AirportDto>() );
 
             _mockMapper.Setup(m => m.Map<AirportDto>(arrivalAirport)).Returns(arrivalAirportDto);
@@ -535,7 +535,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             Assert.IsNotNull(flights);
             Assert.AreEqual(0, flights.Count);
             _mockAirportRepository.Verify(r => r.GetAllAsync(), Times.Once);
-            _mockFlightService.Verify(s => s.GetAirportAsync(departureAirportName), Times.Once);
+            _mockFlightService.Verify(s => s.GetAirportsAsync(departureAirportName), Times.Once);
         }
 
         [TestMethod]
@@ -553,7 +553,7 @@ namespace Gotorz.Server.UnitTests.Controllers
 
             var departureAirportDto = new AirportDto { EntityId = "95565058", LocalizedName = "New York John F. Kennedy", SkyId = "JFK" };
 
-            _mockFlightService.Setup(s => s.GetAirportAsync(arrivalAirportName))
+            _mockFlightService.Setup(s => s.GetAirportsAsync(arrivalAirportName))
                       .ReturnsAsync( new List<AirportDto>() );
 
             _mockMapper.Setup(m => m.Map<AirportDto>(departureAirport)).Returns(departureAirportDto);
@@ -565,7 +565,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             Assert.IsNotNull(flights);
             Assert.AreEqual(0, flights.Count);
             _mockAirportRepository.Verify(r => r.GetAllAsync(), Times.Once);
-            _mockFlightService.Verify(s => s.GetAirportAsync(arrivalAirportName), Times.Once);
+            _mockFlightService.Verify(s => s.GetAirportsAsync(arrivalAirportName), Times.Once);
         }
 
         // -------------------- PostFlightTicketsAsync --------------------

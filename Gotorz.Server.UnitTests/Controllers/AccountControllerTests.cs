@@ -170,13 +170,15 @@ namespace Gotorz.Server.UnitTests.Controllers
                 LastName = "Customer",
                 PhoneNumber = "87654321"
             };
-            var claims = new List<ClaimDto>
+            var claims = new List<Claim>
             {
-                new ClaimDto { Type = ClaimTypes.Role, Value = "customer" }
+                new Claim(ClaimTypes.Role, "customer")
             };
 
-            _userRepoMock.Setup(r => r.GetUserByIdAsync(userId)).ReturnsAsync(testUser);
+
+            _userRepoMock.Setup(r => r.GetUserByIdAsync(userId)).ReturnsAsync(testUser); 
             _userRepoMock.Setup(r => r.GetClaimsAsync(testUser)).ReturnsAsync(claims);
+
 
             // Act
             var result = await _controller.GetUserById(userId);

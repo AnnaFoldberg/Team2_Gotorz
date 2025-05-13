@@ -9,6 +9,12 @@ namespace Gotorz.Client.Services
     public interface IBookingService
     {
         /// <summary>
+        /// Retrieves the next available booking reference.
+        /// </summary>
+        /// <returns>A <c>string</c> representing the next available booking reference.</returns>
+        Task<string> GetNextBookingReferenceAsync();
+
+        /// <summary>
         /// Retrieves all <see cref="HolidayBooking"/> entities from the database.
         /// </summary>
         /// <returns>A collection of <see cref="HolidayBookingDto"/> entities.</returns>
@@ -22,12 +28,6 @@ namespace Gotorz.Client.Services
         Task<IEnumerable<HolidayBookingDto>> GetCustomerHolidayBookingsAsync(string email);
 
         /// <summary>
-        /// Retrieves the next available booking reference.
-        /// </summary>
-        /// <returns>A <c>string</c> representing the next available booking reference.</returns>
-        Task<string> GetNextBookingReferenceAsync();
-
-        /// <summary>
         /// Retrieves a holiday booking matching the specified <paramref name="bookingReference"/> from the database.
         /// </summary>
         /// <param name="bookingReference">The booking reference to match the holiday booking against.</param>
@@ -38,7 +38,7 @@ namespace Gotorz.Client.Services
         /// Updates a holiday booking's status in the Server by calling its API endpoint, <c>holiday-booking</c>.
         /// </summary>
         /// <param name="holidayBooking">The holiday booking to be updated.</param>
-        Task PatchHolidayBookingStatusAsync(HolidayBookingDto holidayBooking);
+        Task PatchHolidayBookingStatusAsync(HolidayBookingDto holidayBookingPatch);
 
         /// <summary>
         /// Posts a holiday booking to the Server by calling its API endpoint, <c>holiday-booking</c>.

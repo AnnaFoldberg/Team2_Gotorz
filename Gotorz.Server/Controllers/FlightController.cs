@@ -19,8 +19,8 @@ namespace Gotorz.Server.Controllers;
 [Route("[controller]")]
 public class FlightController : ControllerBase
 {
-    private IFlightService _flightService;
     private readonly IMapper _mapper;
+    private IFlightService _flightService;
     private readonly IRepository<Airport> _airportRepository;
     private readonly IFlightRepository _flightRepository;
     private readonly IRepository<FlightTicket> _flightTicketRepository;
@@ -37,7 +37,7 @@ public class FlightController : ControllerBase
     /// <see cref="Flight"/> data in the database.</param>
     /// /// <param name="flightTicketRepository">The <see cref="IRepository<FlightTicket>"/> used to access
     /// <see cref="FlightTicket"/> data in the database.</param>
-    public FlightController(IFlightService flightService, IMapper mapper,
+    public FlightController(IMapper mapper, IFlightService flightService,
         IRepository<Airport> airportRepository, IFlightRepository flightRepository,
         IRepository<FlightTicket> flightTicketRepository, IRepository<HolidayPackage> holidayPackageRepository)
     {
@@ -63,15 +63,15 @@ public class FlightController : ControllerBase
     }
 
     /// <summary>
-    /// Defines an API endpoint for HTTP GET that calls <see cref="FlightService.GetAirport(string)"/>
+    /// Defines an API endpoint for HTTP GET that calls <see cref="FlightService.GetAirportsAsync(string)"/>
     /// to retrieve a single matching <see cref="Airport"/>.
     /// </summary>
-    /// <param name="airport">The search term to match airport names against in <see cref="FlightService.GetAirport(string)"/>.</param>
+    /// <param name="airport">The search term to match airport names against in <see cref="FlightService.GetAirportAsync(string)"/>.</param>
     /// <returns>An <see cref="IActionResult"/> that contains <c>Ok</c> if exactly one airport was found, otherwise <c>BadRequest</c>.</returns>
     [HttpGet("airport")]
     public async Task<IActionResult> GetAirportAsync(string airportName)
     {
-        var airports = await _flightService.GetAirportAsync(airportName);
+        var airports = await _flightService.GetAirportsAsync(airportName);
 
         if (airports == null) return BadRequest("Something went wrong");
         else if ( airports.Count == 0 ) return BadRequest("No airports were found");
@@ -85,12 +85,12 @@ public class FlightController : ControllerBase
     }
 
     /// <summary>
-    /// Defines an API endpoint for HTTP GET that calls <see cref="FlightService.GetFlights(string, string, string)"/>
+    /// Defines an API endpoint for HTTP GET that calls <see cref="FlightService.GetFlightsAsync(string, string, string)"/>
     /// to retrieve a list of matching <see cref="FlightDto"/> entities.
     /// </summary>
-    /// <param name="date">The departure date to match the flight against in <see cref="FlightService.GetFlights(string, string, string)"/>.</param>
-    /// <param name="departureAirport">The departure airport to match the flight against in <see cref="FlightService.GetFlights(string, string, string)"/>.</param>
-    /// <param name="arrivalAirport">The arrival airport to match the flight against in <see cref="FlightService.GetFlights(string, string, string)"/>.</param>
+    /// <param name="date">The departure date to match the flight against in <see cref="FlightService.GetFlightsAsync(string, string, string)"/>.</param>
+    /// <param name="departureAirport">The departure airport to match the flight against in <see cref="FlightService.GetFlightsAsync(string, string, string)"/>.</param>
+    /// <param name="arrivalAirport">The arrival airport to match the flight against in <see cref="FlightService.GetFlightsAsync(string, string, string)"/>.</param>
     /// <returns>A list of <see cref="FlightDto"/> entities matching the specified parameters.</returns>
     [HttpGet("flights")]
     public async Task<List<FlightDto>> GetFlightsAsync([FromQuery] string? date, [FromQuery] string departureAirport, [FromQuery] string arrivalAirport)

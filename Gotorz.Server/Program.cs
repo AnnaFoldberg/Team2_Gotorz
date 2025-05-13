@@ -5,6 +5,7 @@ using Gotorz.Server.Models;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -115,6 +116,8 @@ using (var scope = app.Services.CreateScope())
         if (result.Succeeded)
         {
             await userManager.AddToRoleAsync(adminUser, "admin");
+            await userManager.AddClaimAsync(adminUser, new Claim(ClaimTypes.Role, "admin"));
+
         }
     }
 }
@@ -131,9 +134,9 @@ app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 app.UseCors("MyAllowedOrigins");
+app.UseRouting(); //Bruges tiL??
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseRouting();
 
 app.MapControllers();
 app.MapFallbackToFile("index.html");
