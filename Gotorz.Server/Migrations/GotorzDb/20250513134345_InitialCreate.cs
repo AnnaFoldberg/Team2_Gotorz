@@ -3,14 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Gotorz.Server.Migrations
+namespace Gotorz.Server.Migrations.GotorzDb
 {
     /// <inheritdoc />
-<<<<<<<< HEAD:Gotorz.Server/Migrations/20250513100947_InitialCreate.cs
     public partial class InitialCreate : Migration
-========
-    public partial class InitialGotorzMigration : Migration
->>>>>>>> master:Gotorz.Server/Migrations/20250506105829_InitialGotorzMigration.cs
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

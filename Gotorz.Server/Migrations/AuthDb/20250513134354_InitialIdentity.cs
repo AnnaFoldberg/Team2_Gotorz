@@ -6,11 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Gotorz.Server.Migrations.AuthDb
 {
     /// <inheritdoc />
-<<<<<<<< HEAD:Gotorz.Server/Migrations/AuthDb/20250513103122_AuthCreate.cs
-    public partial class AuthCreate : Migration
-========
-    public partial class InitialIdentityMigration : Migration
->>>>>>>> master:Gotorz.Server/Migrations/20250506105819_InitialIdentityMigration.cs
+    public partial class InitialIdentity : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -1,7 +1,7 @@
-using Gotorz.Server.Configurations;
 using Gotorz.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 using Gotorz.Server.Models;
+using Gotorz.Server.Configurations;
 
 namespace Gotorz.Server.Contexts
 {
@@ -44,44 +44,47 @@ namespace Gotorz.Server.Contexts
         public GotorzDbContext(DbContextOptions<GotorzDbContext> options) : base(options) { }
 
         /// <summary>
-        /// Applies all entity configurations that implement <see cref="IEntityTypeConfiguration{TEntity}"/>,
-        /// except the <see cref="ApplicationUserConfiguration"/>.
+        /// Applies all entity configurations that implement <see cref="IEntityTypeConfiguration{TEntity}"/>.
         /// </summary>
         /// <param name="modelBuilder">The <see cref="ModelBuilder"/> used to configure entity relationships.</param>
         /// <remarks>Based on suggestion from ChatGPT. Customized for this project.</remarks>
-        protected override void OnModelCreating(ModelBuilder builder)
+        /// 
+
+        public DbSet<Hotel> Hotels { get; set; }
+        public DbSet<HotelBooking> HotelBookings { get; set; }
+        public DbSet<HotelRoom> HotelRooms { get; set; }
+        public DbSet<HotelSearchHistory> HotelSearchHistories { get; set; }
+        // protected override void OnModelCreating(ModelBuilder modelBuilder)
+        // {
+        //     modelBuilder.ApplyConfigurationsFromAssembly(typeof(GotorzDbContext).Assembly);
+        //     modelBuilder.Entity<HotelRoom>()
+        //             .Property(r => r.Price)
+        //             .HasPrecision(10, 2);
+
+        //     modelBuilder.Entity<HotelBooking>()
+        //     .HasOne(b => b.HotelRoom)
+        //     .WithMany(r => r.HotelBookings)
+        //     .HasForeignKey(b => b.HotelRoomId);
+
+        //     modelBuilder.Entity<HotelBooking>()
+        //         .Property(b => b.Price)
+        //         .HasPrecision(10, 2);
+
+        //     modelBuilder.Entity<HotelBooking>()
+        //     .HasOne(b => b.HolidayPackage)
+        //     .WithMany(p => p.HotelBookings)
+        //     .HasForeignKey(b => b.HolidayPackageId)
+        //     .OnDelete(DeleteBehavior.Cascade);
+            
+        // }
+            protected override void OnModelCreating(ModelBuilder builder)
         {
                 builder.ApplyConfigurationsFromAssembly(
                     typeof(GotorzDbContext).Assembly,
                     type => type != typeof(ApplicationUserConfiguration)
                 );
                 builder.Ignore<ApplicationUser>();
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(GotorzDbContext).Assembly);
-            modelBuilder.Entity<HotelRoom>()
-                    .Property(r => r.Price)
-                    .HasPrecision(10, 2);
-
-            modelBuilder.Entity<HotelBooking>()
-            .HasOne(b => b.HotelRoom)
-            .WithMany(r => r.HotelBookings)
-            .HasForeignKey(b => b.HotelRoomId);
-
-            modelBuilder.Entity<HotelBooking>()
-                .Property(b => b.Price)
-                .HasPrecision(10, 2);
-
-            modelBuilder.Entity<HotelBooking>()
-            .HasOne(b => b.HolidayPackage)
-            .WithMany(p => p.HotelBookings)
-            .HasForeignKey(b => b.HolidayPackageId)
-            .OnDelete(DeleteBehavior.Cascade);
-            
         }
-        public DbSet<Hotel> Hotels { get; set; }
-        public DbSet<HotelBooking> HotelBookings { get; set; }
-        public DbSet<HotelRoom> HotelRooms { get; set; }
-        public DbSet<HotelSearchHistory> HotelSearchHistories { get; set; }
-
     }
 
 }

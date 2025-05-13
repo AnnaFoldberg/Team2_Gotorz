@@ -12,13 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Gotorz.Server.Migrations.AuthDb
 {
     [DbContext(typeof(AuthDbContext))]
-<<<<<<<< HEAD:Gotorz.Server/Migrations/AuthDb/20250513103122_AuthCreate.Designer.cs
-    [Migration("20250513103122_AuthCreate")]
-    partial class AuthCreate
-========
-    [Migration("20250506105819_InitialIdentityMigration")]
-    partial class InitialIdentityMigration
->>>>>>>> master:Gotorz.Server/Migrations/20250506105819_InitialIdentityMigration.Designer.cs
+    [Migration("20250513134354_InitialIdentity")]
+    partial class InitialIdentity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

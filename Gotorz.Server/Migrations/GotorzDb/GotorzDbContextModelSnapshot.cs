@@ -4,24 +4,16 @@ using Gotorz.Server.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Gotorz.Server.Migrations
+namespace Gotorz.Server.Migrations.GotorzDb
 {
     [DbContext(typeof(GotorzDbContext))]
-<<<<<<<< HEAD:Gotorz.Server/Migrations/20250513100947_InitialCreate.Designer.cs
-    [Migration("20250513100947_InitialCreate")]
-    partial class InitialCreate
-========
-    [Migration("20250506105829_InitialGotorzMigration")]
-    partial class InitialGotorzMigration
->>>>>>>> master:Gotorz.Server/Migrations/20250506105829_InitialGotorzMigration.Designer.cs
+    partial class GotorzDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
