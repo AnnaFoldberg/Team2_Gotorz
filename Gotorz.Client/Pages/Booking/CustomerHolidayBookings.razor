@@ -81,7 +81,8 @@
 
             isAuthorizedUser = ((await UserService.IsUserInRoleAsync("customer")) &&
                 holidayBookings.First().Customer.UserId == UserId) ||
-                isSales;
+                isSales ||
+                await UserService.IsUserInRoleAsync("admin");
         }
         catch (Exception ex)
         {
@@ -90,7 +91,7 @@
     }
     private async Task NavigateToHolidayBooking(string bookingReference)
     {
-        string from = $"customer/holiday-bookings?User={UserId}";
+        string from = $"customer/holiday-bookings?UserId={UserId}";
         Navigation.NavigateTo($"/booking/holiday-booking/{bookingReference}/edit/?From={Uri.EscapeDataString(from)}");
     }
 }

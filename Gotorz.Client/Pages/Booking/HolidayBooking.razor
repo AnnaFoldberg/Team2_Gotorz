@@ -90,7 +90,8 @@
 
             isAuthorizedUser = ((await UserService.IsUserInRoleAsync("customer")) &&
                 holidayBooking.Customer.UserId == currentUser.UserId) ||
-                isSales;
+                isSales ||
+                await UserService.IsUserInRoleAsync("admin");
 
             bookingStatusEnums = Enum.GetValues(typeof(BookingStatus)).Cast<BookingStatus>();
         }
