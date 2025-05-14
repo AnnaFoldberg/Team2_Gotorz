@@ -65,7 +65,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -104,7 +104,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -138,6 +138,45 @@ namespace Gotorz.Client.UnitTests.Pages
             Assert.IsNotNull(confirmButton);
         }
 
+
+        [TestMethod]
+        public void OnInitializedAsync_IsAdmin_ShowsHolidayBookingWithStatusInputDisabled()
+        {
+            // Arrange
+            SetUser("admin");
+
+            var mockCustomer = new UserDto
+            {
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
+            };
+
+            var mockHolidayPackage = new HolidayPackageDto
+            {
+                HolidayPackageId = 1,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            var mockHolidayBooking = new HolidayBookingDto
+            {
+                BookingReference = "G01",
+                Customer = mockCustomer,
+                Status = BookingStatus.Pending,
+                HolidayPackage = mockHolidayPackage
+            };
+
+            _mockBookingService.Setup(s => s.GetHolidayBookingAsync(mockHolidayBooking.BookingReference)).ReturnsAsync(mockHolidayBooking);
+
+            // Act
+            var component = RenderComponent<HolidayBooking>(parameters => parameters.Add(c => c.BookingReference, mockHolidayBooking.BookingReference));
+
+            // Assert
+            Assert.IsTrue(component.Markup.Contains($"Booking Reference: #{mockHolidayBooking.BookingReference}"));
+            Assert.IsTrue(component.Markup.Contains("Rome"));
+            var selectStatus = component.Find("#status");
+            Assert.IsTrue(selectStatus.HasAttribute("disabled"));
+        }
+
         [TestMethod]
         public void OnInitializedAsync_IsUnauthorizedCustomer_ShowsPageNotFound()
         {
@@ -146,12 +185,12 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockUnauthorizedCustomer = new UserDto
             {
-                Email = "unauthorizedcustomer@mail.com",
+                UserId = "3a7b4ccf-2d09-4753-80ba-76818cd4f3f1"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -180,41 +219,6 @@ namespace Gotorz.Client.UnitTests.Pages
         }
 
         [TestMethod]
-        public void OnInitializedAsync_IsAdmin_ShowsPageNotFound()
-        {
-            // Arrange
-            SetUser("admin");
-
-            var mockCustomer = new UserDto
-            {
-                Email = "customer@mail.com",
-            };
-
-            var mockHolidayPackage = new HolidayPackageDto
-            {
-                HolidayPackageId = 1,
-                Title = "Rome",
-                MaxCapacity = 2
-            };
-
-            var mockHolidayBooking = new HolidayBookingDto
-            {
-                BookingReference = "G01",
-                Customer = mockCustomer,
-                Status = BookingStatus.Pending,
-                HolidayPackage = mockHolidayPackage
-            };
-
-            _mockBookingService.Setup(s => s.GetHolidayBookingAsync(mockHolidayBooking.BookingReference)).ReturnsAsync(mockHolidayBooking);
-
-            // Act
-            var component = RenderComponent<HolidayBooking>(parameters => parameters.Add(c => c.BookingReference, mockHolidayBooking.BookingReference));
-
-            // Assert
-            Assert.IsTrue(component.Markup.Contains("Page not found."));
-        }
-
-        [TestMethod]
         public void OnInitializedAsync_NotLoggedIn_ShowsLogin()
         {
             // Arrange
@@ -222,7 +226,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -262,7 +266,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -304,7 +308,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -339,7 +343,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -386,7 +390,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -423,7 +427,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto

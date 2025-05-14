@@ -13,7 +13,6 @@ namespace Gotorz.Shared.DTOs;
 /// <author>Eske</author>
 public class UserDto
 {
-    //[JsonIgnore]
     public string? UserId { get; set; }
     public string? Email { get; set; }
     public bool IsAuthenticated { get; set; }

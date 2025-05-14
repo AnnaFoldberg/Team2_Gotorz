@@ -30,9 +30,9 @@ namespace Gotorz.Client.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<HolidayBookingDto>> GetCustomerHolidayBookingsAsync(string email)
+        public async Task<IEnumerable<HolidayBookingDto>> GetCustomerHolidayBookingsAsync(string userId)
         {
-            return await _httpClient.GetFromJsonAsync<IEnumerable<HolidayBookingDto>>($"/Booking/customer-holiday-bookings?email={email}");
+            return await _httpClient.GetFromJsonAsync<IEnumerable<HolidayBookingDto>>($"/Booking/customer-holiday-bookings?userId={userId}");
         }
 
         /// <inheritdoc />

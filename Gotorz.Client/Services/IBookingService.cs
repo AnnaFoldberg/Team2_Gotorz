@@ -21,11 +21,11 @@ namespace Gotorz.Client.Services
         Task<IEnumerable<HolidayBookingDto>> GetAllHolidayBookingsAsync();
 
         /// <summary>
-        /// Retrieves a collection of holiday bookings matching the specified <paramref name="userDto"/> from the database.
+        /// Retrieves a collection of holiday bookings matching the specified <paramref name="userId"/> from the database.
         /// </summary>
-        /// <param name="userDto">The <c>UserDto</c> to match holiday bookings against.</param>
-        /// <returns>A collection of <see cref="HolidayBookingDto"/> entities matching the specified <paramref name="userDto"</>.</returns>
-        Task<IEnumerable<HolidayBookingDto>> GetCustomerHolidayBookingsAsync(string email);
+        /// <param name="userId">The <c>UserId</c> to match holiday bookings against.</param>
+        /// <returns>A collection of <see cref="HolidayBookingDto"/> entities matching the specified <paramref name="userId"</>.</returns>
+        Task<IEnumerable<HolidayBookingDto>> GetCustomerHolidayBookingsAsync(string userId);
 
         /// <summary>
         /// Retrieves a holiday booking matching the specified <paramref name="bookingReference"/> from the database.
