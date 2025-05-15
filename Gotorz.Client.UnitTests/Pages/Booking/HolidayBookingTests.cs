@@ -346,30 +346,10 @@ namespace Gotorz.Client.UnitTests.Pages
             // Arrange
             SetUser("sales");
 
-            var mockCustomer = new UserDto
-            {
-                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
-            };
-
-            var mockHolidayPackage = new HolidayPackageDto
-            {
-                HolidayPackageId = 1,
-                Title = "Rome",
-                MaxCapacity = 2
-            };
-
-            var mockHolidayBooking = new HolidayBookingDto
-            {
-                BookingReference = "G01",
-                Customer = mockCustomer,
-                Status = BookingStatus.Pending,
-                HolidayPackage = mockHolidayPackage
-            };
-
-            _mockBookingService.Setup(s => s.GetHolidayBookingAsync(mockHolidayBooking.BookingReference)).ReturnsAsync((HolidayBookingDto)null);
+            _mockBookingService.Setup(s => s.GetHolidayBookingAsync(It.IsAny<string>())).ReturnsAsync((HolidayBookingDto)null);
 
             // Act
-            var component = RenderComponent<HolidayBooking>(parameters => parameters.Add(c => c.BookingReference, mockHolidayBooking.BookingReference));
+            var component = RenderComponent<HolidayBooking>();
 
             // Assert
             Assert.IsTrue(component.Markup.Contains("Page not found."));
