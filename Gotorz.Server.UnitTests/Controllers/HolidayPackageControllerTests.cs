@@ -19,14 +19,19 @@ namespace Gotorz.Server.UnitTests.Controllers
         private HolidayPackageController _controller;
         private Mock<IRepository<HolidayPackage>> _mockRepository;
         private Mock<IMapper> _mockMapper;
+        private Mock<IHolidayPackageRepository> _mockHolidayPackageRepository;
 
         [TestInitialize]
         public void TestInitialize()
         {
             _mockRepository = new Mock<IRepository<HolidayPackage>>();
             _mockMapper = new Mock<IMapper>();
+            _mockHolidayPackageRepository = new Mock<IHolidayPackageRepository>();
 
-            _controller = new HolidayPackageController(_mockRepository.Object, _mockMapper.Object);
+            _controller = new HolidayPackageController(
+                _mockRepository.Object,
+                _mockHolidayPackageRepository.Object,
+                _mockMapper.Object);
         }
 
 
@@ -53,5 +58,47 @@ namespace Gotorz.Server.UnitTests.Controllers
             _mockMapper.Verify(m => m.Map<HolidayPackage>(dto), Times.Once);
             _mockRepository.Verify(r => r.AddAsync(mappedPackage), Times.Once);
         }
+
+        // -------------------- GetAll --------------------
+        [TestMethod]
+        public async Task GetAllAsync_ReturnsOkResult_WithListOfDtos()
+        {
+            // Arrange
+            var holidayPackages = new List<HolidayPackage>
+            {
+            new HolidayPackage { HolidayPackageId = 1, Title = "Test Package 1" },
+             new HolidayPackage { HolidayPackageId = 2, Title = "Test Package 2" }
+            };
+
+            var expectedDtos = new List<HolidayPackageDto>
+            {
+                new HolidayPackageDto { HolidayPackageId = 1, Title = "Test Package 1" },
+                new HolidayPackageDto { HolidayPackageId = 2, Title = "Test Package 2" }
+            };
+
+            _mockRepository.Setup(repo => repo.GetAllAsync())
+                           .ReturnsAsync(holidayPackages);
+
+            _mockMapper.Setup(mapper => mapper.Map<IEnumerable<HolidayPackageDto>>(holidayPackages))
+                       .Returns(expectedDtos);
+
+            // Act
+            var result = await _controller.GetAllAsync();
+
+            // Assert
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
+
+            var okResult = result.Result as OkObjectResult;
+            Assert.IsNotNull(okResult);
+
+            var actualDtos = okResult.Value as IEnumerable<HolidayPackageDto>;
+            Assert.IsNotNull(actualDtos);
+            Assert.AreEqual(expectedDtos.Count, actualDtos.Count());
+
+            // Verify mocks were called
+            _mockRepository.Verify(r => r.GetAllAsync(), Times.Once);
+            _mockMapper.Verify(m => m.Map<IEnumerable<HolidayPackageDto>>(holidayPackages), Times.Once);
+        }
+
     }
 }
