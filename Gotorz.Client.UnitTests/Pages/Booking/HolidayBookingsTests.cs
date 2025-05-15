@@ -472,7 +472,46 @@ namespace Gotorz.Client.UnitTests.Pages
         }
 
         // -------------------- NavigateToHolidayBooking --------------------
+        [TestMethod]
+        public async Task NavigateToHolidayBookingAsync_ValidBookingReference_NavigatesToHolidayBooking()
+        {
+            // Arrange
+            SetUser("sales");
 
+            var bookingReference = "G01";
+
+            var mockCustomer = new UserDto
+            {
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
+            };
+
+            var mockHolidayPackage = new HolidayPackageDto
+            {
+                HolidayPackageId = 1,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            var mockHolidayBooking = new HolidayBookingDto
+            {
+                BookingReference = bookingReference,
+                Customer = mockCustomer,
+                Status = BookingStatus.Pending,
+                HolidayPackage = mockHolidayPackage
+            };
+
+            _mockBookingService.Setup(s => s.GetAllHolidayBookingsAsync()).ReturnsAsync(new List<HolidayBookingDto>{ mockHolidayBooking });
+
+            var component = RenderComponent<HolidayBookings>();
+            var buttons = component.FindAll("button");
+            var editButton = buttons.FirstOrDefault(b => b.TextContent.Contains("Edit"));
+
+            // Act
+            editButton.Click();
+
+            // Assert
+            Assert.IsTrue(Services.GetRequiredService<NavigationManager>().Uri.Contains($"/booking/holiday-booking/{bookingReference}/edit?From=all-holiday-bookings"));
+        }
 
         // -------------------- Helper Methods --------------------
         private void SetUser(string? role)

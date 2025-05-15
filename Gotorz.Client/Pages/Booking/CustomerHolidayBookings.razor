@@ -8,7 +8,7 @@
 @using System.ComponentModel.DataAnnotations
 @inject IUserService UserService
 @inject IBookingService BookingService
-@inject ILogger<HolidayBooking> Logger
+@inject ILogger<CustomerHolidayBookings> Logger
 @inject NavigationManager Navigation
 
 <AuthorizeView>
@@ -29,18 +29,7 @@
             @foreach (HolidayBookingDto holidayBooking in holidayBookings)
             {
                 <div class="p-3 border rounded bg-white shadow">
-                <HolidayBooking BookingReference="@holidayBooking.BookingReference" />
-                <br><br>
-                @if (isSales)
-                {
-                    <div class="container mt-auto mb-4">
-                        <div class="d-flex justify-content-between align-items-center p-3">
-                            <p class="mb-0 flex-grow-1"></p>
-                            <button type="button" class="btn btn-light custom-background text-white"
-                                @onclick="() => NavigateToHolidayBooking(holidayBooking.BookingReference)">Edit</button>
-                        </div>
-                    </div>
-                }
+                    <HolidayBooking BookingReference="@holidayBooking.BookingReference" />
                 </div>
                 <br><br><br>
             }
@@ -56,7 +45,6 @@
 
 @code {
     private bool isAuthorizedUser;
-    private bool isSales;
     private IEnumerable<HolidayBookingDto> holidayBookings;
 
     [Parameter]
@@ -77,21 +65,13 @@
 
             if (holidayBookings == null) return;
 
-            isSales = await UserService.IsUserInRoleAsync("sales");
-
             isAuthorizedUser = ((await UserService.IsUserInRoleAsync("customer")) &&
                 holidayBookings.First().Customer.UserId == UserId) ||
-                isSales ||
                 await UserService.IsUserInRoleAsync("admin");
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error initializing customer's holiday bookings");
         }
-    }
-    private async Task NavigateToHolidayBooking(string bookingReference)
-    {
-        string from = $"customer/holiday-bookings?UserId={UserId}";
-        Navigation.NavigateTo($"/booking/holiday-booking/{bookingReference}/edit/?From={Uri.EscapeDataString(from)}");
     }
 }

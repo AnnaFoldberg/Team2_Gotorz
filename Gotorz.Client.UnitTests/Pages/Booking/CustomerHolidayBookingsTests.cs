@@ -13,7 +13,6 @@ using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Gotorz.Client.Pages.Booking;
 using Gotorz.Shared.Enums;
-using Microsoft.AspNetCore.Components;
 
 namespace Gotorz.Client.UnitTests.Pages
 {
@@ -54,7 +53,6 @@ namespace Gotorz.Client.UnitTests.Pages
             Services.AddSingleton(mockAuthService.Object);
             Services.AddSingleton(_mockBookingService.Object);
             Services.AddSingleton(_mockUserService.Object);
-            Services.AddSingleton<NavigationManager, FakeNavigationManager>();
             Services.AddSingleton(logger.Object);
         }
 
@@ -113,80 +111,13 @@ namespace Gotorz.Client.UnitTests.Pages
             _mockBookingService.Setup(s => s.GetCustomerHolidayBookingsAsync(mockCustomerOne.UserId)).ReturnsAsync(mockCustomerOneHolidayBookings);
 
             // Act
-            var component = RenderComponent<CustomerHolidayBookings>();
+            var component = RenderComponent<CustomerHolidayBookings>(parameters => parameters.Add(c => c.UserId, mockCustomerOne.UserId));
 
             // Assert
             var bookingComponents = component.FindComponents<HolidayBooking>();
             Assert.AreEqual(2, bookingComponents.Count);
             Assert.IsTrue(bookingComponents.ElementAt(0).Instance.BookingReference == "G01");
             Assert.IsTrue(bookingComponents.ElementAt(1).Instance.BookingReference == "G02");
-        }
-
-        [TestMethod]
-        public void OnInitializedAsync_IsSales_ShowsCustomerHolidayBookingsWithEditButton()
-        {
-            // Arrange
-            SetUser("sales");
-
-            var mockCustomerOne = new UserDto
-            {
-                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
-            };
-
-            var mockCustomerTwo = new UserDto
-            {
-                UserId = "3a7b4ccf-2d09-4753-80ba-76818cd4f3f1"
-            };
-
-            var mockHolidayPackage = new HolidayPackageDto
-            {
-                HolidayPackageId = 1,
-                Title = "Rome",
-                MaxCapacity = 2
-            };
-
-            var mockCustomerOneHolidayBookings = new List<HolidayBookingDto>()
-            {
-                new HolidayBookingDto
-                {
-                    BookingReference = "G01",
-                    Customer = mockCustomerOne,
-                    Status = BookingStatus.Pending,
-                    HolidayPackage = mockHolidayPackage
-                },
-                new HolidayBookingDto
-                {
-                    BookingReference = "G02",
-                    Customer = mockCustomerOne,
-                    Status = BookingStatus.Pending,
-                    HolidayPackage = mockHolidayPackage
-                }
-            };
-
-            var mockCustomerTwoHolidayBooking = new HolidayBookingDto
-            {
-                BookingReference = "G03",
-                Customer = mockCustomerTwo,
-                Status = BookingStatus.Pending,
-                HolidayPackage = mockHolidayPackage
-            };
-
-
-            _mockUserService.Setup(s => s.GetCurrentUserAsync()).ReturnsAsync(mockCustomerOne);
-            _mockBookingService.Setup(s => s.GetCustomerHolidayBookingsAsync(mockCustomerOne.UserId)).ReturnsAsync(mockCustomerOneHolidayBookings);
-
-            // Act
-            var component = RenderComponent<CustomerHolidayBookings>();
-
-            // Assert
-            var bookingComponents = component.FindComponents<HolidayBooking>();
-            Assert.AreEqual(2, bookingComponents.Count);
-            Assert.IsTrue(bookingComponents.ElementAt(0).Instance.BookingReference == "G01");
-            Assert.IsTrue(bookingComponents.ElementAt(1).Instance.BookingReference == "G02");
-            var buttons = component.FindAll("button");
-            var editButton = buttons.FirstOrDefault(b => b.TextContent.Contains("Edit"));
-            Assert.IsNotNull(editButton);
-            Assert.IsFalse(editButton.HasAttribute("disabled"));
         }
 
         [TestMethod]
@@ -244,6 +175,118 @@ namespace Gotorz.Client.UnitTests.Pages
 
             // Act
             var component = RenderComponent<CustomerHolidayBookings>();
+
+            // Assert
+            var bookingComponents = component.FindComponents<HolidayBooking>();
+            Assert.AreEqual(2, bookingComponents.Count);
+            Assert.IsTrue(bookingComponents.ElementAt(0).Instance.BookingReference == "G01");
+            Assert.IsTrue(bookingComponents.ElementAt(1).Instance.BookingReference == "G02");
+        }
+
+        [TestMethod]
+        public void OnInitializedAsync_IsUnauthorizedCustomer_ShowsPageNotFound()
+        {
+            // Arrange
+            SetUser("customer");
+
+            var mockCustomerOne = new UserDto
+            {
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
+            };
+
+            var mockCustomerTwo = new UserDto
+            {
+                UserId = "3a7b4ccf-2d09-4753-80ba-76818cd4f3f1"
+            };
+
+            var mockHolidayPackage = new HolidayPackageDto
+            {
+                HolidayPackageId = 1,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            var mockCustomerOneHolidayBookings = new List<HolidayBookingDto>()
+            {
+                new HolidayBookingDto
+                {
+                    BookingReference = "G01",
+                    Customer = mockCustomerOne,
+                    Status = BookingStatus.Pending,
+                    HolidayPackage = mockHolidayPackage
+                },
+                new HolidayBookingDto
+                {
+                    BookingReference = "G02",
+                    Customer = mockCustomerOne,
+                    Status = BookingStatus.Pending,
+                    HolidayPackage = mockHolidayPackage
+                }
+            };
+
+            _mockUserService.Setup(s => s.GetCurrentUserAsync()).ReturnsAsync(mockCustomerTwo);
+
+            // Act
+            var component = RenderComponent<CustomerHolidayBookings>(parameters => parameters.Add(c => c.UserId, mockCustomerOne.UserId));
+
+            // Assert
+            Assert.IsTrue(component.Markup.Contains("Page not found."));
+        }
+
+        [TestMethod]
+        public void OnInitializedAsync_IsSales_ShowsPageNotFound()
+        {
+            // Arrange
+            SetUser("sales");
+
+            var mockCustomerOne = new UserDto
+            {
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
+            };
+
+            var mockCustomerTwo = new UserDto
+            {
+                UserId = "3a7b4ccf-2d09-4753-80ba-76818cd4f3f1"
+            };
+
+            var mockHolidayPackage = new HolidayPackageDto
+            {
+                HolidayPackageId = 1,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            var mockCustomerOneHolidayBookings = new List<HolidayBookingDto>()
+            {
+                new HolidayBookingDto
+                {
+                    BookingReference = "G01",
+                    Customer = mockCustomerOne,
+                    Status = BookingStatus.Pending,
+                    HolidayPackage = mockHolidayPackage
+                },
+                new HolidayBookingDto
+                {
+                    BookingReference = "G02",
+                    Customer = mockCustomerOne,
+                    Status = BookingStatus.Pending,
+                    HolidayPackage = mockHolidayPackage
+                }
+            };
+
+            var mockCustomerTwoHolidayBooking = new HolidayBookingDto
+            {
+                BookingReference = "G03",
+                Customer = mockCustomerTwo,
+                Status = BookingStatus.Pending,
+                HolidayPackage = mockHolidayPackage
+            };
+
+            _mockUserService.Setup(s => s.GetCurrentUserAsync()).ReturnsAsync(mockCustomerOne);
+            _mockBookingService.Setup(s => s.GetCustomerHolidayBookingsAsync(mockCustomerOne.UserId)).ReturnsAsync(mockCustomerOneHolidayBookings);
+
+            // Act
+            var component = RenderComponent<CustomerHolidayBookings>(parameters => parameters.Add(c => c.UserId, mockCustomerOne.UserId));
 
             // Assert
             Assert.IsTrue(component.Markup.Contains("Page not found."));
@@ -314,8 +357,210 @@ namespace Gotorz.Client.UnitTests.Pages
         }
 
         // -------------------- OnInitializedAsync --------------------
+        [TestMethod]
+        public void OnInitializedAsync_MultipleCustomerHolidayBookingsExist_ShowsCustomerHolidayBookings()
+        {
+            // Arrange
+            SetUser("customer");
 
-        // -------------------- NavigateToHolidayBooking --------------------
+            var mockCustomerOne = new UserDto
+            {
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
+            };
+
+            var mockCustomerTwo = new UserDto
+            {
+                UserId = "3a7b4ccf-2d09-4753-80ba-76818cd4f3f1"
+            };
+
+            var mockHolidayPackage = new HolidayPackageDto
+            {
+                HolidayPackageId = 1,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            var mockCustomerOneHolidayBookings = new List<HolidayBookingDto>()
+            {
+                new HolidayBookingDto
+                {
+                    BookingReference = "G01",
+                    Customer = mockCustomerOne,
+                    Status = BookingStatus.Pending,
+                    HolidayPackage = mockHolidayPackage
+                },
+                new HolidayBookingDto
+                {
+                    BookingReference = "G02",
+                    Customer = mockCustomerOne,
+                    Status = BookingStatus.Pending,
+                    HolidayPackage = mockHolidayPackage
+                }
+            };
+
+            var mockCustomerTwoHolidayBooking = new HolidayBookingDto
+            {
+                BookingReference = "G03",
+                Customer = mockCustomerTwo,
+                Status = BookingStatus.Pending,
+                HolidayPackage = mockHolidayPackage
+            };
+
+
+            _mockUserService.Setup(s => s.GetCurrentUserAsync()).ReturnsAsync(mockCustomerOne);
+            _mockBookingService.Setup(s => s.GetCustomerHolidayBookingsAsync(mockCustomerOne.UserId)).ReturnsAsync(mockCustomerOneHolidayBookings);
+
+            // Act
+            var component = RenderComponent<CustomerHolidayBookings>();
+
+            // Assert
+            var bookingComponents = component.FindComponents<HolidayBooking>();
+            Assert.AreEqual(2, bookingComponents.Count);
+            Assert.IsTrue(bookingComponents.ElementAt(0).Instance.BookingReference == "G01");
+            Assert.IsTrue(bookingComponents.ElementAt(1).Instance.BookingReference == "G02");
+        }
+
+        [TestMethod]
+        public void OnInitializedAsync_SingleCustomerHolidayBookingExists_ShowsCustomerHolidayBooking()
+        {
+            // Arrange
+            SetUser("customer");
+
+            var mockCustomer = new UserDto
+            {
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
+            };
+
+            var mockHolidayPackage = new HolidayPackageDto
+            {
+                HolidayPackageId = 1,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            var mockCustomerHolidayBooking = new HolidayBookingDto
+            {
+                BookingReference = "G01",
+                Customer = mockCustomer,
+                Status = BookingStatus.Pending,
+                HolidayPackage = mockHolidayPackage
+            };
+
+            _mockUserService.Setup(s => s.GetCurrentUserAsync()).ReturnsAsync(mockCustomer);
+            _mockBookingService.Setup(s => s.GetCustomerHolidayBookingsAsync(mockCustomer.UserId)).ReturnsAsync(new List<HolidayBookingDto>{mockCustomerHolidayBooking});
+
+            // Act
+            var component = RenderComponent<CustomerHolidayBookings>();
+
+            // Assert
+            var bookingComponents = component.FindComponents<HolidayBooking>();
+            Assert.AreEqual(1, bookingComponents.Count);
+            Assert.IsTrue(bookingComponents.ElementAt(0).Instance.BookingReference == "G01");
+        }
+
+        [TestMethod]
+        public void OnInitializedAsync_NullCustomerHolidayBookings_ShowsPageNotFound()
+        {
+            // Arrange
+            SetUser("customer");
+
+            var mockCustomer = new UserDto
+            {
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
+            };
+
+            _mockUserService.Setup(s => s.GetCurrentUserAsync()).ReturnsAsync(mockCustomer);
+            _mockBookingService.Setup(s => s.GetCustomerHolidayBookingsAsync(mockCustomer.UserId)).ReturnsAsync((List<HolidayBookingDto>)null);
+
+            // Act
+            var component = RenderComponent<CustomerHolidayBookings>();
+
+            // Assert
+            Assert.IsTrue(component.Markup.Contains("Page not found."));
+        }
+
+        [TestMethod]
+        public void OnInitializedAsync_NullUserId_ShowsPageNotFound()
+        {
+            // Arrange
+            SetUser("admin");
+
+            var mockCustomer = new UserDto
+            {
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
+            };
+
+            var mockHolidayPackage = new HolidayPackageDto
+            {
+                HolidayPackageId = 1,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            var mockCustomerHolidayBooking = new HolidayBookingDto
+            {
+                BookingReference = "G01",
+                Customer = mockCustomer,
+                Status = BookingStatus.Pending,
+                HolidayPackage = mockHolidayPackage
+            };
+
+            _mockUserService.Setup(s => s.GetCurrentUserAsync()).ReturnsAsync(mockCustomer);
+            _mockBookingService.Setup(s => s.GetCustomerHolidayBookingsAsync(mockCustomer.UserId)).ReturnsAsync(new List<HolidayBookingDto>{mockCustomerHolidayBooking});
+
+            // Act
+            var component = RenderComponent<CustomerHolidayBookings>();
+
+            // Assert
+            Assert.IsTrue(component.Markup.Contains("Page not found."));
+        }
+
+        [TestMethod]
+        public void OnInitializedAsync_ThrowsException_LogsError()
+        {
+            // Arrange
+            SetUser("customer");
+
+            var mockCustomer = new UserDto
+            {
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
+            };
+
+            var mockHolidayPackage = new HolidayPackageDto
+            {
+                HolidayPackageId = 1,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            var mockHolidayBooking = new HolidayBookingDto
+            {
+                BookingReference = "G01",
+                Customer = mockCustomer,
+                Status = BookingStatus.Pending,
+                HolidayPackage = mockHolidayPackage
+            };
+
+            _mockUserService.Setup(s => s.GetCurrentUserAsync()).ReturnsAsync(mockCustomer);
+            _mockBookingService.Setup(s => s.GetCustomerHolidayBookingsAsync(mockCustomer.UserId))
+                .ThrowsAsync(new Exception("Mocked booking service failure"));
+
+            // Act
+            var component = RenderComponent<CustomerHolidayBookings>();
+
+            // Assert
+            _mockBookingService.Verify(s => s.GetCustomerHolidayBookingsAsync(mockCustomer.UserId), Times.Once());
+            
+            // Structure from ChatGPT. Customized for this project.
+            logger.Verify(
+                l => l.Log(
+                    LogLevel.Error,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((state, _) => state.ToString()!.Contains("Error initializing customer's holiday bookings")),
+                    It.IsAny<Exception>(),
+                    It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+                Times.Once);
+        }
 
         // -------------------- Helper Methods --------------------
         private void SetUser(string? role)

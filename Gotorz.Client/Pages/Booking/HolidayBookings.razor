@@ -8,7 +8,7 @@
 @using System.ComponentModel.DataAnnotations
 @inject IUserService UserService
 @inject IBookingService BookingService
-@inject ILogger<HolidayBooking> Logger
+@inject ILogger<HolidayBookings> Logger
 @inject NavigationManager Navigation
 
 <AuthorizeView>
@@ -37,7 +37,7 @@
                             <div class="d-flex justify-content-between align-items-center p-3">
                                 <p class="mb-0 flex-grow-1"></p>
                                 <button type="button" class="btn btn-light custom-background text-white"
-                                    @onclick="() => NavigateToHolidayBooking(holidayBooking.BookingReference)">Edit</button>
+                                    @onclick="() => NavigateToHolidayBookingAsync(holidayBooking.BookingReference)">Edit</button>
                             </div>
                         </div>
                     }
@@ -76,7 +76,7 @@
         }
     }
 
-    private async Task NavigateToHolidayBooking(string bookingReference)
+    private async Task NavigateToHolidayBookingAsync(string bookingReference)
     {
         Navigation.NavigateTo($"/booking/holiday-booking/{bookingReference}/edit?From=all-holiday-bookings");
     }
