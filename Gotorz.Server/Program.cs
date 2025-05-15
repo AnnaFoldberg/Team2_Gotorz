@@ -16,6 +16,7 @@ builder.Services.AddScoped<IRepository<HolidayPackage>, HolidayPackageRepository
 builder.Services.AddScoped<IHolidayBookingRepository, HolidayBookingRepository>();
 builder.Services.AddScoped<IRepository<Traveller>, TravellerRepository>();
 builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<IHolidayPackageRepository, HolidayPackageRepository>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
@@ -24,7 +25,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connectionString = builder.Configuration.GetConnectionString("AnnaConnection");
+var connectionString = builder.Configuration.GetConnectionString("FrederikConnection");
 
 builder.Services.AddDbContext<GotorzDbContext>(options =>
 {

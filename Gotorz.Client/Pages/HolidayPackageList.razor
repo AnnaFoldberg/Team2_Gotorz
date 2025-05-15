@@ -1,25 +1,30 @@
-﻿@page "/HPList"
+@page "/holidaypackages"
+@using Gotorz.Client.Services
 @using Gotorz.Shared.DTOs
-@using Services
-@inject HolidayPackageService HolidayPackageService
+@using Gotorz.Client.Components
+@inject HolidayPackageService PackageService
 
-<h2 class="text-2xl font-bold mb-4">Holiday Packages</h2>
+<h2 class="text-2xl font-bold mb-6">Holiday Packages</h2>
 
-<ul class="space-y-2">
-    @foreach (var package in packages)
-    {
-        <li class="p-4 border rounded shadow-sm">
-            <strong>@package.Title</strong><br />
-            @package.Description
-        </li>
-    }
-</ul>
+@if (packages == null || !packages.Any())
+{
+    <p>No holiday packages available.</p>
+}
+else
+{
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        @foreach (var package in packages)
+        {
+            <HolidayPackageCard Package="package" />
+        }
+    </div>
+}
 
 @code {
     private List<HolidayPackageDto> packages = new();
 
     protected override async Task OnInitializedAsync()
     {
-        packages = await HolidayPackageService.GetAllAsync();
+        packages = await PackageService.GetAllAsync();
     }
 }
