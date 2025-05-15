@@ -13,6 +13,7 @@ using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Gotorz.Client.Pages.Booking;
 using Gotorz.Shared.Enums;
+using Microsoft.AspNetCore.Components;
 
 namespace Gotorz.Client.UnitTests.Pages
 {
@@ -53,6 +54,7 @@ namespace Gotorz.Client.UnitTests.Pages
             Services.AddSingleton(mockAuthService.Object);
             Services.AddSingleton(_mockBookingService.Object);
             Services.AddSingleton(_mockUserService.Object);
+            Services.AddSingleton<NavigationManager, FakeNavigationManager>();
             Services.AddSingleton(logger.Object);
         }
 
@@ -92,12 +94,12 @@ namespace Gotorz.Client.UnitTests.Pages
             // Assert
             Assert.IsTrue(component.Markup.Contains($"Booking Reference: #{mockHolidayBooking.BookingReference}"));
             Assert.IsTrue(component.Markup.Contains("Rome"));
-            var selectStatus = component.Find("#status");
-            Assert.IsTrue(selectStatus.HasAttribute("disabled"));
+            var status = component.Find("#status");
+            Assert.IsTrue(status.HasAttribute("disabled"));
         }
 
         [TestMethod]
-        public void OnInitializedAsync_IsSales_ShowsHolidayBookingWithStatusInputEnabled()
+        public void OnInitializedAsync_IsSalesAndEditMode_ShowsHolidayBookingWithStatusInputEnabled()
         {
             // Arrange
             SetUser("sales");
@@ -138,6 +140,44 @@ namespace Gotorz.Client.UnitTests.Pages
             Assert.IsNotNull(confirmButton);
         }
 
+        [TestMethod]
+        public void OnInitializedAsync_IsSalesAndModeIsNull_ShowsHolidayBookingWithStatusInputDisabled()
+        {
+            // Arrange
+            SetUser("sales");
+
+            var mockCustomer = new UserDto
+            {
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
+            };
+
+            var mockHolidayPackage = new HolidayPackageDto
+            {
+                HolidayPackageId = 1,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            var mockHolidayBooking = new HolidayBookingDto
+            {
+                BookingReference = "G01",
+                Customer = mockCustomer,
+                Status = BookingStatus.Pending,
+                HolidayPackage = mockHolidayPackage
+            };
+
+            _mockBookingService.Setup(s => s.GetHolidayBookingAsync(mockHolidayBooking.BookingReference)).ReturnsAsync(mockHolidayBooking);
+
+            // Act
+            var component = RenderComponent<HolidayBooking>(parameters => parameters
+                .Add(c => c.BookingReference, mockHolidayBooking.BookingReference));
+
+            // Assert
+            Assert.IsTrue(component.Markup.Contains($"Booking Reference: #{mockHolidayBooking.BookingReference}"));
+            Assert.IsTrue(component.Markup.Contains("Rome"));
+            var status = component.Find("#status");
+            Assert.IsTrue(status.HasAttribute("disabled"));
+        }
 
         [TestMethod]
         public void OnInitializedAsync_IsAdmin_ShowsHolidayBookingWithStatusInputDisabled()
@@ -306,30 +346,10 @@ namespace Gotorz.Client.UnitTests.Pages
             // Arrange
             SetUser("sales");
 
-            var mockCustomer = new UserDto
-            {
-                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
-            };
-
-            var mockHolidayPackage = new HolidayPackageDto
-            {
-                HolidayPackageId = 1,
-                Title = "Rome",
-                MaxCapacity = 2
-            };
-
-            var mockHolidayBooking = new HolidayBookingDto
-            {
-                BookingReference = "G01",
-                Customer = mockCustomer,
-                Status = BookingStatus.Pending,
-                HolidayPackage = mockHolidayPackage
-            };
-
-            _mockBookingService.Setup(s => s.GetHolidayBookingAsync(mockHolidayBooking.BookingReference)).ReturnsAsync((HolidayBookingDto)null);
+            _mockBookingService.Setup(s => s.GetHolidayBookingAsync(It.IsAny<string>())).ReturnsAsync((HolidayBookingDto)null);
 
             // Act
-            var component = RenderComponent<HolidayBooking>(parameters => parameters.Add(c => c.BookingReference, mockHolidayBooking.BookingReference));
+            var component = RenderComponent<HolidayBooking>();
 
             // Assert
             Assert.IsTrue(component.Markup.Contains("Page not found."));
@@ -417,6 +437,84 @@ namespace Gotorz.Client.UnitTests.Pages
 
             // Assert
             _mockBookingService.Verify(s => s.PatchHolidayBookingStatusAsync(mockHolidayBooking), Times.Once());
+        }
+
+        [TestMethod]
+        public async Task ConfirmChangesAsync_FromParameterIsAllHolidayBookings_NavigatesToFrom()
+        {
+            // Arrange
+            SetUser("sales");
+
+            var mockCustomer = new UserDto
+            {
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
+            };
+
+            var mockHolidayPackage = new HolidayPackageDto
+            {
+                HolidayPackageId = 1,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            var mockHolidayBooking = new HolidayBookingDto
+            {
+                BookingReference = "G01",
+                Customer = mockCustomer,
+                Status = BookingStatus.Pending,
+                HolidayPackage = mockHolidayPackage
+            };
+
+            _mockBookingService.Setup(s => s.GetHolidayBookingAsync(mockHolidayBooking.BookingReference)).ReturnsAsync(mockHolidayBooking);
+
+            var component = RenderComponent<HolidayBooking>(parameters => parameters
+                .Add(c => c.BookingReference, mockHolidayBooking.BookingReference)
+                .Add(c => c.From, "all-holiday-bookings"));
+
+            // Act
+            component.Find("form").Submit();
+
+            // Assert
+            Assert.IsTrue(Services.GetRequiredService<NavigationManager>().Uri.Contains("/booking/all-holiday-bookings"));
+        }
+
+        [TestMethod]
+        public async Task ConfirmChangesAsync_FromParameterIsCustomerHolidayBookings_NavigatesToFrom()
+        {
+            // Arrange
+            SetUser("sales");
+
+            var mockCustomer = new UserDto
+            {
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
+            };
+
+            var mockHolidayPackage = new HolidayPackageDto
+            {
+                HolidayPackageId = 1,
+                Title = "Rome",
+                MaxCapacity = 2
+            };
+
+            var mockHolidayBooking = new HolidayBookingDto
+            {
+                BookingReference = "G01",
+                Customer = mockCustomer,
+                Status = BookingStatus.Pending,
+                HolidayPackage = mockHolidayPackage
+            };
+
+            _mockBookingService.Setup(s => s.GetHolidayBookingAsync(mockHolidayBooking.BookingReference)).ReturnsAsync(mockHolidayBooking);
+
+            var component = RenderComponent<HolidayBooking>(parameters => parameters
+                .Add(c => c.BookingReference, mockHolidayBooking.BookingReference)
+                .Add(c => c.From, $"customer/holiday-bookings?UserId={mockCustomer.UserId}"));
+
+            // Act
+            component.Find("form").Submit();
+
+            // Assert
+            Assert.IsTrue(Services.GetRequiredService<NavigationManager>().Uri.Contains($"customer/holiday-bookings?UserId={mockCustomer.UserId}"));
         }
 
         [TestMethod]
