@@ -2,7 +2,6 @@ using System.Web;
 using Gotorz.Server.Contexts;
 using Gotorz.Server.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Gotorz.Server.DataAccess
 {

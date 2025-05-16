@@ -1,6 +1,4 @@
 ﻿using Gotorz.Server.Models;
-using Gotorz.Shared.DTOs;
-using Humanizer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;

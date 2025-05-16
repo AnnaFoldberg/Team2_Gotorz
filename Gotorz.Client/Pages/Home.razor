@@ -1,18 +1,22 @@
 ﻿@page "/"
 @using Gotorz.Client.Services
 @using Gotorz.Client.Pages.Booking
-@* @inject HolidayPackageService HolidayPackageService *@
+@inject IHolidayPackageService HolidayPackageService
 @inject IBookingService BookingService
 @inject IUserService UserService
 @inject ILogger<Home> Logger
 
+<PageTitle>Home</PageTitle>
+<h1>Home</h1>
+<hr><br>
+
 @if (userRole == null)
 {
-    @* <HolidayPackageList/> *@
+    <HolidayPackageList/>
 }
 else if (userRole == "customer")
 {
-    @* <HolidayPackageList/> *@
+    <HolidayPackageList/>
     <br><hr><br>
     <CustomerHolidayBookings/>
 }

@@ -17,6 +17,6 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
 builder.Services.AddScoped<ServerAuthenticationStateProvider>();
-builder.Services.AddScoped<HolidayPackageService>();
+builder.Services.AddScoped<IHolidayPackageService, HolidayPackageService>();
 
 await builder.Build().RunAsync();

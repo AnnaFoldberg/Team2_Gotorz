@@ -4,8 +4,6 @@ using Gotorz.Server.Services;
 using Gotorz.Server.DataAccess;
 using Gotorz.Shared.DTOs;
 using AutoMapper;
-using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace Gotorz.Server.Controllers;
 

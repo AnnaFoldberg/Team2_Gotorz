@@ -1,10 +1,10 @@
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using System.Web;
 using Gotorz.Shared.DTOs;
 
 namespace Gotorz.Client.Services
 {
-    public class HolidayPackageService
+    public class HolidayPackageService : IHolidayPackageService
     {
         private readonly HttpClient _http;
 

@@ -1,8 +1,4 @@
-
-using Gotorz.Client.Services;
-using Gotorz.Server.Contexts;
 using Gotorz.Server.DataAccess;
-using Microsoft.EntityFrameworkCore;
 
 namespace Gotorz.Server.Services
 {

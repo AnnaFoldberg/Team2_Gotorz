@@ -1,16 +1,9 @@
-﻿
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Json;
+﻿using System.Net;
 using System.Security.Claims;
 using System.Text.Json;
 using Gotorz.Shared.DTOs;
-using Microsoft.AspNetCore.Components.Authorization;
 using Moq;
 using Moq.Protected;
-using System.Threading;
-using System.Threading.Tasks;
 using Gotorz.Client.Services;
 
 namespace Gotorz.Client.UnitTests.Services

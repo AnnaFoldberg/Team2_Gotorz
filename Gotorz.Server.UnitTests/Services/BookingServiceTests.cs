@@ -1,15 +1,7 @@
 using Moq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Gotorz.Server.Controllers;
 using Gotorz.Server.DataAccess;
 using Gotorz.Server.Models;
-using Gotorz.Shared.DTOs;
 using Gotorz.Server.Services;
-using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using Gotorz.Shared.Enums;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
 
 namespace Gotorz.Server.UnitTests.Services
 {

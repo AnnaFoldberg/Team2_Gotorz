@@ -1,8 +1,8 @@
-@page "/holidaypackages"
+﻿@page "/holidaypackages"
 @using Gotorz.Client.Services
 @using Gotorz.Shared.DTOs
 @using Gotorz.Client.Components
-@inject HolidayPackageService PackageService
+@inject IHolidayPackageService PackageService
 
 <h2 class="text-2xl font-bold mb-6">Holiday Packages</h2>
 
@@ -12,6 +12,7 @@
 }
 else
 {
+    <PageTitle>Holiday Packages</PageTitle>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         @foreach (var package in packages)
         {

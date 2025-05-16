@@ -3,7 +3,7 @@
 @using Gotorz.Shared.DTOs
 @inject IBookingService BookingService
 @inject IUserService UserService
-@inject HolidayPackageService PackageService
+@inject IHolidayPackageService PackageService
 @inject NavigationManager NavigationManager
 
 @if (package == null)
@@ -17,6 +17,7 @@
 }
 else
 {
+    <PageTitle>Holiday Package Details</PageTitle>
     <div class="container mt-5">
         <div class="card shadow">
             <div class="card-body">

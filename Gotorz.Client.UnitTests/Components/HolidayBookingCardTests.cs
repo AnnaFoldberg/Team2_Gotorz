@@ -1,18 +1,13 @@
-using Bunit;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Gotorz.Client.Pages;
 using Gotorz.Client.Components;
 using Moq;
 using Gotorz.Client.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components.Authorization;
 using Gotorz.Shared.DTOs;
 using Bunit.TestDoubles;
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
-using Gotorz.Client.Pages.Booking;
 using Gotorz.Shared.Enums;
 
 namespace Gotorz.Client.UnitTests.Components

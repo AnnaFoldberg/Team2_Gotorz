@@ -11,6 +11,7 @@
 @inject ILogger<CustomerHolidayBookings> Logger
 @inject NavigationManager Navigation
 
+
 <AuthorizeView>
     <Authorized Context="auth">
         @if (!isAuthorizedUser)
@@ -23,6 +24,7 @@
         }
         else
         {
+          <PageTitle>Holiday Bookings</PageTitle>
           <div class="container d-flex flex-column standard-page-wrapper ">
             <h3>Holiday Bookings</h3>
             <br>

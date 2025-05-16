@@ -1,5 +1,4 @@
-﻿using System.Web;
-using AutoMapper;
+﻿using AutoMapper;
 using Gotorz.Server.DataAccess;
 using Gotorz.Server.Models;
 using Gotorz.Shared.DTOs;
