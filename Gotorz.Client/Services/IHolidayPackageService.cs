@@ -1,5 +1,3 @@
-using System.Net.Http.Json;
-using System.Web;
 using Gotorz.Shared.DTOs;
 
 namespace Gotorz.Client.Services
