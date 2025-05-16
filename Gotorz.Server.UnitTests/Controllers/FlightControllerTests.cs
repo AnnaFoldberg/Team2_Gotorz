@@ -1,5 +1,4 @@
 using Moq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Gotorz.Server.Controllers;
 using Gotorz.Server.DataAccess;
 using Gotorz.Server.Models;

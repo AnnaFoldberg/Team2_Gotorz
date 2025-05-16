@@ -1,19 +1,14 @@
 using Bunit;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Gotorz.Client.Pages;
 using Moq;
 using Gotorz.Client.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components.Authorization;
-using Gotorz.Shared.DTOs;
 using Bunit.TestDoubles;
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Gotorz.Client.Pages.Booking;
-using Gotorz.Shared.Enums;
-using Microsoft.AspNetCore.Components;
 
 namespace Gotorz.Client.UnitTests.Pages
 {
@@ -24,7 +19,7 @@ namespace Gotorz.Client.UnitTests.Pages
     [TestClass]
     public class HomeTests : Bunit.TestContext
     {
-        // private Mock<HolidayPackageService> _mockHolidayPackageService;
+        private Mock<IHolidayPackageService> _mockHolidayPackageService;
         private Mock<IBookingService> _mockBookingService;
         private Mock<IUserService> _mockUserService;
         private Mock<ILogger<Home>> logger;
@@ -32,7 +27,7 @@ namespace Gotorz.Client.UnitTests.Pages
         [TestInitialize]
         public void TestInitialize()
         {
-            // _mockHolidayPackageService = new Mock<HolidayPackageService>();
+            _mockHolidayPackageService = new Mock<IHolidayPackageService>();
             _mockBookingService = new Mock<IBookingService>();
             _mockUserService = new Mock<IUserService>();
             logger = new Mock<ILogger<Home>>();
@@ -54,26 +49,26 @@ namespace Gotorz.Client.UnitTests.Pages
                 .ReturnsAsync(AuthorizationResult.Success());
 
             Services.AddSingleton(mockAuthService.Object);
-            // Services.AddSingleton(_mockHolidayPackageService.Object);
+            Services.AddSingleton(_mockHolidayPackageService.Object);
             Services.AddSingleton(_mockBookingService.Object);
             Services.AddSingleton(_mockUserService.Object);
             Services.AddSingleton(logger.Object);
         }
 
         // -------------------- OnInitializedAsync --------------------
-        // [TestMethod]
-        // public void OnInitializedAsync_NotLoggedIn_ShowsHolidayPackageList()
-        // {
-        //     // Arrange
-        //     SetUser(null);
+        [TestMethod]
+        public void OnInitializedAsync_NotLoggedIn_ShowsHolidayPackageList()
+        {
+            // Arrange
+            SetUser(null);
 
-        //     // Act
-        //     var component = RenderComponent<Home>();
+            // Act
+            var component = RenderComponent<Home>();
 
-        //     // Assert
-        //     var holidayPackageListComponent = component.FindComponents<HolidayPackageList>();
-        //     Assert.AreEqual(1, holidayPackageListComponent.Count);
-        // }
+            // Assert
+            var holidayPackageListComponent = component.FindComponents<HolidayPackageList>();
+            Assert.AreEqual(1, holidayPackageListComponent.Count);
+        }
 
         [TestMethod]
         public void OnInitializedAsync_IsCustomer_ShowsHolidayPackageListAndCustomerHolidayBookings()
@@ -85,8 +80,8 @@ namespace Gotorz.Client.UnitTests.Pages
             var component = RenderComponent<Home>();
 
             // Assert
-            // var holidayPackageListComponent = component.FindComponents<HolidayPackageList>();
-            // Assert.AreEqual(1, holidayPackageListComponent.Count);
+            var holidayPackageListComponent = component.FindComponents<HolidayPackageList>();
+            Assert.AreEqual(1, holidayPackageListComponent.Count);
             var customerHolidayBookingsComponent = component.FindComponents<CustomerHolidayBookings>();
             Assert.AreEqual(1, customerHolidayBookingsComponent.Count);
         }

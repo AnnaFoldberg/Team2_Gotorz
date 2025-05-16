@@ -1,12 +1,8 @@
 ﻿using Bunit;
 using Bunit.TestDoubles;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Gotorz.Client.Pages;
-using System.Security.Claims;
 using Microsoft.Extensions.DependencyInjection;
-using Moq.Protected;
 using Moq;
-using System.Net;
 using Gotorz.Client.Services;
 using Gotorz.Shared.DTOs;
 

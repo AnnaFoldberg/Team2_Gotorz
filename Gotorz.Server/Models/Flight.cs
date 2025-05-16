@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Gotorz.Server.Models
+﻿namespace Gotorz.Server.Models
 {
     /// <summary>
     /// Represents a flight stored in the database.

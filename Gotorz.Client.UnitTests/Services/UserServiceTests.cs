@@ -1,12 +1,7 @@
-﻿
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Json;
+﻿using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Gotorz.Client.Services;
 using Gotorz.Shared.DTOs;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Moq.Protected;
 using System.Security.Claims;

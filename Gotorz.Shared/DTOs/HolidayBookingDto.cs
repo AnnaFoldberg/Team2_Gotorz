@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using Gotorz.Shared.Enums;
 
 namespace Gotorz.Shared.DTOs
