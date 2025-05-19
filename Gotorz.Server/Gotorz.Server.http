@@ -1,6 +1,0 @@
-@Gotorz.Server_HostAddress = http://localhost:5181
-
-GET {{Gotorz.Server_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
