@@ -4,6 +4,7 @@ using Gotorz.Server.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Gotorz.Server.Migrations.GotorzDb
 {
     [DbContext(typeof(GotorzDbContext))]
-    partial class GotorzDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250515111103_FixHotelBookingCascade")]
+    partial class FixHotelBookingCascade
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

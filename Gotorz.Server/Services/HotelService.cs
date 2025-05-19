@@ -1,7 +1,7 @@
 using System.Text.Json.Nodes;
-using Gotorz.Shared.Models;
 using Gotorz.Server.Models;
-using Gotorz.Server.Contexts;
+using Gotorz.Server.DataAccess;
+using Gotorz.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gotorz.Server.Services
@@ -10,25 +10,29 @@ namespace Gotorz.Server.Services
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
-        private readonly GotorzDbContext _dbContext;
+        private readonly IHotelRepository _hotelRepository;
+        private readonly IHotelRoomRepository _hotelRoomRepository;
+        private readonly IHotelBookingRepository _hotelBookingRepository;
 
-        public HotelService(HttpClient httpClient, IConfiguration config, GotorzDbContext dbContext)
+        public HotelService(
+            HttpClient httpClient,
+            IConfiguration config,
+            IHotelRepository hotelRepository,
+            IHotelRoomRepository hotelRoomRepository,
+            IHotelBookingRepository hotelBookingRepository)
         {
             _httpClient = httpClient;
             _config = config;
-            _dbContext = dbContext;
+            _hotelRepository = hotelRepository;
+            _hotelRoomRepository = hotelRoomRepository;
+            _hotelBookingRepository = hotelBookingRepository;
         }
 
         public async Task<List<Hotel>> GetHotelsByCityName(string city, string country, DateTime arrival, DateTime departure)
         {
-            var existingHotels = await _dbContext.Hotels
-                .Where(h => h.Address.ToLower().Contains(city.ToLower()))
-                .ToListAsync();
-
-            foreach (var h in existingHotels)
-            {
-                Console.WriteLine($"🧾 {h.Name} | ExternalId: {h.ExternalHotelId}");
-            }
+            var existingHotels = (await _hotelRepository.GetAllAsync())
+                .Where(h => h.Address?.ToLower().Contains(city.ToLower()) == true)
+                .ToList();
 
             if (existingHotels.Any())
                 return existingHotels;
@@ -48,23 +52,19 @@ namespace Gotorz.Server.Services
 
             using var locationResponse = await _httpClient.SendAsync(locationRequest);
             var locationBody = await locationResponse.Content.ReadAsStringAsync();
-            JsonNode? locationRoot = JsonNode.Parse(locationBody);
+            var locationRoot = JsonNode.Parse(locationBody);
 
-            var locationArray = locationRoot?["data"]?.AsArray();
-            JsonNode? bestMatch = locationArray?.FirstOrDefault(item =>
+            var bestMatch = locationRoot?["data"]?.AsArray()?.FirstOrDefault(item =>
                 item?["dest_type"]?.ToString() == "city" &&
                 item?["country"]?.ToString()?.ToLower().Contains(country.ToLower()) == true &&
-                item?["name"]?.ToString()?.ToLower().Contains(city.ToLower()) == true
-            );
+                item?["name"]?.ToString()?.ToLower().Contains(city.ToLower()) == true);
 
-            if (bestMatch == null)
-                return hotels;
+            if (bestMatch == null) return hotels;
 
             var lat = bestMatch["latitude"]?.GetValue<double>() ?? 0;
             var lon = bestMatch["longitude"]?.GetValue<double>() ?? 0;
 
-            if (lat == 0 || lon == 0)
-                return hotels;
+            if (lat == 0 || lon == 0) return hotels;
 
             string arrivalStr = arrival.ToString("yyyy-MM-dd");
             string departureStr = departure.ToString("yyyy-MM-dd");
@@ -82,51 +82,37 @@ namespace Gotorz.Server.Services
 
             using var hotelResponse = await _httpClient.SendAsync(hotelRequest);
             var hotelBody = await hotelResponse.Content.ReadAsStringAsync();
-            JsonNode? hotelRoot = JsonNode.Parse(hotelBody);
+            var hotelRoot = JsonNode.Parse(hotelBody);
 
-            if (hotelRoot?["data"]?["result"] is JsonArray hotelArray)
+            var hotelArray = hotelRoot?["data"]?["result"]?.AsArray();
+            if (hotelArray == null) return hotels;
+
+            foreach (var h in hotelArray)
             {
-                foreach (var h in hotelArray)
+                var address = h?["address"]?.ToString() ?? $"{h?["district"]} {h?["zip"]} {h?["city"]}".Trim();
+                if (string.IsNullOrWhiteSpace(address)) address = "Unknown";
+
+                hotels.Add(new Hotel
                 {
-                    var address = h?["address"]?.ToString();
-
-                    if (string.IsNullOrWhiteSpace(address))
-                    {
-                        var cityVal = h?["city"]?.ToString();
-                        var zip = h?["zip"]?.ToString();
-                        var district = h?["district"]?.ToString();
-                        address = $"{(district ?? "")} {(zip ?? "")} {(cityVal ?? "")}".Trim();
-                        if (string.IsNullOrWhiteSpace(address)) address = "Unknown";
-                    }
-                    Console.WriteLine("🧪 Raw JSON for hotel:");
-                    Console.WriteLine(h);
-                    hotels.Add(new Hotel
-                    {
-                        
-                        Name = h?["hotel_name"]?.ToString() ?? "Unknown",
-                        Address = address,
-                        Rating = (int)(h?["review_score"]?.GetValue<double>() ?? 0),
-                        Latitude = h?["latitude"]?.GetValue<double>() ?? 0,
-                        Longitude = h?["longitude"]?.GetValue<double>() ?? 0,
-                        ExternalHotelId = h?["hotel_id"]?.ToString() ?? h?["id"]?.ToString() ?? "N/A"
-                    });
-                }
+                    Name = h?["hotel_name"]?.ToString() ?? "Unknown",
+                    Address = address,
+                    Rating = (int)(h?["review_score"]?.GetValue<double>() ?? 0),
+                    Latitude = h?["latitude"]?.GetValue<double>() ?? 0,
+                    Longitude = h?["longitude"]?.GetValue<double>() ?? 0,
+                    ExternalHotelId = h?["hotel_id"]?.ToString() ?? "N/A"
+                });
             }
 
-            if (hotels.Any())
+            foreach (var hotel in hotels)
             {
-                _dbContext.Hotels.AddRange(hotels);
-                await _dbContext.SaveChangesAsync();
+                await _hotelRepository.AddAsync(hotel);
             }
 
-            await SaveSearchHistory(city, country, arrival, departure);
             return hotels;
         }
 
         public async Task<List<HotelRoom>> GetHotelRoomsAsync(string externalHotelId, DateTime arrival, DateTime departure)
         {
-            Console.WriteLine($"🔍 Getting rooms for hotel {externalHotelId} from {arrival} to {departure}");
-
             var arrivalStr = arrival.ToString("yyyy-MM-dd");
             var departureStr = departure.ToString("yyyy-MM-dd");
 
@@ -143,84 +129,50 @@ namespace Gotorz.Server.Services
 
             using var response = await _httpClient.SendAsync(request);
             var body = await response.Content.ReadAsStringAsync();
-            Console.WriteLine("📦 Room API raw response:");
-            Console.WriteLine(body);
-
             var json = JsonNode.Parse(body);
-            var rooms = new List<HotelRoom>();
+
             var roomArray = json?["available"]?.AsArray();
-            if (roomArray is null) return rooms;
-            Console.WriteLine($"📋 Total rooms found in API: {roomArray?.Count ?? 0}");
+            if (roomArray == null) return new List<HotelRoom>();
+
+            var rooms = new List<HotelRoom>();
 
             foreach (var room in roomArray)
             {
-                var name = room?["name"]?.ToString() ?? "Unknown";
-                var description = room?["description"]?.ToString();
-                //var maxGuests = room?["max_occupancy"]?.GetValue<int>() ?? 0;
-                var maxGuestsString = room?["max_occupancy"]?.ToString();
-                int.TryParse(maxGuestsString, out var maxGuests);
-                var price = room?["product_price_breakdown"]?["gross_amount"]?["value"]?.GetValue<decimal>() ?? 0;                
-                var roomId = room?["room_id"]?.GetValue<int>().ToString() ?? "0";
-                var mealPlan = room?["mealplan"]?.ToString();
-                var surface = room?["room_surface_in_m2"]?.GetValue<int?>();
-                var breakfast = room?["breakfast_included"]?.GetValue<int?>() == 1;
-                var cancelPolicy = room?["policy_display_details"]?["cancellation"]?["description_details"]?["translation"]?.ToString();
-                var refundPolicy = room?["policy_display_details"]?["refund_during_fc"]?["title_details"]?["translation"]?.ToString();
+                int.TryParse(room?["max_occupancy"]?.ToString(), out var maxGuests);
 
                 rooms.Add(new HotelRoom
                 {
                     ExternalHotelId = externalHotelId,
-                    RoomId = roomId,
-                    Name = name,
-                    Description = description,
+                    RoomId = room?["room_id"]?.ToString() ?? "0",
+                    Name = room?["name"]?.ToString() ?? "Unknown",
+                    Description = room?["description"]?.ToString(),
                     Capacity = maxGuests,
-                    Surface = surface ?? 0, 
-                    Price = price,
-                    MealPlan = mealPlan,
-                    Refundable = refundPolicy != null, 
-                    CancellationPolicy = cancelPolicy,
+                    Surface = room?["room_surface_in_m2"]?.GetValue<int>() ?? 0,
+                    Price = room?["product_price_breakdown"]?["gross_amount"]?["value"]?.GetValue<decimal>() ?? 0,
+                    MealPlan = room?["mealplan"]?.ToString(),
+                    Refundable = room?["policy_display_details"]?["refund_during_fc"]?["title_details"]?["translation"] != null,
+                    CancellationPolicy = room?["policy_display_details"]?["cancellation"]?["description_details"]?["translation"]?.ToString(),
                     ArrivalDate = arrival,
                     DepartureDate = departure
                 });
-                }
+            }
 
-            if (rooms.Any())
+            foreach (var r in rooms)
             {
-                _dbContext.HotelRooms.AddRange(rooms);
-                await _dbContext.SaveChangesAsync();
-                Console.WriteLine($"💾 Saved {rooms.Count} rooms to DB.");
+                await _hotelRoomRepository.AddAsync(r);
             }
 
             return rooms;
-            
-        }
-
-        private async Task SaveSearchHistory(string city, string country, DateTime arrival, DateTime departure)
-        {
-            var history = new HotelSearchHistory
-            {
-                City = city,
-                Country = country,
-                ArrivalDate = arrival,
-                DepartureDate = departure,
-                SearchTimestamp = DateTime.Now
-            };
-
-            _dbContext.HotelSearchHistories.Add(history);
-            await _dbContext.SaveChangesAsync();
-        }
-
-        public async Task<List<HotelSearchHistory>> GetSearchHistory()
-        {
-            return await _dbContext.HotelSearchHistories
-                .OrderByDescending(h => h.SearchTimestamp)
-                .ToListAsync();
         }
 
         public async Task BookHotelAsync(HotelBooking booking)
         {
-            _dbContext.HotelBookings.Add(booking);
-            await _dbContext.SaveChangesAsync();
+            await _hotelBookingRepository.AddAsync(booking);
+        }
+
+        public async Task<List<HotelSearchHistory>> GetSearchHistory()
+        {
+            throw new NotImplementedException("HotelSearchHistory repository not yet implemented.");
         }
     }
 }

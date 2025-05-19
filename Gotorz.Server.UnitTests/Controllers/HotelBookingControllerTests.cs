@@ -6,6 +6,7 @@ using Gotorz.Server.Controllers;
 using Gotorz.Server.Services;
 using Gotorz.Shared.DTOs;
 using Gotorz.Server.Models;
+using Gotorz.Server.DataAccess; 
 
 namespace Gotorz.Server.UnitTests.Controllers
 {
@@ -13,13 +14,19 @@ namespace Gotorz.Server.UnitTests.Controllers
     public class HotelBookingControllerTests
     {
         private Mock<IHotelBookingService> _mockService = null!;
+        private Mock<IRepository<HolidayPackage>> _mockHolidayPackageRepository = null!;
         private HotelBookingController _controller = null!;
 
         [TestInitialize]
         public void Setup()
         {
             _mockService = new Mock<IHotelBookingService>();
-            _controller = new HotelBookingController(_mockService.Object);
+            _mockHolidayPackageRepository = new Mock<IRepository<HolidayPackage>>();
+
+            _controller = new HotelBookingController(
+                _mockService.Object,
+                _mockHolidayPackageRepository.Object
+            );
         }
 
         [TestMethod]

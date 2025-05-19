@@ -8,6 +8,7 @@
 @using Gotorz.Client.ViewModels
 @inject HolidayPackageService PackageService
 @inject IFlightService FlightService
+@inject IHotelService HotelService 
 
 <h2 class="text-2xl font-bold mb-4">Holiday packages</h2>
 
@@ -102,6 +103,32 @@
     }
     <br><br>
 
+    <h5>Hotel</h5>
+    <br>
+    @if (hotelBookingDto == null || !showHotels)
+    {
+        <div class="flex-grow-1">
+            <button type="button" class="btn icon-white h-100 custom-background text-white" @onclick="() => ShowHotelList()">
+                <i class="bi bi-plus-square-fill me-2"></i>Add</button>
+        </div>
+    }
+    else if (showHotels)
+    {
+        <HotelList OnHotelBookingConfirmed="HandleHotelBookingConfirmed" />
+    }
+    else if (hotelBookingDto != null && !showHotels && hotelBookingDto.Hotel!=null)
+    {
+        <div class="p-3 mb-3 d-flex justify-content-between bg-light border rounded shadow-sm">
+            <span>
+                @hotelBookingDto?.Hotel?.Name
+            </span>
+            <span>
+                <i class="bi bi-currency-dollar"></i>@hotelBookingDto?.Price
+            </span>
+        </div>
+    }
+    <br><br>
+
     <p><b>Total: @(newPackage.CostPrice + (newPackage.CostPrice * newPackage.MarkupPercentage))</b></p>
 
     <div class="d-flex align-items-center gap-3 mb-3">
@@ -123,8 +150,12 @@
     private bool showSuccessMessage = false;
     private bool showFlightsOutbound;
     private bool showFlightsInbound;
+    private bool showHotels;
+    
     private List<FlightTicketDto> outboundFlightTickets;
     private List<FlightTicketDto> inboundFlightTickets;
+
+    private HotelBookingDto hotelBookingDto;    
     private EditContext editContext;
 
     protected override async Task OnInitializedAsync()
@@ -132,6 +163,7 @@
         editContext = new EditContext(newPackage);
         outboundFlightTickets = new List<FlightTicketDto>();
         inboundFlightTickets = new List<FlightTicketDto>();
+        hotelBookingDto = new HotelBookingDto();
     }
 
     private async Task CreatePackage()
@@ -148,6 +180,10 @@
         foreach (var flightTicket in inboundFlightTickets) flightTicket.HolidayPackage = newPackage;
         await FlightService.PostFlightTicketsAsync(outboundFlightTickets);
         await FlightService.PostFlightTicketsAsync(inboundFlightTickets);
+
+        hotelBookingDto.HolidayPackageId = newPackage.HolidayPackageId;
+        Console.WriteLine($"📦 Booking HolidayPackageId = {hotelBookingDto.HolidayPackageId}");
+        await HotelService.BookHotelAsync(hotelBookingDto);
 
         showSuccessMessage = true;
         newPackage = new HolidayPackageDto();
@@ -176,5 +212,18 @@
         inboundFlightTickets = flightTickets.OrderBy(flightTicket => flightTicket.Flight.DepartureDate).ToList();
         newPackage.CostPrice += (decimal)flightTickets.Sum(flightTicket => flightTicket.Price);
         showFlightsInbound = false;
+    }
+
+    private void ShowHotelList()
+    {
+        showHotels = true;
+    }
+
+    private void HandleHotelBookingConfirmed(HotelBookingDto hotelBooking)
+    {
+        Console.WriteLine($"📥 Received booking: {hotelBooking.Hotel?.Name} - Room ID: {hotelBooking.HotelRoomId}");
+        hotelBookingDto = hotelBooking;
+        newPackage.CostPrice += (decimal)hotelBookingDto.Price;
+        showHotels = false;
     }
 }

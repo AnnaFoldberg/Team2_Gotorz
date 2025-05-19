@@ -93,10 +93,9 @@ else if (hotels.Any())
                                     <p><strong>Refundable:</strong> @(room.Refundable ? "Yes" : "No")</p>
 
                                     <button class="btn btn-sm btn-success"
-                                            @onclick="() => SubmitBooking(hotel.HotelId, room.HotelRoomId, room.Price, room.Capacity)">
+                                            @onclick="@(() => { Console.WriteLine("✅ Button clicked"); SubmitBooking(hotel.HotelId, room.HotelRoomId, room.Price, room.Capacity); })">
                                         Book Hotel
                                     </button>
-
                                     @if (bookingSuccess && lastBookedRoomId == room.HotelRoomId)
                                     {
                                         <div class="alert alert-success mt-2">
@@ -121,8 +120,9 @@ else
     <h6>No hotels found.</h6>
 }
 
+@inject IJSRuntime JS
 @code {
-    private SearchForm searchForm = new();
+    private HotelSearchForm searchForm = new();
     private List<HotelDto>? hotels;
     private bool searchPerformed = false;
     private bool bookingSuccess = false;
@@ -130,6 +130,9 @@ else
     private int? expandedHotelId = null;
     private Dictionary<int, List<HotelRoomDto>> hotelRoomsDict = new();
     private Dictionary<int, bool> isLoadingRoomsDict = new();
+
+    [Parameter]
+    public EventCallback<HotelBookingDto> OnHotelBookingConfirmed { get; set; }    
 
     private async Task ToggleDetails(int hotelId)
     {
@@ -163,32 +166,64 @@ else
         }
     }
 
+ //   private async Task SubmitBooking(int hotelId, int roomId, decimal price, int capacity)
+  //  {
+    //    try
+      //  {
+        //    var booking = new HotelBookingDto
+          //  {
+            //    HotelId = hotelId,
+              //  HotelRoomId = roomId,
+                //CheckIn = searchForm.ArrivalDate,
+                //CheckOut = searchForm.DepartureDate,
+                //Price = price,
+                //RoomCapacity = capacity
+            //};
+
+            //await HotelService.BookHotelAsync(booking);
+            //bookingSuccess = true;
+            //lastBookedRoomId = roomId;
+        //}
+        //catch (Exception ex)
+        //{
+          //  Console.WriteLine($"Booking failed: {ex.Message}");
+            //bookingSuccess = false;
+            //lastBookedRoomId = -1;
+        //}
+
+       // StateHasChanged();
+    //}
+
     private async Task SubmitBooking(int hotelId, int roomId, decimal price, int capacity)
     {
         try
         {
+            var hotel = hotels?.FirstOrDefault(h => h.HotelId == hotelId);
+            if (hotel == null) return;
             var booking = new HotelBookingDto
-            {
-                HotelId = hotelId,
-                HotelRoomId = roomId,
-                CheckIn = searchForm.ArrivalDate,
-                CheckOut = searchForm.DepartureDate,
-                Price = price,
-                RoomCapacity = capacity
-            };
+        {
+            HotelId = hotelId,
+            HotelRoomId = roomId,
+            CheckIn = searchForm.ArrivalDate,
+            CheckOut = searchForm.DepartureDate,
+            Price = price,
+            RoomCapacity = capacity,
+            Hotel = hotel 
+        };
+        lastBookedRoomId = roomId;
+        await JS.InvokeVoidAsync("console.log", $"🔥 Booking confirmed: HotelId = {hotelId}, RoomId = {roomId}, Price = {price}");
+        await JS.InvokeVoidAsync("console.log", $"📦 Sending booking to parent: {booking.Hotel?.Name}");
 
-            await HotelService.BookHotelAsync(booking);
-            bookingSuccess = true;
-            lastBookedRoomId = roomId;
+        await OnHotelBookingConfirmed.InvokeAsync(booking);
+        bookingSuccess = true;
+        StateHasChanged();
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Booking failed: {ex.Message}");
+            await JS.InvokeVoidAsync("console.error", $"❌ Booking failed: {ex.Message}");
             bookingSuccess = false;
             lastBookedRoomId = -1;
         }
-
-        StateHasChanged();
     }
 
     private async Task Search()
@@ -211,7 +246,7 @@ else
         }
     }
 
-    public class SearchForm
+    public class HotelSearchForm
     {
         [Required(ErrorMessage = "Country is required.")]
         public string Country { get; set; } = string.Empty;

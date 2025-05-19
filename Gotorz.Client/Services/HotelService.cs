@@ -44,7 +44,7 @@ namespace Gotorz.Client.Services
         }
         public async Task BookHotelAsync(HotelBookingDto booking)
         {
-            await _httpClient.PostAsJsonAsync("http://localhost:5181/api/hotelbooking", booking);
+            await _httpClient.PostAsJsonAsync("http://localhost:5181/api/hotelbooking", new { bookingDto = booking });
         }
     }
 }

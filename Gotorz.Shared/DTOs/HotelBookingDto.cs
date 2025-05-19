@@ -17,7 +17,7 @@ namespace Gotorz.Shared.DTOs
     // Used to resolve HolidayPackage by title from frontend
     public string HolidayPackageTitle { get; set; } = string.Empty;
 
-    public HotelDto? Hotel { get; set; }
+    public HotelDto Hotel { get; set; }
     public HotelRoomDto? HotelRoom { get; set; }
 }
 }
