@@ -4,7 +4,6 @@
 @using System.Security.Claims
 @inject IUserService UserService
 
-@* change or remove @page if you like (UserProfile.razor has a NavigateTo(/admin/users) marked with // HACK:) *@
 
 @if (!isAccessChecked)
 {
@@ -69,7 +68,7 @@ else
                             <td>@GetRoleDisplayName(roleClaim)</td>
                             <td class="text-nowrap">
                                 <div class="d-flex gap-2">
-                                    <a class="btn btn-sm btn-primary" href="@($"/profile/{user.UserId}")">Profile</a>
+                                    <a class="btn btn-sm btn-primary" href="@($"/profile/{user.UserId}?from={Uri.EscapeDataString(From ?? "/admin/users")}")">Profile</a>
                                     <a class="btn btn-sm btn-outline-secondary"
                                        href="@($"/booking/customer/holiday-bookings?UserId={Uri.EscapeDataString(user.UserId)}")">
                                         Bookings
@@ -85,6 +84,9 @@ else
 }
 
 @code {
+    [Parameter]
+    public string? From { get; set; }
+
     private List<UserDto>? users;
     private string? selectedRoleFilter = "";
     private string searchTerm = "";
