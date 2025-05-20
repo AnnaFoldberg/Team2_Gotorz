@@ -37,10 +37,9 @@ namespace Gotorz.Client.Services
         }
         public async Task<List<HotelRoomDto>> GetHotelRoomsByHotelId(string externalHotelId, DateTime arrival, DateTime departure)
         {
-            
-        var query = $"http://localhost:5181/api/hotel/rooms?externalHotelId={externalHotelId}&arrival={arrival:yyyy-MM-dd}&departure={departure:yyyy-MM-dd}";
-        var response = await _httpClient.GetFromJsonAsync<List<HotelRoomDto>>(query);
-        return response ?? new List<HotelRoomDto>();
+            var query = $"http://localhost:5181/api/hotelroom/rooms?externalHotelId={externalHotelId}&arrival={arrival:yyyy-MM-dd}&departure={departure:yyyy-MM-dd}";
+            var response = await _httpClient.GetFromJsonAsync<List<HotelRoomDto>>(query);
+            return response ?? new List<HotelRoomDto>();
         }
         public async Task BookHotelAsync(HotelBookingDto booking)
         {

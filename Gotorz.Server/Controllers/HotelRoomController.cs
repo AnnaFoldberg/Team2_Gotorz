@@ -17,28 +17,18 @@ namespace Gotorz.Server.Controllers
             _context = context;
         }
 
-        /* [HttpGet("{externalHotelId}")]
-         public async Task<ActionResult<List<HotelRoom>>> GetHotelRooms(string externalHotelId, [FromQuery] DateTime arrival, [FromQuery] DateTime departure)
-         {
-             var rooms = await _context.HotelRooms
-                 .Where(r => r.ExternalHotelId == externalHotelId
-                             && r.ArrivalDate == arrival
-                             && r.DepartureDate == departure)
-                 .ToListAsync();
-
-             if (!rooms.Any())
-                 return NotFound();
-
-             return rooms;
-         }
-         */
         [HttpGet("rooms")]
-        public async Task<ActionResult<List<HotelRoomDto>>> GetHotelRooms([FromQuery] string externalHotelId, [FromQuery] DateTime arrival, [FromQuery] DateTime departure)
+        public async Task<ActionResult<List<HotelRoomDto>>> GetHotelRooms(
+            [FromQuery] string externalHotelId,
+            [FromQuery] DateTime arrival,
+            [FromQuery] DateTime departure)
         {
+            Console.WriteLine($"[HotelRoomController] externalHotelId: {externalHotelId}, arrival: {arrival}, departure: {departure}");
+
             var rooms = await _context.HotelRooms
                 .Where(r => r.ExternalHotelId == externalHotelId
-                            && r.ArrivalDate == arrival
-                            && r.DepartureDate == departure)
+                            && r.ArrivalDate.Date == arrival.Date
+                            && r.DepartureDate.Date == departure.Date)
                 .Select(r => new HotelRoomDto
                 {
                     HotelRoomId = r.HotelRoomId,
@@ -52,7 +42,10 @@ namespace Gotorz.Server.Controllers
                 .ToListAsync();
 
             if (!rooms.Any())
+            {
+                Console.WriteLine($"[HotelRoomController] No rooms found for externalHotelId: {externalHotelId} between {arrival} and {departure}");
                 return NotFound();
+            }
 
             return rooms;
         }
