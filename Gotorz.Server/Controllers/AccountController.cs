@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Gotorz.Server.Models;
 using Gotorz.Server.DataAccess;
 using Microsoft.AspNetCore.Authorization;
@@ -101,6 +100,7 @@ public class AccountController : ControllerBase
 
         var userDto = new UserDto
         {
+            UserId = user?.Id,
             Email = user?.UserName,
             IsAuthenticated = User.Identity?.IsAuthenticated ?? false,
             FirstName = user?.FirstName,
@@ -131,6 +131,7 @@ public class AccountController : ControllerBase
 
         var userDto = new UserDto
         {
+            UserId = user?.Id,
             Email = user.Email,
             FirstName = user.FirstName,
             LastName = user.LastName,

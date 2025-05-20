@@ -1,0 +1,32 @@
+﻿@using System
+@using System.Web
+@using Gotorz.Shared.DTOs
+@inject NavigationManager NavigationManager
+
+<div class="card bg-light border-light p-3 mb-3 shadow-sm cursor-pointer" @onclick="@(() => NavigateToDetails(Package.URL))">
+    <div class="card-body">
+        <h5 class="card-title text-dark fw-bold">@Package.Title</h5>
+        <p class="card-text text-secondary mb-1">
+            <strong>Max Capacity:</strong> @Package.MaxCapacity
+        </p>
+        <p class="card-text text-secondary mb-1">
+            <strong>Price:</strong> @(Package.CostPrice * (1 + Package.MarkupPercentage)) DKK
+        </p>
+        <p class="card-text text-muted small fst-italic text-truncate">
+            @Package.Description
+        </p>
+        <p class="card-text text-muted small fst-italic text-truncate">
+            @Package.URL
+        </p>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public HolidayPackageDto Package { get; set; } = default!;
+
+    private void NavigateToDetails(string URL)
+    {
+        NavigationManager.NavigateTo($"/holidaypackage/{URL}");
+    }
+}

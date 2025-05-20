@@ -8,7 +8,7 @@
 @using System.ComponentModel.DataAnnotations
 @inject IUserService UserService
 @inject IBookingService BookingService
-@inject ILogger<HolidayBooking> Logger
+@inject ILogger<HolidayBookings> Logger
 @inject NavigationManager Navigation
 
 <AuthorizeView>
@@ -23,6 +23,7 @@
         }
         else
         {
+          <PageTitle>Holiday Bookings</PageTitle>
           <div class="container d-flex flex-column standard-page-wrapper ">
             <h3>Holiday Bookings</h3>
             <br>
@@ -31,13 +32,16 @@
                 <div class="p-3 border rounded bg-white shadow">
                     <HolidayBooking BookingReference="@holidayBooking.BookingReference" />
                     <br><br>
-                    <div class="container mt-auto mb-4">
-                        <div class="d-flex justify-content-between align-items-center p-3">
-                            <p class="mb-0 flex-grow-1"></p>
-                            <button type="button" class="btn btn-light custom-background text-white"
-                                @onclick="() => NavigateToHolidayBooking(holidayBooking.BookingReference)">Edit</button>
+                    @if (isSales)
+                    {
+                        <div class="container mt-auto mb-4">
+                            <div class="d-flex justify-content-between align-items-center p-3">
+                                <p class="mb-0 flex-grow-1"></p>
+                                <button type="button" class="btn btn-light custom-background text-white"
+                                    @onclick="() => NavigateToHolidayBookingAsync(holidayBooking.BookingReference)">Edit</button>
+                            </div>
                         </div>
-                    </div>
+                    }
                 </div>
                 <br><br><br>
             }
@@ -64,7 +68,8 @@
 
             if (holidayBookings == null) return;
 
-            isAuthorizedUser = await UserService.IsUserInRoleAsync("sales");
+            isSales = await UserService.IsUserInRoleAsync("sales");
+            isAuthorizedUser = isSales || await UserService.IsUserInRoleAsync("admin");
         }
         catch (Exception ex)
         {
@@ -72,7 +77,7 @@
         }
     }
 
-    private async Task NavigateToHolidayBooking(string bookingReference)
+    private async Task NavigateToHolidayBookingAsync(string bookingReference)
     {
         Navigation.NavigateTo($"/booking/holiday-booking/{bookingReference}/edit?From=all-holiday-bookings");
     }

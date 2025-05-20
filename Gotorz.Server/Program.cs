@@ -21,6 +21,8 @@ builder.Services.AddScoped<IRepository<FlightTicket>, FlightTicketRepository>();
 builder.Services.AddScoped<IRepository<HolidayPackage>, HolidayPackageRepository>();
 builder.Services.AddScoped<IHolidayBookingRepository, HolidayBookingRepository>();
 builder.Services.AddScoped<IRepository<Traveller>, TravellerRepository>();
+builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<IHolidayPackageRepository, HolidayPackageRepository>();
 builder.Services.AddScoped<IHotelRepository, HotelRepository>();
 builder.Services.AddScoped<IHotelRoomRepository, HotelRoomRepository>();
 builder.Services.AddScoped<IHotelBookingRepository, HotelBookingRepository>();

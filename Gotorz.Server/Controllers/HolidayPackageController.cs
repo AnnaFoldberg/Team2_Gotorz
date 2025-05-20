@@ -11,6 +11,7 @@ namespace Gotorz.Server.Controllers
     public class HolidayPackageController : ControllerBase
     {
         private readonly IRepository<HolidayPackage>? _repository;
+        private readonly IHolidayPackageRepository _holidayRepository;
         private IMapper _mapper;
 
 
@@ -19,13 +20,19 @@ namespace Gotorz.Server.Controllers
         /// </summary>
         /// <param name="repository">The repository for managing holiday package entities.</param>
         /// <param name="mapper">The mapper for converting between DTOs and domain models.</param>
-        public HolidayPackageController(IRepository<HolidayPackage> repository, IMapper mapper)
+        public HolidayPackageController(IRepository<HolidayPackage> repository, IHolidayPackageRepository holidayRepository, IMapper mapper)
         {
             _repository = repository;
+            _holidayRepository = holidayRepository;
             _mapper = mapper;
         }
 
-        /*
+        /// <summary>
+        /// Retrieves all holiday packages from the database and returns them as a collection of DTOs.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="ActionResult{T}"/> containing a list of <see cref="HolidayPackageDto"/> objects.
+        /// </returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HolidayPackageDto>>> GetAllAsync()
         {
@@ -34,7 +41,7 @@ namespace Gotorz.Server.Controllers
 
             return Ok(result);
         }
-        */
+        
 
         /// <summary>
         /// Creates a new holiday package based on the provided DTO.
@@ -65,6 +72,25 @@ namespace Gotorz.Server.Controllers
             return Ok(_mapper.Map<HolidayPackageDto>(package));
         }
         */
+
+        /// <summary>
+        /// Retrieves a holiday package by its URL-friendly title and returns it as a DTO.
+        /// </summary>
+        /// <param name="url">The URL-encoded title used to identify the holiday package.</param>
+        /// <returns>
+        /// An <see cref="ActionResult{T}"/> containing the <see cref="HolidayPackageDto"/> if found; otherwise, <c>NotFound</c>.
+        /// </returns>
+        [HttpGet("{url}")]
+        public async Task<ActionResult<HolidayPackageDto>> GetByUrl(string url)
+        {
+            var package = await _holidayRepository.GetByUrlAsync(url);
+            if (package == null)
+            {
+                return NotFound();
+            }
+            return Ok(_mapper.Map<HolidayPackageDto>(package));
+        }
+        
 
         /*
         [HttpDelete("{id}")]

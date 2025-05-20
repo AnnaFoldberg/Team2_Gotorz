@@ -1,7 +1,48 @@
 ﻿@page "/"
+@using Gotorz.Client.Services
+@using Gotorz.Client.Pages.Booking
+@inject IHolidayPackageService HolidayPackageService
+@inject IBookingService BookingService
+@inject IUserService UserService
+@inject ILogger<Home> Logger
 
 <PageTitle>Home</PageTitle>
+<h1>Home</h1>
+<hr><br>
 
-<h1>Hello, world!</h1>
+@if (userRole == null)
+{
+    <HolidayPackageList/>
+}
+else if (userRole == "customer")
+{
+    <HolidayPackageList/>
+    <br><hr><br>
+    <CustomerHolidayBookings/>
+}
+else if (userRole == "sales")
+{
+    <HolidayBookings/>
+}
+else if (userRole == "admin")
+{
+    <UserList/>
+    <br><hr><br>
+    <HolidayBookings/>
+}
 
-Welcome to your new app.
+@code {
+    private string? userRole;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            userRole = await UserService.GetUserRoleAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error initializing homepage");
+        }
+    }
+}

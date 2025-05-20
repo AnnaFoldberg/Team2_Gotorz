@@ -1,11 +1,9 @@
 using Bunit;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Gotorz.Client.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components.Authorization;
 using Gotorz.Shared.DTOs;
 using Bunit.TestDoubles;
 using System.Security.Claims;
@@ -66,7 +64,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -103,12 +101,12 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockUnauthorizedCustomer = new UserDto
             {
-                Email = "unauthorizedcustomer@mail.com",
+                UserId = "3a7b4ccf-2d09-4753-80ba-76818cd4f3f1"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -144,7 +142,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -179,7 +177,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -214,7 +212,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -252,7 +250,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -321,7 +319,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -369,7 +367,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -417,7 +415,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -469,7 +467,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -522,7 +520,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -575,7 +573,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -631,7 +629,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -695,7 +693,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -746,7 +744,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -797,7 +795,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -848,7 +846,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -896,7 +894,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -945,7 +943,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -994,7 +992,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -1043,7 +1041,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -1092,7 +1090,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto
@@ -1141,7 +1139,7 @@ namespace Gotorz.Client.UnitTests.Pages
 
             var mockCustomer = new UserDto
             {
-                Email = "customer@mail.com",
+                UserId = "17506e3e-43fd-4152-ae92-1872ddc91aa0"
             };
 
             var mockHolidayPackage = new HolidayPackageDto

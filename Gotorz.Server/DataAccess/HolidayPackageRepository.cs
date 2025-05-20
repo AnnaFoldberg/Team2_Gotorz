@@ -1,10 +1,11 @@
+using System.Web;
 using Gotorz.Server.Contexts;
 using Gotorz.Server.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gotorz.Server.DataAccess
 {
-    public class HolidayPackageRepository : IRepository<HolidayPackage>
+    public class HolidayPackageRepository : IRepository<HolidayPackage>, IHolidayPackageRepository
     {
         private readonly GotorzDbContext _context;
 
@@ -61,6 +62,20 @@ namespace Gotorz.Server.DataAccess
         {
             return await _context.HolidayPackages
                 .FirstOrDefaultAsync(hp => hp.HolidayPackageId == key);
+        }
+
+        /// <summary>
+        /// Retrieves a holiday package from the database by matching the decoded URL title.
+        /// </summary>
+        /// <param name="url">The URL-encoded title of the holiday package.</param>
+        /// <returns>
+        /// A task representing the asynchronous operation, containing the matching <see cref="HolidayPackage"/> if found; otherwise, <c>null</c>.
+        /// </returns>
+        public async Task<HolidayPackage?> GetByUrlAsync(string url)
+        {
+            string decoded = HttpUtility.UrlDecode(url);
+            return await _context.HolidayPackages
+                .FirstOrDefaultAsync(hp => hp.Title == decoded);
         }
 
         /// <summary>

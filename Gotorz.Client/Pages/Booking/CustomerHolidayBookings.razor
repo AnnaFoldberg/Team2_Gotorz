@@ -8,8 +8,9 @@
 @using System.ComponentModel.DataAnnotations
 @inject IUserService UserService
 @inject IBookingService BookingService
-@inject ILogger<HolidayBooking> Logger
+@inject ILogger<CustomerHolidayBookings> Logger
 @inject NavigationManager Navigation
+
 
 <AuthorizeView>
     <Authorized Context="auth">
@@ -23,24 +24,14 @@
         }
         else
         {
+          <PageTitle>Holiday Bookings</PageTitle>
           <div class="container d-flex flex-column standard-page-wrapper ">
             <h3>Holiday Bookings</h3>
             <br>
             @foreach (HolidayBookingDto holidayBooking in holidayBookings)
             {
                 <div class="p-3 border rounded bg-white shadow">
-                <HolidayBooking BookingReference="@holidayBooking.BookingReference" />
-                <br><br>
-                @if (isSales)
-                {
-                    <div class="container mt-auto mb-4">
-                        <div class="d-flex justify-content-between align-items-center p-3">
-                            <p class="mb-0 flex-grow-1"></p>
-                            <button type="button" class="btn btn-light custom-background text-white"
-                                @onclick="() => NavigateToHolidayBooking(holidayBooking.BookingReference)">Edit</button>
-                        </div>
-                    </div>
-                }
+                    <HolidayBooking BookingReference="@holidayBooking.BookingReference" />
                 </div>
                 <br><br><br>
             }
@@ -56,41 +47,33 @@
 
 @code {
     private bool isAuthorizedUser;
-    private bool isSales;
     private IEnumerable<HolidayBookingDto> holidayBookings;
 
     [Parameter]
     [SupplyParameterFromQuery]
-    public string? UserEmail { get; set; }
+    public string? UserId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(UserEmail))
+            if (string.IsNullOrWhiteSpace(UserId))
             {
                 var currentUser = await UserService.GetCurrentUserAsync();
-                UserEmail = currentUser.Email;
+                UserId = currentUser.UserId;
             }
 
-            holidayBookings = await BookingService.GetCustomerHolidayBookingsAsync(UserEmail);
+            holidayBookings = await BookingService.GetCustomerHolidayBookingsAsync(UserId);
 
             if (holidayBookings == null) return;
 
-            isSales = await UserService.IsUserInRoleAsync("sales");
-
             isAuthorizedUser = ((await UserService.IsUserInRoleAsync("customer")) &&
-                holidayBookings.First().Customer.Email == UserEmail) ||
-                isSales;
+                holidayBookings.First().Customer.UserId == UserId) ||
+                await UserService.IsUserInRoleAsync("admin");
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error initializing customer's holiday bookings");
         }
-    }
-    private async Task NavigateToHolidayBooking(string bookingReference)
-    {
-        string from = $"customer/holiday-bookings?UserEmail={UserEmail}";
-        Navigation.NavigateTo($"/booking/holiday-booking/{bookingReference}/edit/?From={Uri.EscapeDataString(from)}");
     }
 }

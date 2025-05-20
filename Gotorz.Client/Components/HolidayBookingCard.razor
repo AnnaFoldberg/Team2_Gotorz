@@ -21,6 +21,7 @@
                 <div class="p-2 flex-fill">
                     <h5><b>Holiday Booking</b></h5>
                     <p>@HolidayBookingDto.HolidayPackage.Title</p>
+                    <p>@HolidayBookingDto.HolidayPackage.Description</p>
                 </div>
                 <div class="card bg-light border-light p-2 mb-3">
                     <div class="card-body">
@@ -61,7 +62,7 @@
             currentUser = await UserService.GetCurrentUserAsync();
 
             isAuthorizedUser = ((await UserService.IsUserInRoleAsync("customer")) &&
-                HolidayBookingDto.Customer.Email == currentUser.Email ) ||
+                HolidayBookingDto.Customer.UserId == currentUser.UserId ) ||
                 (await UserService.IsUserInRoleAsync("sales")) ||
                 (await UserService.IsUserInRoleAsync("admin"));
 

@@ -1,8 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Net;
 using Moq;
 using Moq.Protected;
 using Gotorz.Client.Services;
@@ -62,6 +58,39 @@ namespace Gotorz.Client.UnitTests.Services
                     req.Method == HttpMethod.Post &&
                     req.RequestUri!.AbsolutePath == "/HolidayPackage"),
                 ItExpr.IsAny<CancellationToken>());
+        }
+
+        [TestMethod]
+        public async Task GetAllAsync_WhenCalled_ReturnsListOfHolidayPackages()
+        {
+            // Arrange
+            var expected = new List<HolidayPackageDto>
+    {
+        new HolidayPackageDto { HolidayPackageId = 1, Title = "Test Package" },
+        new HolidayPackageDto { HolidayPackageId = 2, Title = "Another Package" }
+    };
+
+            var httpResponse = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = JsonContent.Create(expected)
+            };
+
+            _mockHttpMessageHandler
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.Is<HttpRequestMessage>(req =>
+                        req.Method == HttpMethod.Get &&
+                        req.RequestUri!.AbsolutePath == "/HolidayPackage"),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(httpResponse);
+
+            // Act
+            var result = await _service.GetAllAsync();
+
+            // Assert
+            Assert.AreEqual(2, result.Count);
+            Assert.AreEqual("Test Package", result[0].Title);
         }
     }
 }

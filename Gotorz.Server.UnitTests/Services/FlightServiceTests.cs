@@ -1,5 +1,4 @@
 using Moq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Gotorz.Server.Services;
 using Moq.Protected;
 using System.Net;
