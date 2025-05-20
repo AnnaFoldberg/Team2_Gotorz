@@ -182,7 +182,7 @@
         await FlightService.PostFlightTicketsAsync(inboundFlightTickets);
 
         hotelBookingDto.HolidayPackageId = newPackage.HolidayPackageId;
-        Console.WriteLine($"📦 Booking HolidayPackageId = {hotelBookingDto.HolidayPackageId}");
+        Console.WriteLine($"Booking HolidayPackageId = {hotelBookingDto.HolidayPackageId}");
         await HotelService.BookHotelAsync(hotelBookingDto);
 
         showSuccessMessage = true;
@@ -221,7 +221,7 @@
 
     private void HandleHotelBookingConfirmed(HotelBookingDto hotelBooking)
     {
-        Console.WriteLine($"📥 Received booking: {hotelBooking.Hotel?.Name} - Room ID: {hotelBooking.HotelRoomId}");
+        Console.WriteLine($" Received booking: {hotelBooking.Hotel?.Name} - Room ID: {hotelBooking.HotelRoomId}");
         hotelBookingDto = hotelBooking;
         newPackage.CostPrice += (decimal)hotelBookingDto.Price;
         showHotels = false;
