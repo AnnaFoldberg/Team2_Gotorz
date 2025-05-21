@@ -15,6 +15,7 @@ namespace Gotorz.Server.Services
 
         public async Task AddHotelBookingAsync(HotelBooking booking)
         {
+                Console.WriteLine($"📦 Saving booking for HotelId: {booking.HotelId}, PackageId: {booking.HolidayPackageId}");
             _context.HotelBookings.Add(booking);
             await _context.SaveChangesAsync();
         }

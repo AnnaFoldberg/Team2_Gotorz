@@ -177,13 +177,20 @@
         hotelBookingDto = new HotelBookingDto();
     }
 
-    private async Task CreatePackage()
+   private async Task CreatePackage()
     {
         var isValid = editContext.Validate();
-        if (isValid)
+        if (!isValid)
+            return;
+
+        var createdPackage = await PackageService.CreateAsync(newPackage);
+        if (createdPackage == null)
         {
-            await PackageService.CreateAsync(newPackage);
+            Console.Error.WriteLine("❌ Holiday package creation failed.");
+            return;
         }
+
+        newPackage = createdPackage;
 
         foreach (var flightTicket in outboundFlightTickets)
             flightTicket.HolidayPackage = newPackage;

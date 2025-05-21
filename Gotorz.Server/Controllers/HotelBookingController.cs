@@ -1,38 +1,41 @@
 using Microsoft.AspNetCore.Mvc;
 using Gotorz.Server.Models;
 using Gotorz.Server.Services;
-using Gotorz.Server.DataAccess;
 using Gotorz.Shared.DTOs;
 
 namespace Gotorz.Server.Controllers;
+
 [ApiController]
 [Route("api/[controller]")]
-
 public class HotelBookingController : ControllerBase
 {
     private readonly IHotelBookingService _service;
-    private readonly IRepository<HolidayPackage> _holidayPackageRepository;
 
-
-    public HotelBookingController(IHotelBookingService service,
-    IRepository<HolidayPackage> holidayPackageRepository)
+    // Constructor injecting the hotel booking service
+    public HotelBookingController(IHotelBookingService service)
     {
         _service = service;
-        _holidayPackageRepository = holidayPackageRepository;
     }
 
+    /// <summary>
+    /// Adds a new hotel booking to the database.
+    /// </summary>
+    /// <param name="bookingDto">Data transfer object containing booking details</param>
+    /// <returns>HTTP 200 OK on success or HTTP 400 BadRequest on failure</returns>
+    /// </remarks>
+    /// <author>Sayeh</author>
     [HttpPost]
     public async Task<IActionResult> AddBooking([FromBody] HotelBookingDto bookingDto)
     {
-        // Step 1: Find the holiday package based on title
-        var packages = await _holidayPackageRepository.GetAllAsync();
-        var holidayPackage = packages.FirstOrDefault(p =>
-            p.Title.Equals(bookingDto.HolidayPackageTitle, StringComparison.OrdinalIgnoreCase));
+            Console.WriteLine("📥 AddBooking called");  // TestLog
 
-        if (holidayPackage == null)
-            return BadRequest("Holiday package not found.");
+        // Validate input: booking must exist and HolidayPackageId must be set
+        if (bookingDto == null || bookingDto.HolidayPackageId <= 0)
+        {
+            return BadRequest("Invalid booking data. HolidayPackageId is required.");
+        }
 
-        // Step 2: Create the HotelBooking object with the correct HolidayPackageId
+        // Map DTO to domain model
         var booking = new HotelBooking
         {
             HotelId = bookingDto.HotelId,
@@ -41,11 +44,13 @@ public class HotelBookingController : ControllerBase
             CheckOut = bookingDto.CheckOut,
             Price = bookingDto.Price,
             RoomCapacity = bookingDto.RoomCapacity,
-            HolidayPackageId = holidayPackage.HolidayPackageId
+            HolidayPackageId = bookingDto.HolidayPackageId.Value  // foreign key relation
         };
 
-        // Step 3: Save to database
+        // Save to database via the service
         await _service.AddHotelBookingAsync(booking);
+
+        // Return HTTP 200 success message
         return Ok("Hotel booking created successfully.");
     }
 }

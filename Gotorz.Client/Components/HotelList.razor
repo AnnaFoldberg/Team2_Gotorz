@@ -1,126 +1,144 @@
+@page "/hotels"
 @using Gotorz.Shared.DTOs
 @using Gotorz.Client.Services
 @using System.ComponentModel.DataAnnotations
 @inject IHotelService HotelService
+@inject IUserService UserService
+@inject IJSRuntime JS
 
-<EditForm Model="@searchForm" OnValidSubmit="Search">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-
-    <div class="container">
-        <div class="d-flex gap-2 align-items-end">
-            <div class="form-group flex-grow-1">
-                <label for="country" class="form-label">Country</label>
-                <InputText class="form-control" id="country" @bind-Value="searchForm.Country" />
-                <ValidationMessage For="@(() => searchForm.Country)" />
-            </div>
-            <div class="form-group flex-grow-1">
-                <label for="city" class="form-label">City</label>
-                <InputText class="form-control" id="city" @bind-Value="searchForm.City" />
-                <ValidationMessage For="@(() => searchForm.City)" />
-            </div>
-            <div class="form-group flex-grow-1">
-                <label for="arrivalDate" class="form-label">Arrival Date</label>
-                <InputDate class="form-control" id="arrivalDate" @bind-Value="searchForm.ArrivalDate" />
-            </div>
-            <div class="form-group flex-grow-1">
-                <label for="departureDate" class="form-label">Departure Date</label>
-                <InputDate class="form-control" id="departureDate" @bind-Value="searchForm.DepartureDate" />
-            </div>
-            <div class="form-group flex-grow-1">
-                <button type="submit" class="btn btn-primary">Search</button>
-            </div>
-        </div>
-    </div>
-</EditForm>
-
-<br />
-
-@if (!searchPerformed)
-{
-    <p class="text-muted">Start by entering a country and city, then click Search.</p>
-}
-else if (hotels == null)
-{
-    <p>Loading...</p>
-}
-else if (hotels.Any())
-{
-    <ul class="list-group">
-        <li class="list-group-item d-flex justify-content-between align-items-center text-white bg-dark">
-            <span class="col">Hotel</span>
-            <span class="col">City</span>
-            <span class="col">Rating</span>
-            <span class="col">Book</span>
-            <span class="col">Map</span>
-        </li>
-
-        @foreach (var hotel in hotels)
+<AuthorizeView>
+    <Authorized Context="auth">
+        @if (!isAuthorizedUser)
         {
-            <li class="list-group-item">
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="col">@hotel.Name</span>
-                    <span class="col">@hotel.Address</span>
-                    <span class="col">@hotel.Rating</span>
-                    <span class="col">
-                        <button class="btn btn-sm btn-outline-secondary" @onclick="() => ToggleDetails(hotel.HotelId)">
-                            @(expandedHotelId == hotel.HotelId ? "Hide details" : "Show details")
-                        </button>
-                    </span>
-                    <span class="col">
-                        <a href="@hotel.GoogleMapsUrl" target="_blank">📍 View</a>
-                    </span>
+            <p>Page not found.</p>
+        }
+        else
+        {
+            <EditForm Model="@searchForm" OnValidSubmit="Search">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="container">
+                    <div class="d-flex gap-2 align-items-end">
+                        <div class="form-group flex-grow-1">
+                            <label for="country" class="form-label">Country</label>
+                            <InputText class="form-control" id="country" @bind-Value="searchForm.Country" />
+                            <ValidationMessage For="@(() => searchForm.Country)" />
+                        </div>
+                        <div class="form-group flex-grow-1">
+                            <label for="city" class="form-label">City</label>
+                            <InputText class="form-control" id="city" @bind-Value="searchForm.City" />
+                            <ValidationMessage For="@(() => searchForm.City)" />
+                        </div>
+                        <div class="form-group flex-grow-1">
+                            <label for="arrivalDate" class="form-label">Arrival Date</label>
+                            <InputDate class="form-control" id="arrivalDate" @bind-Value="searchForm.ArrivalDate" />
+                        </div>
+                        <div class="form-group flex-grow-1">
+                            <label for="departureDate" class="form-label">Departure Date</label>
+                            <InputDate class="form-control" id="departureDate" @bind-Value="searchForm.DepartureDate" />
+                        </div>
+                        <div class="form-group flex-grow-1">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </div>
                 </div>
+            </EditForm>
 
-                @if (expandedHotelId == hotel.HotelId)
-                {
-                    <div class="bg-light p-3 rounded mt-2">
-                        <h6>Available Rooms</h6>
+            <br />
 
-                        @if (isLoadingRoomsDict.ContainsKey(hotel.HotelId) && isLoadingRoomsDict[hotel.HotelId])
-                        {
-                            <p class="text-muted">Loading rooms...</p>
-                        }
-                        else if (hotelRoomsDict.ContainsKey(hotel.HotelId) && hotelRoomsDict[hotel.HotelId].Any())
-                        {
-                            @foreach (var room in hotelRoomsDict[hotel.HotelId])
-                            {
-                                <div class="mb-2 border-bottom pb-2">
-                                    <p><strong>Name:</strong> @room.Name</p>
-                                    <p><strong>Capacity:</strong> @room.Capacity</p>
-                                    <p><strong>Price:</strong> @room.Price.ToString("C")</p>
-                                    <p><strong>Meal Plan:</strong> @room.MealPlan</p>
-                                    <p><strong>Refundable:</strong> @(room.Refundable ? "Yes" : "No")</p>
+            @if (!searchPerformed)
+            {
+                <p class="text-muted">Start by entering a country and city, then click Search.</p>
+            }
+            else if (hotels == null)
+            {
+                <p>Loading...</p>
+            }
+            else if (hotels.Any())
+            {
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center text-white bg-dark">
+                        <span class="col">Hotel</span>
+                        <span class="col">City</span>
+                        <span class="col">Rating</span>
+                        <span class="col">Book</span>
+                        <span class="col">Map</span>
+                    </li>
 
-                                    <button class="btn btn-sm btn-success"
-                                            @onclick="@(() => { Console.WriteLine("✅ Button clicked"); SubmitBooking(hotel.HotelId, room.HotelRoomId, room.Price, room.Capacity); })">
-                                        Book Hotel
+                    @foreach (var hotel in hotels)
+                    {
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="col">@hotel.Name</span>
+                                <span class="col">@hotel.Address</span>
+                                <span class="col">@hotel.Rating</span>
+                                <span class="col">
+                                    <button class="btn btn-sm btn-outline-secondary" @onclick="() => ToggleDetails(hotel.HotelId)">
+                                        @(expandedHotelId == hotel.HotelId ? "Hide details" : "Show details")
                                     </button>
-                                    @if (bookingSuccess && lastBookedRoomId == room.HotelRoomId)
+                                </span>
+                                <span class="col">
+                                    <a href="@hotel.GoogleMapsUrl" target="_blank">📍 View</a>
+                                </span>
+                            </div>
+
+                            @if (expandedHotelId == hotel.HotelId)
+                            {
+                                <div class="bg-light p-3 rounded mt-2">
+                                    <h6>Available Rooms</h6>
+
+                                    @if (isLoadingRoomsDict.ContainsKey(hotel.HotelId) && isLoadingRoomsDict[hotel.HotelId])
                                     {
-                                        <div class="alert alert-success mt-2">
-                                            ✅ Booking was successful!
-                                        </div>
+                                        <p class="text-muted">Loading rooms...</p>
+                                    }
+                                    else if (hotelRoomsDict.ContainsKey(hotel.HotelId) && hotelRoomsDict[hotel.HotelId].Any())
+                                    {
+                                        @foreach (var room in hotelRoomsDict[hotel.HotelId])
+                                        {
+                                            <div class="mb-2 border-bottom pb-2">
+                                                <p><strong>Name:</strong> @room.Name</p>
+                                                <p><strong>Capacity:</strong> @room.Capacity</p>
+                                                <p><strong>Price:</strong> @room.Price.ToString("C")</p>
+                                                <p><strong>Meal Plan:</strong> @room.MealPlan</p>
+                                                <p><strong>Refundable:</strong> @(room.Refundable ? "Yes" : "No")</p>
+
+                                                <button class="btn btn-sm btn-success"
+                                                        @onclick="@(() => SubmitBooking(hotel.HotelId, room.HotelRoomId, room.Price, room.Capacity))">
+                                                    Book Hotel
+                                                </button>
+                                                @if (bookingSuccess && lastBookedRoomId == room.HotelRoomId)
+                                                {
+                                                    <div class="alert alert-success mt-2">
+                                                        ✅ Booking was successful!
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted">No rooms found for this hotel.</p>
                                     }
                                 </div>
                             }
-                        }
-                        else
-                        {
-                            <p class="text-muted">No rooms found for this hotel.</p>
-                        }
-                    </div>
-                }
-            </li>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <h6>No hotels found.</h6>
+            }
         }
-    </ul>
-}
-else
-{
-    <h6>No hotels found.</h6>
-}
+    </Authorized>
+    <NotAuthorized>
+        <div class="mt-5 standard-page-wrapper">
+            <Login />
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
 
-@inject IJSRuntime JS
 @code {
     private HotelSearchForm searchForm = new();
     private List<HotelDto>? hotels;
@@ -128,102 +146,17 @@ else
     private bool bookingSuccess = false;
     private int lastBookedRoomId = -1;
     private int? expandedHotelId = null;
+    private bool isAuthorizedUser;
+
     private Dictionary<int, List<HotelRoomDto>> hotelRoomsDict = new();
     private Dictionary<int, bool> isLoadingRoomsDict = new();
 
     [Parameter]
-    public EventCallback<HotelBookingDto> OnHotelBookingConfirmed { get; set; }    
+    public EventCallback<HotelBookingDto> OnHotelBookingConfirmed { get; set; }
 
-    private async Task ToggleDetails(int hotelId)
+    protected override async Task OnInitializedAsync()
     {
-        if (expandedHotelId == hotelId)
-        {
-            expandedHotelId = null;
-            return;
-        }
-
-        expandedHotelId = hotelId;
-
-        if (!hotelRoomsDict.ContainsKey(hotelId))
-        {
-            isLoadingRoomsDict[hotelId] = true;
-            StateHasChanged();
-
-            var hotel = hotels?.FirstOrDefault(h => h.HotelId == hotelId);
-            if (hotel != null)
-            {
-                var rooms = await HotelService.GetHotelRoomsByHotelId(
-                    hotel.ExternalHotelId,
-                    searchForm.ArrivalDate,
-                    searchForm.DepartureDate
-                );
-
-                hotelRoomsDict[hotelId] = rooms;
-            }
-
-            isLoadingRoomsDict[hotelId] = false;
-            StateHasChanged();
-        }
-    }
-
- //   private async Task SubmitBooking(int hotelId, int roomId, decimal price, int capacity)
-  //  {
-    //    try
-      //  {
-        //    var booking = new HotelBookingDto
-          //  {
-            //    HotelId = hotelId,
-              //  HotelRoomId = roomId,
-                //CheckIn = searchForm.ArrivalDate,
-                //CheckOut = searchForm.DepartureDate,
-                //Price = price,
-                //RoomCapacity = capacity
-            //};
-
-            //await HotelService.BookHotelAsync(booking);
-            //bookingSuccess = true;
-            //lastBookedRoomId = roomId;
-        //}
-        //catch (Exception ex)
-        //{
-          //  Console.WriteLine($"Booking failed: {ex.Message}");
-            //bookingSuccess = false;
-            //lastBookedRoomId = -1;
-        //}
-
-       // StateHasChanged();
-    //}
-
-    private async Task SubmitBooking(int hotelId, int roomId, decimal price, int capacity)
-    {
-        try
-        {
-            var hotel = hotels?.FirstOrDefault(h => h.HotelId == hotelId);
-            if (hotel == null) return;
-            var booking = new HotelBookingDto
-        {
-            HotelId = hotelId,
-            HotelRoomId = roomId,
-            CheckIn = searchForm.ArrivalDate,
-            CheckOut = searchForm.DepartureDate,
-            Price = price,
-            RoomCapacity = capacity,
-            Hotel = hotel 
-        };
-        lastBookedRoomId = roomId;
-        await JS.InvokeVoidAsync("console.log", $"🔥 Booking confirmed: HotelId = {hotelId}, RoomId = {roomId}, Price = {price}");
-        await JS.InvokeVoidAsync("console.log", $"📦 Sending booking to parent: {booking.Hotel?.Name}");
-
-        await OnHotelBookingConfirmed.InvokeAsync(booking);
-        bookingSuccess = true;
-        StateHasChanged();
-        }
-        catch (Exception ex)
-        {
-            await JS.InvokeVoidAsync("console.error", $"❌ Booking failed: {ex.Message}");
-            bookingSuccess = false;
-            lastBookedRoomId = -1;
-        }
+        isAuthorizedUser = await UserService.IsUserInRoleAsync("sales");
     }
 
     private async Task Search()
@@ -244,6 +177,80 @@ else
         {
             Console.WriteLine($"Error: {ex.Message}");
         }
+    }
+
+    private async Task ToggleDetails(int hotelId)
+    {
+        if (expandedHotelId == hotelId)
+        {
+            expandedHotelId = null;
+            return;
+        }
+
+        expandedHotelId = hotelId;
+
+        if (!hotelRoomsDict.ContainsKey(hotelId))
+        {
+            isLoadingRoomsDict[hotelId] = true;
+            StateHasChanged();
+
+            var hotel = hotels?.FirstOrDefault(h => h.HotelId == hotelId);
+            if (hotel != null)
+            {
+                try
+                {
+                    var rooms = await HotelService.GetHotelRoomsByHotelId(
+                        hotel.ExternalHotelId,
+                        searchForm.ArrivalDate,
+                        searchForm.DepartureDate
+                    );
+
+                    hotelRoomsDict[hotelId] = rooms ?? new List<HotelRoomDto>();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"❌ Error fetching rooms: {ex.Message}");
+                    hotelRoomsDict[hotelId] = new List<HotelRoomDto>();
+                }
+            }
+
+            isLoadingRoomsDict[hotelId] = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SubmitBooking(int hotelId, int roomId, decimal price, int capacity)
+    {
+        try
+        {
+            var hotel = hotels?.FirstOrDefault(h => h.HotelId == hotelId);
+            if (hotel == null) return;
+
+            var booking = new HotelBookingDto
+            {
+                HotelId = hotelId,
+                HotelRoomId = roomId,
+                CheckIn = searchForm.ArrivalDate,
+                CheckOut = searchForm.DepartureDate,
+                Price = price,
+                RoomCapacity = capacity,
+                Hotel = hotel
+            };
+
+            lastBookedRoomId = roomId;
+            await JS.InvokeVoidAsync("console.log", $"Booking confirmed: {hotel.Name}");
+
+            await OnHotelBookingConfirmed.InvokeAsync(booking);
+            bookingSuccess = true;
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("console.error", $"Booking failed: {ex.Message}");
+            bookingSuccess = false;
+            lastBookedRoomId = -1;
+        }
+
+        StateHasChanged();
     }
 
     public class HotelSearchForm

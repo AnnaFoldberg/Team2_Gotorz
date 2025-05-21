@@ -28,6 +28,7 @@ namespace Gotorz.Server.Services
             _hotelBookingRepository = hotelBookingRepository;
         }
 
+        // Search and store hotels if not already in DB
         public async Task<List<Hotel>> GetHotelsByCityName(string city, string country, DateTime arrival, DateTime departure)
         {
             var existingHotels = (await _hotelRepository.GetAllAsync())
@@ -39,6 +40,7 @@ namespace Gotorz.Server.Services
 
             var hotels = new List<Hotel>();
 
+            // Get destination coordinates
             var locationRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
@@ -63,9 +65,9 @@ namespace Gotorz.Server.Services
 
             var lat = bestMatch["latitude"]?.GetValue<double>() ?? 0;
             var lon = bestMatch["longitude"]?.GetValue<double>() ?? 0;
-
             if (lat == 0 || lon == 0) return hotels;
 
+            // Get hotel list by coordinates
             string arrivalStr = arrival.ToString("yyyy-MM-dd");
             string departureStr = departure.ToString("yyyy-MM-dd");
 
@@ -111,8 +113,22 @@ namespace Gotorz.Server.Services
             return hotels;
         }
 
+        // First check DB for hotel rooms; if not found, call external API
         public async Task<List<HotelRoom>> GetHotelRoomsAsync(string externalHotelId, DateTime arrival, DateTime departure)
         {
+            // 1. Check local database
+            var localRooms = (await _hotelRoomRepository.GetAllAsync())
+                .Where(r => r.ExternalHotelId == externalHotelId
+                         && r.ArrivalDate.Date == arrival.Date
+                         && r.DepartureDate.Date == departure.Date)
+                .ToList();
+
+            if (localRooms.Any())
+                return localRooms;
+
+            // 2. If not in DB → Call external API
+            Console.WriteLine($" No local room data for {externalHotelId} → Getting from RapidAPI...");
+
             var arrivalStr = arrival.ToString("yyyy-MM-dd");
             var departureStr = departure.ToString("yyyy-MM-dd");
 
