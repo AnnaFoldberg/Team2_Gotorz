@@ -31,15 +31,6 @@ namespace Gotorz.Server.Services
         // Search and store hotels if not already in DB
         public async Task<List<Hotel>> GetHotelsByCityName(string city, string country, DateTime arrival, DateTime departure)
         {
-            var existingHotels = (await _hotelRepository.GetAllAsync())
-                .Where(h => h.Address?.ToLower().Contains(city.ToLower()) == true)
-                .ToList();
-
-            if (existingHotels.Any())
-            {
-                return existingHotels;
-  
-                }
             var hotels = new List<Hotel>();
 
             // Get destination coordinates
@@ -91,6 +82,7 @@ namespace Gotorz.Server.Services
             var hotelArray = hotelRoot?["data"]?["result"]?.AsArray();
             if (hotelArray == null) return hotels;
 
+            var allHotels = await _hotelRepository.GetAllAsync();
             foreach (var h in hotelArray)
             {
                 var address = h?["address"]?.ToString() ?? $"{h?["district"]} {h?["zip"]} {h?["city"]}".Trim();
@@ -109,9 +101,12 @@ namespace Gotorz.Server.Services
 
             foreach (var hotel in hotels)
             {
-                await _hotelRepository.AddAsync(hotel);
+                var matchingHotel = allHotels.FirstOrDefault(a => a.ExternalHotelId == hotel.ExternalHotelId);
+                if (matchingHotel == null)
+                {
+                    await _hotelRepository.AddAsync(hotel);
+                }
             }
-
             return hotels;
         }
 
@@ -125,19 +120,7 @@ namespace Gotorz.Server.Services
                 return null;
             }
 
-            // 1. Check local database
-            var localRooms = (await _hotelRoomRepository.GetAllAsync())
-                .Where(r => r.HotelId == hotel.HotelId
-                         && r.ArrivalDate.Date == arrival.Date
-                         && r.DepartureDate.Date == departure.Date)
-                .ToList();
-
-            if (localRooms.Any())
-                return localRooms;
-
-            // 2. If not in DB → Call external API
-            Console.WriteLine($" No local room data for {externalHotelId} → Getting from RapidAPI...");
-
+            
             var arrivalStr = arrival.ToString("yyyy-MM-dd");
             var departureStr = departure.ToString("yyyy-MM-dd");
 

@@ -19,7 +19,9 @@ namespace Gotorz.Server.DataAccess
 
         public async Task<IEnumerable<HotelRoom>> GetAllAsync()
         {
-            return await _context.HotelRooms.ToListAsync();
+            return await _context.HotelRooms
+            .Include(r => r.Hotel)
+            .ToListAsync();
         }
 
         public async Task<IEnumerable<HotelRoom>> GetByHotelIdAsync(int hotelId)

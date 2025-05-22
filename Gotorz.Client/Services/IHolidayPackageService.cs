@@ -8,7 +8,6 @@ namespace Gotorz.Client.Services
 
         Task<HolidayPackageDto?> GetByUrlAsync(string url);
 
-        //Task CreateAsync(HolidayPackageDto dto);
-        Task<HolidayPackageDto?> CreateAsync(HolidayPackageDto dto);
+        Task<HolidayPackageDto> CreateAsync(HolidayPackageDto dto);
     }
 }

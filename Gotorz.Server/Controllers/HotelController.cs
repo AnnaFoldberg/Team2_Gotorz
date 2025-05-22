@@ -44,18 +44,6 @@ namespace Gotorz.Server.Controllers
             if (rooms == null || !rooms.Any())
                 return NotFound();
 
-            // Convert to DTOs if needed, or return full entity
-            // var roomDtos = rooms.Select(r => new HotelRoomDto
-            // {
-            //     HotelRoomId = r.HotelRoomId,
-            //     ExternalRoomId = r.ExternalRoomId,
-            //     Name = r.Name,
-            //     Capacity = r.Capacity,
-            //     Price = r.Price,
-            //     MealPlan = r.MealPlan,
-            //     Refundable = r.Refundable
-            // }).ToList();
-
             var roomDtos = _mapper.Map<List<HotelRoomDto>>(rooms);
             return Ok(roomDtos);
         }

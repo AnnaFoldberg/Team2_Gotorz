@@ -11,7 +11,7 @@ namespace Gotorz.Client.Services
 Task<List<HotelDto>> GetHotelsByCityName(string city, string country, DateTime arrival, DateTime departure);  
 Task<List<HotelSearchHistory>> GetSearchHistory(); 
 Task<List<HotelRoomDto>> GetHotelRoomsByHotelId(string externalHotelId, DateTime arrival, DateTime departure);
-Task<bool> BookHotelAsync(HotelBookingDto booking);
+Task BookHotelAsync(HotelBookingDto booking);
  
 }
 }

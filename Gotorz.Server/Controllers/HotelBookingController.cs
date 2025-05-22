@@ -44,41 +44,26 @@ public class HotelBookingController : ControllerBase
     public async Task<IActionResult> AddBooking([FromBody] HotelBookingDto bookingDto)
     {
         // Validate input: booking must exist and HolidayPackage must be set
-        if (bookingDto == null)
-        {
-            Console.WriteLine("BookingDTO IS NULL");
-            return BadRequest("Invalid booking data.");
-        }
-        if (bookingDto.HolidayPackageDto == null)
-        {
-            Console.WriteLine("HolidayPackageDTO IS NULL");
-            return BadRequest("Invalid HOLIDAYPACKAGE data.");
-        }
-        Console.WriteLine("Succed Alert");
-        // Map DTO to domain model
-        // var booking = new HotelBooking
-        // {
-        //     HotelId = bookingDto.HotelId,
-        //     HotelRoomId = bookingDto.HotelRoomId,
-        //     CheckIn = bookingDto.CheckIn,
-        //     CheckOut = bookingDto.CheckOut,
-        //     Price = bookingDto.HotelRoom.Price,
-        //     RoomCapacity = bookingDto.HotelRoom.Capacity,
-        //     HolidayPackageId = holidayPackage.HolidayPackageId
-        // };
+        if (bookingDto == null || bookingDto.HolidayPackageDto == null || bookingDto.HotelRoom == null)
+    {
+        return BadRequest("Booking data mangler.");
+    }
+
         var booking = _mapper.Map<HotelBooking>(bookingDto);
-        var hotelRoom = (await _hotelRoomRepository.GetAllAsync()).FirstOrDefault(r => r.ExternalRoomId == booking.HotelRoom.ExternalRoomId);
+
+        var hotelRoom = (await _hotelRoomRepository.GetAllAsync()).FirstOrDefault(r => r.ExternalRoomId == bookingDto.HotelRoom.ExternalRoomId);
+        
         if (hotelRoom == null)
         {
             return BadRequest();
         }
-        booking.HotelRoom.HotelRoomId = hotelRoom.HotelRoomId;
+        booking.HotelRoomId = hotelRoom.HotelRoomId;
         var holidayPackage = await _holidayPackageRepository.GetByUrlAsync(bookingDto.HolidayPackageDto.URL);
         if (holidayPackage == null)
         {
             return BadRequest();
         }
-        booking.HolidayPackage.HolidayPackageId = holidayPackage.HolidayPackageId;
+        booking.HolidayPackageId = holidayPackage.HolidayPackageId;
 
         // Save to database via the service
         await _service.AddHotelBookingAsync(booking);

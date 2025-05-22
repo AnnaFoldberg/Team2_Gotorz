@@ -180,36 +180,24 @@
 
    private async Task CreatePackage()
     {
-        await JS.InvokeVoidAsync("console.error", $"Method entered:");
         var isValid = editContext.Validate();
         if (!isValid)
             return;
-        await JS.InvokeVoidAsync("console.error", $"Is Valid");
 
         var createdPackage = await PackageService.CreateAsync(newPackage);
-        if (createdPackage == null)
-        {
-            await JS.InvokeVoidAsync("console.error", $"PackageService failed:");
-
-            return;
-        }
-        await JS.InvokeVoidAsync("console.error", $"PackageService entered:");
-
-        newPackage = createdPackage;
-        await JS.InvokeVoidAsync("console.error", $"{newPackage.Title}");
+        
 
         foreach (var flightTicket in outboundFlightTickets)
-            flightTicket.HolidayPackage = newPackage;
+            flightTicket.HolidayPackage = createdPackage;
 
         foreach (var flightTicket in inboundFlightTickets)
-            flightTicket.HolidayPackage = newPackage;
+            flightTicket.HolidayPackage = createdPackage;
 
         await FlightService.PostFlightTicketsAsync(outboundFlightTickets);
         await FlightService.PostFlightTicketsAsync(inboundFlightTickets);
 
-        hotelBookingDto.HolidayPackageDto = newPackage;
-        bool result = await HotelService.BookHotelAsync(hotelBookingDto);
-        await JS.InvokeVoidAsync("console.error", $"Booking failed: {result}");
+        hotelBookingDto.HolidayPackageDto = createdPackage;
+        await HotelService.BookHotelAsync(hotelBookingDto);
 
         showSuccessMessage = true;
         newPackage = new HolidayPackageDto();

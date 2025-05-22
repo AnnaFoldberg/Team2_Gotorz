@@ -216,6 +216,7 @@
     {
         try
         {
+            await JS.InvokeVoidAsync("console.log", $"Booking confirmed: {room.ExternalRoomId}");
             var booking = new HotelBookingDto
             {
                 //Hotel = hotel,

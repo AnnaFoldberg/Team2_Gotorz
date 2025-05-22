@@ -49,15 +49,15 @@ namespace Gotorz.Server.Controllers
         /// <param name="dto">The data transfer object containing holiday package details.</param>
         /// <returns>An <see cref="IActionResult"/> indicating the result of the operation.</returns>
         [HttpPost]
-        public async Task<IActionResult> Create(HolidayPackageDto dto)
+        public async Task<ActionResult<HolidayPackageDto>> Create(HolidayPackageDto dto)
         {
             var package = _mapper.Map<HolidayPackage>(dto);
             // package.CostPrice = 0;  //Slettes
             // package.MarkupPercentage = 0;  //Slettes
             await _repository.AddAsync(package);
+            var packageDto = _mapper.Map<HolidayPackageDto>(package);
 
-
-            return Ok("Succesfully created package");  //OBS!! Hvis beskeden ændres skal det rettes i testen også!
+            return Ok(packageDto);  //OBS!! Hvis beskeden ændres skal det rettes i testen også!
         }
 
         /*
