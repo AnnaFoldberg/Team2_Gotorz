@@ -35,6 +35,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
+
 var connectionString = builder.Configuration.GetConnectionString("SayeConnection");
 
 builder.Services.AddDbContext<GotorzDbContext>(options =>
