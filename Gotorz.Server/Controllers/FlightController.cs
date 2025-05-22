@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Gotorz.Server.Models;
 using Gotorz.Server.Services;
 using Gotorz.Server.DataAccess;

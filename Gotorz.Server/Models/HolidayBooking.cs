@@ -16,5 +16,8 @@ namespace Gotorz.Server.Models
         public ApplicationUser Customer { get; set; } = null;
         public HolidayPackage HolidayPackage { get; set; } = null;
 
+        public HotelBooking? HotelBooking { get; set; }
+        public int? HotelBookingId { get; set; }
+
     }
 }

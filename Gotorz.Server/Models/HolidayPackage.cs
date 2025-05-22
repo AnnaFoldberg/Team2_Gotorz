@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-
+using Gotorz.Server.Models; 
 namespace Gotorz.Server.Models
 {
     public class HolidayPackage
@@ -12,6 +12,8 @@ namespace Gotorz.Server.Models
         public int MaxCapacity { get; set; }
         public decimal CostPrice { get; set; }
         public decimal MarkupPercentage { get; set; }
+        public List<HotelBooking> HotelBookings { get; set; } = new();        
+
     }
 }
 

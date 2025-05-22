@@ -59,9 +59,24 @@ namespace Gotorz.Client.Services
         /// </summary>
         /// <param name="dto">The holiday package data transfer object containing package details.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
+
+        /*
         public async Task CreateAsync(HolidayPackageDto dto)
         {
             await _http.PostAsJsonAsync("HolidayPackage", dto);
+        }
+        */
+        public async Task<HolidayPackageDto?> CreateAsync(HolidayPackageDto dto)
+        {
+            var response = await _http.PostAsJsonAsync("HolidayPackage", dto);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var created = await response.Content.ReadFromJsonAsync<HolidayPackageDto>();
+                return created;
+            }
+
+            return null;
         }
 
         /*
