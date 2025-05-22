@@ -60,19 +60,6 @@ namespace Gotorz.Server.Controllers
             return Ok("Succesfully created package");  //OBS!! Hvis beskeden ændres skal det rettes i testen også!
         }
 
-        /*
-        [HttpGet("{id}")]
-        public async Task<ActionResult<HolidayPackageDto>> GetById(int id)
-        {
-            var package = await _repository.GetByKeyAsync(id);
-            if (package == null)
-            {
-                return NotFound();
-            }
-            return Ok(_mapper.Map<HolidayPackageDto>(package));
-        }
-        */
-
         /// <summary>
         /// Retrieves a holiday package by its URL-friendly title and returns it as a DTO.
         /// </summary>
@@ -92,33 +79,6 @@ namespace Gotorz.Server.Controllers
         }
         
 
-        /*
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            await _repository.DeleteAsync(id);
-            return NoContent();
-        }
-        */
-
-        /*
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, HolidayPackageDto dto)
-        {
-            if (id != dto.Id)
-                return BadRequest();
-
-            var package = await _repository.GetByKeyAsync(id);
-            if (package is null)
-                return NotFound();
-
-            package.Title = dto.Title;
-            package.Description = dto.Description;
-
-            await _repository.UpdateAsync(package);
-
-            return NoContent();
-        }
-        */
+        
     }
 }
