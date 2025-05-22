@@ -21,4 +21,5 @@ builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStat
 builder.Services.AddScoped<ServerAuthenticationStateProvider>();
 builder.Services.AddScoped<IHolidayPackageService, HolidayPackageService>();
 
+builder.Logging.SetMinimumLevel(LogLevel.Information); // eller Warning / Debug
 await builder.Build().RunAsync();

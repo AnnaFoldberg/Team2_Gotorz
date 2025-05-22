@@ -22,7 +22,7 @@ namespace Gotorz.Server.DataAccess
         /// <summary>
         /// Retrieves all rooms matching the given <c>ExternalHotelId</c>.
         /// </summary>
-        Task<IEnumerable<HotelRoom>> GetByExternalHotelIdAsync(string externalHotelId);
+        Task<IEnumerable<HotelRoom>> GetByHotelIdAsync(int hotelId);
 
         /// <summary>
         /// Adds a new <see cref="HotelRoom"/> to the database.

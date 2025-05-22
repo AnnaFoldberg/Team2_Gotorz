@@ -39,9 +39,6 @@ namespace Gotorz.Server.UnitTests.Controllers
                 CheckOut = DateTime.Today.AddDays(1),
                 HotelId = 1,
                 HotelRoomId = 1,
-                Price = 100,
-                RoomCapacity = 2,
-                HolidayPackageId = 10
             };
 
             _mockService.Setup(s => s.AddHotelBookingAsync(It.IsAny<HotelBooking>()))

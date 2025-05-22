@@ -36,8 +36,10 @@ namespace Gotorz.Server.Services
                 .ToList();
 
             if (existingHotels.Any())
+            {
                 return existingHotels;
-
+  
+                }
             var hotels = new List<Hotel>();
 
             // Get destination coordinates
@@ -116,9 +118,16 @@ namespace Gotorz.Server.Services
         // First check DB for hotel rooms; if not found, call external API
         public async Task<List<HotelRoom>> GetHotelRoomsAsync(string externalHotelId, DateTime arrival, DateTime departure)
         {
+            var hotel = (await _hotelRepository.GetAllAsync())
+            .FirstOrDefault(h => h.ExternalHotelId == externalHotelId);
+            if (hotel == null)
+            {
+                return null;
+            }
+
             // 1. Check local database
             var localRooms = (await _hotelRoomRepository.GetAllAsync())
-                .Where(r => r.ExternalHotelId == externalHotelId
+                .Where(r => r.HotelId == hotel.HotelId
                          && r.ArrivalDate.Date == arrival.Date
                          && r.DepartureDate.Date == departure.Date)
                 .ToList();
@@ -158,16 +167,14 @@ namespace Gotorz.Server.Services
 
                 rooms.Add(new HotelRoom
                 {
-                    ExternalHotelId = externalHotelId,
-                    RoomId = room?["room_id"]?.ToString() ?? "0",
+                    HotelId = hotel.HotelId,
+                    ExternalRoomId = room?["room_id"]?.ToString() ?? "0",
                     Name = room?["name"]?.ToString() ?? "Unknown",
                     Description = room?["description"]?.ToString(),
                     Capacity = maxGuests,
-                    Surface = room?["room_surface_in_m2"]?.GetValue<int>() ?? 0,
                     Price = room?["product_price_breakdown"]?["gross_amount"]?["value"]?.GetValue<decimal>() ?? 0,
                     MealPlan = room?["mealplan"]?.ToString(),
                     Refundable = room?["policy_display_details"]?["refund_during_fc"]?["title_details"]?["translation"] != null,
-                    CancellationPolicy = room?["policy_display_details"]?["cancellation"]?["description_details"]?["translation"]?.ToString(),
                     ArrivalDate = arrival,
                     DepartureDate = departure
                 });

@@ -23,7 +23,6 @@ namespace Gotorz.Server.DataAccess
         public async Task<IEnumerable<HotelBooking>> GetAllAsync()
         {
             return await _context.HotelBookings
-                .Include(b => b.Hotel)
                 .Include(b => b.HotelRoom)
                 .Include(b => b.HolidayPackage)
                 .ToListAsync();
@@ -32,7 +31,6 @@ namespace Gotorz.Server.DataAccess
         public async Task<HotelBooking?> GetByIdAsync(int id)
         {
             return await _context.HotelBookings
-                .Include(b => b.Hotel)
                 .Include(b => b.HotelRoom)
                 .Include(b => b.HolidayPackage)
                 .FirstOrDefaultAsync(b => b.HotelBookingId == id);

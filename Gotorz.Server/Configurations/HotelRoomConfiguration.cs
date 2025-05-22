@@ -10,6 +10,11 @@ namespace Gotorz.Server.Configurations
         {
             builder.Property(r => r.Price)
                    .HasPrecision(10, 2);
+
+            builder.HasOne(r => r.Hotel)
+                .WithMany()
+                .HasForeignKey(r => r.HotelId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

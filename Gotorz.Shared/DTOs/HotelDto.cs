@@ -1,7 +1,10 @@
+using System.Text.Json.Serialization;
+
 namespace Gotorz.Shared.DTOs
 {
     public class HotelDto
     {
+        [JsonIgnore]
         public int HotelId { get; set; }
         public string ExternalHotelId { get; set; }
         public string Name { get; set; }

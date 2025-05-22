@@ -26,11 +26,11 @@ namespace Gotorz.Server.Services
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri($"https://skyscanner89.p.rapidapi.com/flights/auto-complete?query={airportName}"),
+                RequestUri = new Uri($"https://move-and-rest.p.rapidapi.com/flights/auto-complete?query={airportName}"),
                 Headers =
                 {
-                    { "x-rapidapi-key", _config.GetSection("RapidAPI:Key").Value },
-                    { "x-rapidapi-host", _config.GetSection("RapidAPI:Host").Value },
+                    { "x-rapidapi-key", _config.GetSection("RapidAPI:Flights:Key").Value },
+                    { "x-rapidapi-host", _config.GetSection("RapidAPI:Flights:Host").Value },
                 },
             };
 
@@ -70,11 +70,11 @@ namespace Gotorz.Server.Services
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri($"https://skyscanner89.p.rapidapi.com/flights/one-way/list?origin={departureAirport.SkyId}&originId={departureAirport.EntityId}&destination={arrivalAirport.SkyId}&destinationId={arrivalAirport.EntityId}"),
+                RequestUri = new Uri($"https://move-and-rest.p.rapidapi.com/flights/one-way/list?origin={departureAirport.SkyId}&originId={departureAirport.EntityId}&destination={arrivalAirport.SkyId}&destinationId={arrivalAirport.EntityId}"),
                 Headers =
                 {
-                    { "x-rapidapi-key", _config.GetSection("RapidAPI:Key").Value },
-                    { "x-rapidapi-host", _config.GetSection("RapidAPI:Host").Value },
+                    { "x-rapidapi-key", _config.GetSection("RapidAPI:Flights:Key").Value },
+                    { "x-rapidapi-host", _config.GetSection("RapidAPI:Flights:Host").Value },
                 },
             };
 

@@ -74,8 +74,8 @@
                                 <span class="col">@hotel.Address</span>
                                 <span class="col">@hotel.Rating</span>
                                 <span class="col">
-                                    <button class="btn btn-sm btn-outline-secondary" @onclick="() => ToggleDetails(hotel.HotelId)">
-                                        @(expandedHotelId == hotel.HotelId ? "Hide details" : "Show details")
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => ToggleDetails(hotel)">
+                                        @(expandedHotel == hotel ? "Hide details" : "Show details")
                                     </button>
                                 </span>
                                 <span class="col">
@@ -83,18 +83,18 @@
                                 </span>
                             </div>
 
-                            @if (expandedHotelId == hotel.HotelId)
+                            @if (expandedHotel == hotel)
                             {
                                 <div class="bg-light p-3 rounded mt-2">
                                     <h6>Available Rooms</h6>
 
-                                    @if (isLoadingRoomsDict.ContainsKey(hotel.HotelId) && isLoadingRoomsDict[hotel.HotelId])
+                                    @if (isLoadingRoomsDict.ContainsKey(hotel) && isLoadingRoomsDict[hotel])
                                     {
                                         <p class="text-muted">Loading rooms...</p>
                                     }
-                                    else if (hotelRoomsDict.ContainsKey(hotel.HotelId) && hotelRoomsDict[hotel.HotelId].Any())
+                                    else if (hotelRoomsDict.ContainsKey(hotel) && hotelRoomsDict[hotel].Any())
                                     {
-                                        @foreach (var room in hotelRoomsDict[hotel.HotelId])
+                                        @foreach (var room in hotelRoomsDict[hotel])
                                         {
                                             <div class="mb-2 border-bottom pb-2">
                                                 <p><strong>Name:</strong> @room.Name</p>
@@ -103,16 +103,10 @@
                                                 <p><strong>Meal Plan:</strong> @room.MealPlan</p>
                                                 <p><strong>Refundable:</strong> @(room.Refundable ? "Yes" : "No")</p>
 
-                                                <button class="btn btn-sm btn-success"
-                                                        @onclick="@(() => SubmitBooking(hotel.HotelId, room.HotelRoomId, room.Price, room.Capacity))">
+                                                <button type="button" class="btn btn-sm btn-success"
+                                                        @onclick="@(() => SubmitBooking(hotel, room))">
                                                     Book Hotel
                                                 </button>
-                                                @if (bookingSuccess && lastBookedRoomId == room.HotelRoomId)
-                                                {
-                                                    <div class="alert alert-success mt-2">
-                                                        ✅ Booking was successful!
-                                                    </div>
-                                                }
                                             </div>
                                         }
                                     }
@@ -145,11 +139,11 @@
     private bool searchPerformed = false;
     private bool bookingSuccess = false;
     private int lastBookedRoomId = -1;
-    private int? expandedHotelId = null;
+    private HotelDto? expandedHotel = null;
     private bool isAuthorizedUser;
 
-    private Dictionary<int, List<HotelRoomDto>> hotelRoomsDict = new();
-    private Dictionary<int, bool> isLoadingRoomsDict = new();
+    private Dictionary<HotelDto, List<HotelRoomDto>> hotelRoomsDict = new();
+    private Dictionary<HotelDto, bool> isLoadingRoomsDict = new();
 
     [Parameter]
     public EventCallback<HotelBookingDto> OnHotelBookingConfirmed { get; set; }
@@ -179,75 +173,68 @@
         }
     }
 
-    private async Task ToggleDetails(int hotelId)
+    private async Task ToggleDetails(HotelDto hotel)
     {
-        if (expandedHotelId == hotelId)
+        if (expandedHotel == hotel)
         {
-            expandedHotelId = null;
+            expandedHotel = null;
             return;
         }
 
-        expandedHotelId = hotelId;
+        expandedHotel = hotel;
 
-        if (!hotelRoomsDict.ContainsKey(hotelId))
+        if (!hotelRoomsDict.ContainsKey(hotel))
         {
-            isLoadingRoomsDict[hotelId] = true;
+            isLoadingRoomsDict[expandedHotel] = true;
             StateHasChanged();
 
-            var hotel = hotels?.FirstOrDefault(h => h.HotelId == hotelId);
             if (hotel != null)
             {
                 try
                 {
                     var rooms = await HotelService.GetHotelRoomsByHotelId(
+                        
                         hotel.ExternalHotelId,
                         searchForm.ArrivalDate,
                         searchForm.DepartureDate
                     );
 
-                    hotelRoomsDict[hotelId] = rooms ?? new List<HotelRoomDto>();
+                    hotelRoomsDict[hotel] = rooms ?? new List<HotelRoomDto>();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    Console.WriteLine($"❌ Error fetching rooms: {ex.Message}");
-                    hotelRoomsDict[hotelId] = new List<HotelRoomDto>();
+                    hotelRoomsDict[hotel] = new List<HotelRoomDto>();
                 }
             }
 
-            isLoadingRoomsDict[hotelId] = false;
+            isLoadingRoomsDict[hotel] = false;
             StateHasChanged();
         }
     }
 
-    private async Task SubmitBooking(int hotelId, int roomId, decimal price, int capacity)
+    private async Task SubmitBooking(HotelDto hotel, HotelRoomDto room)
     {
         try
         {
-            var hotel = hotels?.FirstOrDefault(h => h.HotelId == hotelId);
-            if (hotel == null) return;
-
             var booking = new HotelBookingDto
             {
-                HotelId = hotelId,
-                HotelRoomId = roomId,
+                //Hotel = hotel,
+                HotelRoom = room,
                 CheckIn = searchForm.ArrivalDate,
                 CheckOut = searchForm.DepartureDate,
-                Price = price,
-                RoomCapacity = capacity,
-                Hotel = hotel
             };
 
-            lastBookedRoomId = roomId;
-            await JS.InvokeVoidAsync("console.log", $"Booking confirmed: {hotel.Name}");
+            //lastBookedRoomId = room.HotelRoomId;
+            //await JS.InvokeVoidAsync("console.log", $"Booking confirmed: {hotel.Name}");
 
             await OnHotelBookingConfirmed.InvokeAsync(booking);
-            bookingSuccess = true;
+            //bookingSuccess = true;
         }
         catch (Exception ex)
         {
             await JS.InvokeVoidAsync("console.error", $"Booking failed: {ex.Message}");
             bookingSuccess = false;
-            lastBookedRoomId = -1;
+            //lastBookedRoomId = -1;
         }
 
         StateHasChanged();

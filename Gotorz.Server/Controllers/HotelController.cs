@@ -1,6 +1,7 @@
 using Gotorz.Shared.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Gotorz.Server.Services;
+using AutoMapper;
 
 namespace Gotorz.Server.Controllers
 {
@@ -9,10 +10,13 @@ namespace Gotorz.Server.Controllers
     public class HotelController : ControllerBase
     {
         private readonly IHotelService _hotelService;
+        private readonly IMapper _mapper;
 
-        public HotelController(IHotelService hotelService)
+
+        public HotelController(IHotelService hotelService, IMapper mapper)
         {
             _hotelService = hotelService;
+            _mapper = mapper;
         }
 
         [HttpGet("search")]
@@ -32,7 +36,6 @@ namespace Gotorz.Server.Controllers
             [FromQuery] DateTime arrival,
             [FromQuery] DateTime departure)
         {
-            Console.WriteLine("🛎️/// HotelController -> GetHotelRooms() called");
 
             if (string.IsNullOrWhiteSpace(externalHotelId))
                 return BadRequest("Hotel ID is required.");
@@ -42,17 +45,18 @@ namespace Gotorz.Server.Controllers
                 return NotFound();
 
             // Convert to DTOs if needed, or return full entity
-            var roomDtos = rooms.Select(r => new HotelRoomDto
-            {
-                HotelRoomId = r.HotelRoomId,
-                RoomId = r.RoomId,
-                Name = r.Name,
-                Capacity = r.Capacity,
-                Price = r.Price,
-                MealPlan = r.MealPlan,
-                Refundable = r.Refundable
-            }).ToList();
+            // var roomDtos = rooms.Select(r => new HotelRoomDto
+            // {
+            //     HotelRoomId = r.HotelRoomId,
+            //     ExternalRoomId = r.ExternalRoomId,
+            //     Name = r.Name,
+            //     Capacity = r.Capacity,
+            //     Price = r.Price,
+            //     MealPlan = r.MealPlan,
+            //     Refundable = r.Refundable
+            // }).ToList();
 
+            var roomDtos = _mapper.Map<List<HotelRoomDto>>(rooms);
             return Ok(roomDtos);
         }
 

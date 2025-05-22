@@ -22,10 +22,10 @@ namespace Gotorz.Server.DataAccess
             return await _context.HotelRooms.ToListAsync();
         }
 
-        public async Task<IEnumerable<HotelRoom>> GetByExternalHotelIdAsync(string externalHotelId)
+        public async Task<IEnumerable<HotelRoom>> GetByHotelIdAsync(int hotelId)
         {
             return await _context.HotelRooms
-                .Where(r => r.ExternalHotelId == externalHotelId)
+                .Where(r => r.HotelId == hotelId)
                 .ToListAsync();
         }
 

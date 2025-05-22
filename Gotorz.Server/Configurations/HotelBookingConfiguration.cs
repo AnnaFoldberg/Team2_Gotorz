@@ -6,29 +6,26 @@ namespace Gotorz.Server.Configurations
 {
     public class HotelBookingConfiguration : IEntityTypeConfiguration<HotelBooking>
     {
-        public void Configure(EntityTypeBuilder<HotelBooking> builder)
-        {
-            // Set precision for the Price column
-            builder.Property(b => b.Price)
-                   .HasPrecision(10, 2);
+              public void Configure(EntityTypeBuilder<HotelBooking> builder)
+              {
 
-            // Define relationship with HotelRoom (each booking is linked to one room; each room can have multiple bookings)
-            builder.HasOne(b => b.HotelRoom)
-                   .WithMany(r => r.HotelBookings)
-                   .HasForeignKey(b => b.HotelRoomId)
-                   .OnDelete(DeleteBehavior.Cascade);
+                     // Define relationship with HotelRoom (each booking is linked to one room; each room can have multiple bookings)
+                     builder.HasOne(b => b.HotelRoom)
+                            .WithMany()
+                            .HasForeignKey(b => b.HotelRoomId)
+                            .OnDelete(DeleteBehavior.Cascade);
 
-            // Define relationship with HolidayPackage (each booking belongs to one holiday package)
-            builder.HasOne(b => b.HolidayPackage)
-                   .WithMany(p => p.HotelBookings)
-                   .HasForeignKey(b => b.HolidayPackageId)
-                   .OnDelete(DeleteBehavior.Cascade);
+                     // Define relationship with HolidayPackage (each booking belongs to one holiday package)
+                     builder.HasOne(b => b.HolidayPackage)
+                            .WithMany(p => p.HotelBookings)
+                            .HasForeignKey(b => b.HolidayPackageId)
+                            .OnDelete(DeleteBehavior.Cascade);
 
             // Define relationship with Hotel (optional, if you have navigation property)
-            builder.HasOne(b => b.Hotel)
-                   .WithMany()
-                   .HasForeignKey(b => b.HotelId)
-                   .OnDelete(DeleteBehavior.Cascade);
-        }
+                     //      builder.HasOne(b => b.Hotel)
+                     //             .WithMany()
+                     //             .HasForeignKey(b => b.HotelId)
+                     //             .OnDelete(DeleteBehavior.Cascade);
+              }
     }
 }

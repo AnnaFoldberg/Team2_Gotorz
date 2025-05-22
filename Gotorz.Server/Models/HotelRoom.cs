@@ -8,14 +8,14 @@ namespace Gotorz.Server.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int HotelRoomId { get; set; }
-        public ICollection<HotelBooking> HotelBookings { get; set; }
 
+        //public ICollection<HotelBooking> HotelBookings { get; set; }
+        public Hotel? Hotel { get; set; } = null;
 
-        // Ekstern hotel-ID fra API'et, bruges til at knytte værelser til hoteller
-        public string ExternalHotelId { get; set; } = string.Empty;
+        public int HotelId { get; set; } 
 
         // Værelsets unikke ID fra API'et
-        public string RoomId { get; set; } = string.Empty;
+        public string ExternalRoomId { get; set; } = string.Empty;
 
         // Navn på værelset
         public string Name { get; set; } = string.Empty;
@@ -26,9 +26,6 @@ namespace Gotorz.Server.Models
         // Maksimal kapacitet (antal personer)
         public int Capacity { get; set; }
 
-        // Størrelse på værelset i m2
-        public int Surface { get; set; }
-
         // Pris for hele opholdet i valgt periode
         public decimal Price { get; set; }
 
@@ -37,9 +34,6 @@ namespace Gotorz.Server.Models
 
         // Om reservationen kan refunderes
         public bool Refundable { get; set; }
-
-        // Beskrivelse af afbestillingspolitikken
-        public string? CancellationPolicy { get; set; }
 
         // Ankomstdato
         public DateTime ArrivalDate { get; set; }

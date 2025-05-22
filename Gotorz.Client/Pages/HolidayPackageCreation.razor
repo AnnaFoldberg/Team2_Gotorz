@@ -9,13 +9,14 @@
 @inject IHolidayPackageService PackageService
 @inject IFlightService FlightService
 @inject IHotelService HotelService 
+@inject IJSRuntime JS
+
 
 <AuthorizeView>
     <Authorized Context="auth">
         <PageTitle>Holiday Package Creation</PageTitle>
 
-        <!-- 🧪 نقش sales کامنت شده تا صفحه برای تست همیشه نمایش داده شود -->
-        @* if (auth.User.IsInRole("sales")) *@
+         @if (auth.User.IsInRole("sales")) 
         {
             <h3 class="text-xl font-semibold mb-2">Create a new holiday package</h3>
 
@@ -110,7 +111,7 @@
 
                 <h5>Hotel</h5>
                 <br />
-                @if (hotelBookingDto == null || !showHotels)
+                @if ((hotelBookingDto == null || hotelBookingDto.HotelRoom == null) && !showHotels)
                 {
                     <div class="flex-grow-1">
                         <button type="button" class="btn icon-white h-100 custom-background text-white" @onclick="() => ShowHotelList()">
@@ -122,11 +123,11 @@
                 {
                     <HotelList OnHotelBookingConfirmed="HandleHotelBookingConfirmed" />
                 }
-                else if (hotelBookingDto != null && !showHotels && hotelBookingDto.Hotel != null)
+                else if (hotelBookingDto != null && !showHotels)
                 {
                     <div class="p-3 mb-3 d-flex justify-content-between bg-light border rounded shadow-sm">
-                        <span>@hotelBookingDto?.Hotel?.Name</span>
-                        <span><i class="bi bi-currency-dollar"></i>@hotelBookingDto?.Price</span>
+                        <span>@hotelBookingDto?.HotelRoom?.Hotel.Name: @hotelBookingDto.HotelRoom.Name</span>
+                        <span><i class="bi bi-currency-dollar"></i>@hotelBookingDto?.HotelRoom.Price</span>
                     </div>
                 }
 
@@ -179,18 +180,23 @@
 
    private async Task CreatePackage()
     {
+        await JS.InvokeVoidAsync("console.error", $"Method entered:");
         var isValid = editContext.Validate();
         if (!isValid)
             return;
+        await JS.InvokeVoidAsync("console.error", $"Is Valid");
 
         var createdPackage = await PackageService.CreateAsync(newPackage);
         if (createdPackage == null)
         {
-            Console.Error.WriteLine("❌ Holiday package creation failed.");
+            await JS.InvokeVoidAsync("console.error", $"PackageService failed:");
+
             return;
         }
+        await JS.InvokeVoidAsync("console.error", $"PackageService entered:");
 
         newPackage = createdPackage;
+        await JS.InvokeVoidAsync("console.error", $"{newPackage.Title}");
 
         foreach (var flightTicket in outboundFlightTickets)
             flightTicket.HolidayPackage = newPackage;
@@ -201,13 +207,15 @@
         await FlightService.PostFlightTicketsAsync(outboundFlightTickets);
         await FlightService.PostFlightTicketsAsync(inboundFlightTickets);
 
-        hotelBookingDto.HolidayPackageId = newPackage.HolidayPackageId;
-        await HotelService.BookHotelAsync(hotelBookingDto);
+        hotelBookingDto.HolidayPackageDto = newPackage;
+        bool result = await HotelService.BookHotelAsync(hotelBookingDto);
+        await JS.InvokeVoidAsync("console.error", $"Booking failed: {result}");
 
         showSuccessMessage = true;
         newPackage = new HolidayPackageDto();
         outboundFlightTickets = new List<FlightTicketDto>();
         inboundFlightTickets = new List<FlightTicketDto>();
+        hotelBookingDto = new HotelBookingDto();
     }
 
     private void ShowFlights(string direction)
@@ -238,7 +246,7 @@
     private void HandleHotelBookingConfirmed(HotelBookingDto hotelBooking)
     {
         hotelBookingDto = hotelBooking;
-        newPackage.CostPrice += (decimal)hotelBookingDto.Price;
+        newPackage.CostPrice += (decimal)hotelBookingDto.HotelRoom.Price;
         showHotels = false;
     }
 }

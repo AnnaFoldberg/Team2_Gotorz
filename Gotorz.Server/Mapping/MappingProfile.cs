@@ -31,7 +31,7 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.HolidayPackage, opt => opt.Ignore())
             .ReverseMap()
             .ForMember(dest => dest.Flight, opt => opt.MapFrom(src => src.Flight))
-            .ForMember(dest => dest.HolidayPackage, opt => opt.MapFrom(src => src.HolidayPackage));            
+            .ForMember(dest => dest.HolidayPackage, opt => opt.MapFrom(src => src.HolidayPackage));
 
         CreateMap<HolidayPackageDto, HolidayPackage>().ReverseMap();
 
@@ -48,5 +48,19 @@ public class MappingProfile : Profile
 
         CreateMap<TravellerDto, Traveller>()
             .ForMember(dest => dest.HolidayBooking, opt => opt.Ignore()).ReverseMap();
+
+        CreateMap<HotelDto, Hotel>().ReverseMap();
+
+        CreateMap<HotelRoomDto, HotelRoom>()
+            .ForMember(dest => dest.Hotel, opt => opt.Ignore()).ReverseMap();
+
+        CreateMap<HotelBookingDto, HotelBooking>()
+            .ForMember(dest => dest.HolidayPackageId, opt => opt.MapFrom(src => src.HolidayPackageDto.HolidayPackageId))
+            .ForMember(dest => dest.HolidayPackage, opt => opt.Ignore())
+            .ForMember(dest => dest.HotelRoomId, opt => opt.MapFrom(src => src.HotelRoom.HotelRoomId))
+            .ForMember(dest => dest.HotelRoom, opt => opt.Ignore())
+            .ReverseMap()
+            .ForMember(dest => dest.HolidayPackageDto, opt => opt.MapFrom(src => src.HolidayPackage))
+            .ForMember(dest => dest.HotelRoom, opt => opt.MapFrom(src => src.HotelRoom));
     }
 }
