@@ -1,16 +1,17 @@
 ﻿@page "/register"
-@using Microsoft.AspNetCore.Components.Authorization
 @inject HttpClient Http
 @inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthStateProvider
 @inject IUserService UserService
+@using Microsoft.AspNetCore.Components.Authorization
 @using Gotorz.Client.Services
 @using Gotorz.Shared.DTOs
+
+<PageTitle>Register</PageTitle>
 
 @if (isCheckingAccess) {}
 else
 {
-	<PageTitle>Register</PageTitle>
 	<h3 class="text-center mb-4">Register</h3>
 
 	@if (!string.IsNullOrEmpty(ErrorMessage))

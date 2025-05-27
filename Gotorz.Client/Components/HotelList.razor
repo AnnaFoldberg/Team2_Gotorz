@@ -219,23 +219,17 @@
             await JS.InvokeVoidAsync("console.log", $"Booking confirmed: {room.ExternalRoomId}");
             var booking = new HotelBookingDto
             {
-                //Hotel = hotel,
                 HotelRoom = room,
                 CheckIn = searchForm.ArrivalDate,
                 CheckOut = searchForm.DepartureDate,
             };
 
-            //lastBookedRoomId = room.HotelRoomId;
-            //await JS.InvokeVoidAsync("console.log", $"Booking confirmed: {hotel.Name}");
-
             await OnHotelBookingConfirmed.InvokeAsync(booking);
-            //bookingSuccess = true;
         }
         catch (Exception ex)
         {
             await JS.InvokeVoidAsync("console.error", $"Booking failed: {ex.Message}");
             bookingSuccess = false;
-            //lastBookedRoomId = -1;
         }
 
         StateHasChanged();

@@ -399,7 +399,7 @@ namespace Gotorz.Client.UnitTests.Services
                     ItExpr.IsAny<HttpRequestMessage>(),
                     ItExpr.IsAny<CancellationToken>()
                 )
-                .ThrowsAsync(new HttpRequestException()); // <-- simulate failure
+                .ThrowsAsync(new HttpRequestException());
 
             // Act
             var result = await _service.GetUserByIdAsync("invalid-id");
@@ -418,7 +418,7 @@ namespace Gotorz.Client.UnitTests.Services
             new ClaimDto { Type = ClaimTypes.Role, Value = "admin" }
         }
             };
-            SetupResponse(user); // You already have SetupResponse() helper
+            SetupResponse(user);
 
             var result = await _service.GetUserRoleAsync();
 
@@ -430,7 +430,7 @@ namespace Gotorz.Client.UnitTests.Services
         {
             var user = new UserDto
             {
-                Claims = null // no claims
+                Claims = null
             };
             SetupResponse(user);
 

@@ -6,10 +6,11 @@
 @using Gotorz.Client.Services
 @using Gotorz.Shared.DTOs
 
+<PageTitle>Login</PageTitle>
+
 @if (checkingAuth){}
 else
 {
-    <PageTitle>Login</PageTitle>
     <h3 class="text-center mb-4">Login</h3>
 
     @if (!string.IsNullOrEmpty(ErrorMessage))

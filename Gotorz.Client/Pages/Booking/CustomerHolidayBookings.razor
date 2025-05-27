@@ -16,6 +16,7 @@
     <Authorized Context="auth">
         @if (!isAuthorizedUser)
         {
+          <PageTitle>Page not found</PageTitle>
           <p>Page not found.</p>
         }
         else if (holidayBookings == null)

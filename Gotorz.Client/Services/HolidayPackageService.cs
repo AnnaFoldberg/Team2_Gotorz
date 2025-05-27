@@ -37,12 +37,6 @@ namespace Gotorz.Client.Services
             }
         }
 
-        /*
-        public async Task<HolidayPackageDto?> GetByIdAsync(int id)
-        {
-            return await _http.GetFromJsonAsync<HolidayPackageDto>($"HolidayPackage/{id}");
-        }
-        */
         /// <summary>
         /// Sends a request to retrieve a specific holiday package identified by its URL-friendly title.
         /// </summary>
@@ -52,7 +46,6 @@ namespace Gotorz.Client.Services
         {
             return await _http.GetFromJsonAsync<HolidayPackageDto>($"HolidayPackage/{url}");
         }
-
 
         /// <summary>
         /// Sends a request to create a new holiday package using the provided data.
@@ -64,19 +57,5 @@ namespace Gotorz.Client.Services
             var response = await _http.PostAsJsonAsync("http://localhost:5181/HolidayPackage", dto);
             return await response.Content.ReadFromJsonAsync<HolidayPackageDto>();
         }
-
-        /*
-        public async Task DeleteAsync(int id)
-        {
-            await _http.DeleteAsync($"HolidayPackage/{id}");
-        }
-        */
-
-        /*
-        public async Task UpdateAsync(HolidayPackageDto dto)
-        {
-            await _http.PutAsJsonAsync($"HolidayPackage/{dto.Id}", dto);
-        }
-        */
     }
 }

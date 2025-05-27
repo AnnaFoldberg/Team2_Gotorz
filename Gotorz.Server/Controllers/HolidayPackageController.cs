@@ -52,26 +52,11 @@ namespace Gotorz.Server.Controllers
         public async Task<ActionResult<HolidayPackageDto>> Create(HolidayPackageDto dto)
         {
             var package = _mapper.Map<HolidayPackage>(dto);
-            // package.CostPrice = 0;  //Slettes
-            // package.MarkupPercentage = 0;  //Slettes
             await _repository.AddAsync(package);
             var packageDto = _mapper.Map<HolidayPackageDto>(package);
 
-            return Ok(packageDto);  //OBS!! Hvis beskeden ændres skal det rettes i testen også!
+            return Ok(packageDto);
         }
-
-        /*
-        [HttpGet("{id}")]
-        public async Task<ActionResult<HolidayPackageDto>> GetById(int id)
-        {
-            var package = await _repository.GetByKeyAsync(id);
-            if (package == null)
-            {
-                return NotFound();
-            }
-            return Ok(_mapper.Map<HolidayPackageDto>(package));
-        }
-        */
 
         /// <summary>
         /// Retrieves a holiday package by its URL-friendly title and returns it as a DTO.
@@ -90,35 +75,5 @@ namespace Gotorz.Server.Controllers
             }
             return Ok(_mapper.Map<HolidayPackageDto>(package));
         }
-        
-
-        /*
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            await _repository.DeleteAsync(id);
-            return NoContent();
-        }
-        */
-
-        /*
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, HolidayPackageDto dto)
-        {
-            if (id != dto.Id)
-                return BadRequest();
-
-            var package = await _repository.GetByKeyAsync(id);
-            if (package is null)
-                return NotFound();
-
-            package.Title = dto.Title;
-            package.Description = dto.Description;
-
-            await _repository.UpdateAsync(package);
-
-            return NoContent();
-        }
-        */
     }
 }
