@@ -45,11 +45,11 @@ namespace Gotorz.Server.UnitTests.Controllers
             var result = await _controller.Create(dto);
 
             // Assert
-            Assert.IsInstanceOfType(result, typeof(OkObjectResult));
+            Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
 
-            var okResult = result as OkObjectResult;
+            var okResult = result.Result as OkObjectResult;
             Assert.AreEqual("Succesfully created package", okResult?.Value);
-
+            Assert.IsInstanceOfType(result.Value, typeof(HolidayPackageDto));
             _mockMapper.Verify(m => m.Map<HolidayPackage>(dto), Times.Once);
             _mockRepository.Verify(r => r.AddAsync(mappedPackage), Times.Once);
         }
