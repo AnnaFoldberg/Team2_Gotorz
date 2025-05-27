@@ -65,8 +65,10 @@ namespace Gotorz.Server.DataAccess
         public async Task<IEnumerable<HolidayBooking>?> GetByCustomerIdAsync(string customerId)
         {
             return await _context.HolidayBookings
-                .Where(b => b.CustomerId == customerId)
-                .ToListAsync();
+            .Include(b => b.HolidayPackage)
+            .Include(b => b.HotelBooking)
+            .Where(b => b.CustomerId == customerId)
+            .ToListAsync();
         }
 
         /// <summary>

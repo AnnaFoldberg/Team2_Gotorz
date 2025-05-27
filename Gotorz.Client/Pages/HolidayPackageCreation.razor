@@ -1,4 +1,4 @@
-﻿@page "/create-holiday-package"
+@page "/create-holiday-package"
 @using Gotorz.Client.Components
 @using Gotorz.Shared.DTOs
 @using System.ComponentModel.DataAnnotations
@@ -8,114 +8,146 @@
 @using Gotorz.Client.ViewModels
 @inject IHolidayPackageService PackageService
 @inject IFlightService FlightService
+@inject IHotelService HotelService 
+@inject IJSRuntime JS
+
 
 <AuthorizeView>
     <Authorized Context="auth">
         <PageTitle>Holiday Package Creation</PageTitle>
-        @if (auth.User.IsInRole("sales"))
+
+         @if (auth.User.IsInRole("sales")) 
         {
-        <h3 class="text-xl font-semibold mb-2">Create a new holiday package</h3>
+            <h3 class="text-xl font-semibold mb-2">Create a new holiday package</h3>
 
-        <EditForm EditContext="editContext" OnValidSubmit="CreatePackage">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
+            <EditForm EditContext="editContext" OnValidSubmit="CreatePackage">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
 
-            <div class="mb-3 w-50">
-                <label for="title" class="form-label">Title</label>
-                <InputText id="title" @bind-Value="newPackage.Title" class="form-control" />
-            </div>
-
-            <div class="mb-3 w-50">
-                <label for="description" class="form-label">Description</label>
-                <InputTextArea id="description" @bind-Value="newPackage.Description" class="form-control" rows="4" />
-            </div>
-
-            <div class="mb-3 w-50">
-                <label for="maxCapacity" class="form-label">Max capacity</label>
-                <InputNumber id="maxCapacity" @bind-Value="newPackage.MaxCapacity" class="form-control" />
-            </div>
-
-            <br><br>
-
-            <h5><b>Outbound Flight Tickets</b></h5>
-            <br>
-            @if ((outboundFlightTickets == null || !outboundFlightTickets.Any()) && !showFlightsOutbound)
-            {
-                <div class="flex-grow-1">
-                    <button type="button" class="btn icon-white h-100 custom-background text-white" @onclick='() => ShowFlights("outbound")'>
-                        <i class="bi bi-plus-square-fill me-2"></i>Add</button>
+                <div class="mb-3 w-50">
+                    <label for="title" class="form-label">Title</label>
+                    <InputText id="title" @bind-Value="newPackage.Title" class="form-control" />
                 </div>
-            }
-            else if (showFlightsOutbound)
-            {
-                <Flights OnFlightTicketsConfirmed="HandleOutboundFlightTicketsConfirmed"/>
-            }
-            else if (outboundFlightTickets.Any() && !showFlightsOutbound)
-            {
-                @foreach (var flightTicket in outboundFlightTickets)
+
+                <div class="mb-3 w-50">
+                    <label for="description" class="form-label">Description</label>
+                    <InputTextArea id="description" @bind-Value="newPackage.Description" class="form-control" rows="4" />
+                </div>
+
+                <div class="mb-3 w-50">
+                    <label for="maxCapacity" class="form-label">Max capacity</label>
+                    <InputNumber id="maxCapacity" @bind-Value="newPackage.MaxCapacity" class="form-control" />
+                </div>
+
+                <br /><br />
+
+                <h5><b>Outbound Flight Tickets</b></h5>
+                <br />
+                @if ((outboundFlightTickets == null || !outboundFlightTickets.Any()) && !showFlightsOutbound)
+                {
+                    <div class="flex-grow-1">
+                        <button type="button" class="btn icon-white h-100 custom-background text-white" @onclick='() => ShowFlights("outbound")'>
+                            <i class="bi bi-plus-square-fill me-2"></i>Add
+                        </button>
+                    </div>
+                }
+                else if (showFlightsOutbound)
+                {
+                    <Flights OnFlightTicketsConfirmed="HandleOutboundFlightTicketsConfirmed" />
+                }
+                else if (outboundFlightTickets.Any() && !showFlightsOutbound)
+                {
+                    @foreach (var flightTicket in outboundFlightTickets)
+                    {
+                        <div class="p-3 mb-3 d-flex justify-content-between bg-light border rounded shadow-sm">
+                            <span>
+                                @flightTicket.Flight.DepartureDate:
+                                @flightTicket.Flight.DepartureAirport.LocalizedName
+                                <i class="bi bi-arrow-right"></i>
+                                @flightTicket.Flight.ArrivalAirport.LocalizedName
+                            </span>
+                            <span>
+                                <i class="bi bi-currency-dollar"></i>@flightTicket.Price
+                            </span>
+                        </div>
+                    }
+                }
+
+                <br /><br />
+
+                <h5>Inbound Flight Tickets</h5>
+                <br />
+                @if ((inboundFlightTickets == null || !inboundFlightTickets.Any()) && !showFlightsInbound)
+                {
+                    <div class="flex-grow-1">
+                        <button type="button" class="btn icon-white h-100 custom-background text-white" @onclick='() => ShowFlights("inbound")'>
+                            <i class="bi bi-plus-square-fill me-2"></i>Add
+                        </button>
+                    </div>
+                }
+                else if (showFlightsInbound)
+                {
+                    <Flights OnFlightTicketsConfirmed="HandleInboundFlightTicketsConfirmed" />
+                }
+                else if (inboundFlightTickets.Any() && !showFlightsInbound)
+                {
+                    @foreach (var flightTicket in inboundFlightTickets)
+                    {
+                        <div class="p-3 mb-3 d-flex justify-content-between bg-light border rounded shadow-sm">
+                            <span>
+                                @flightTicket.Flight.DepartureDate:
+                                @flightTicket.Flight.DepartureAirport.LocalizedName
+                                <i class="bi bi-arrow-right"></i>
+                                @flightTicket.Flight.ArrivalAirport.LocalizedName
+                            </span>
+                            <span>
+                                <i class="bi bi-currency-dollar"></i>@flightTicket.Price
+                            </span>
+                        </div>
+                    }
+                }
+
+                <br /><br />
+
+                <h5>Hotel</h5>
+                <br />
+                @if ((hotelBookingDto == null || hotelBookingDto.HotelRoom == null) && !showHotels)
+                {
+                    <div class="flex-grow-1">
+                        <button type="button" class="btn icon-white h-100 custom-background text-white" @onclick="() => ShowHotelList()">
+                            <i class="bi bi-plus-square-fill me-2"></i>Add
+                        </button>
+                    </div>
+                }
+                else if (showHotels)
+                {
+                    <HotelList OnHotelBookingConfirmed="HandleHotelBookingConfirmed" />
+                }
+                else if (hotelBookingDto != null && !showHotels)
                 {
                     <div class="p-3 mb-3 d-flex justify-content-between bg-light border rounded shadow-sm">
-                        <span>
-                            @flightTicket.Flight.DepartureDate:
-                            @flightTicket.Flight.DepartureAirport.LocalizedName
-                            <i class="bi bi-arrow-right"></i>
-                            @flightTicket.Flight.ArrivalAirport.LocalizedName
-                        </span>
-                        <span>
-                            <i class="bi bi-currency-dollar"></i>@flightTicket.Price
-                        </span>
+                        <span>@hotelBookingDto?.HotelRoom?.Hotel.Name: @hotelBookingDto.HotelRoom.Name</span>
+                        <span><i class="bi bi-currency-dollar"></i>@hotelBookingDto?.HotelRoom.Price</span>
                     </div>
                 }
-            }
-            <br><br>
 
-            <h5>Inbound Flight Tickets</h5>
-            <br>
-            @if ((inboundFlightTickets == null || !inboundFlightTickets.Any()) && !showFlightsInbound)
-            {
-                <div class="flex-grow-1">
-                    <button type="button" class="btn icon-white h-100 custom-background text-white" @onclick='() => ShowFlights("inbound")'>
-                        <i class="bi bi-plus-square-fill me-2"></i>Add</button>
+                <br /><br />
+
+                <p><b>Total: @(newPackage.CostPrice + (newPackage.CostPrice * newPackage.MarkupPercentage))</b></p>
+
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <button type="submit" class="btn btn-primary">
+                        Create
+                    </button>
+
+                    @if (showSuccessMessage)
+                    {
+                        <div class="alert alert-success mb-0 py-1 px-3" role="alert">
+                            Holiday package created successfully!
+                        </div>
+                    }
                 </div>
-            }
-            else if (showFlightsInbound)
-            {
-                <Flights OnFlightTicketsConfirmed="HandleInboundFlightTicketsConfirmed" />
-            }
-            else if (inboundFlightTickets.Any() && !showFlightsInbound)
-            {
-                @foreach (var flightTicket in inboundFlightTickets)
-                {
-                    <div class="p-3 mb-3 d-flex justify-content-between bg-light border rounded shadow-sm">
-                        <span>
-                            @flightTicket.Flight.DepartureDate:
-                            @flightTicket.Flight.DepartureAirport.LocalizedName
-                            <i class="bi bi-arrow-right"></i>
-                            @flightTicket.Flight.ArrivalAirport.LocalizedName
-                        </span>
-                        <span>
-                            <i class="bi bi-currency-dollar"></i>@flightTicket.Price
-                        </span>
-                    </div>
-                }
-            }
-            <br><br>
-
-            <p><b>Total: @(newPackage.CostPrice + (newPackage.CostPrice * newPackage.MarkupPercentage))</b></p>
-
-            <div class="d-flex align-items-center gap-3 mb-3">
-                <button type="submit" class="btn btn-primary">
-                    Create
-                </button>
-
-                @if (showSuccessMessage)
-                {
-                    <div class="alert alert-success mb-0 py-1 px-3" role="alert">
-                        Holiday package created successfully!
-                    </div>
-                }
-            </div>
-        </EditForm>
+            </EditForm>
         }
     </Authorized>
     <NotAuthorized>
@@ -130,8 +162,12 @@
     private bool showSuccessMessage = false;
     private bool showFlightsOutbound;
     private bool showFlightsInbound;
+    private bool showHotels;
+
     private List<FlightTicketDto> outboundFlightTickets;
     private List<FlightTicketDto> inboundFlightTickets;
+
+    private HotelBookingDto hotelBookingDto;
     private EditContext editContext;
 
     protected override async Task OnInitializedAsync()
@@ -139,27 +175,35 @@
         editContext = new EditContext(newPackage);
         outboundFlightTickets = new List<FlightTicketDto>();
         inboundFlightTickets = new List<FlightTicketDto>();
+        hotelBookingDto = new HotelBookingDto();
     }
 
-    private async Task CreatePackage()
+   private async Task CreatePackage()
     {
         var isValid = editContext.Validate();
-        if (isValid)
-        {
-            await PackageService.CreateAsync(newPackage);
-        }
+        if (!isValid)
+            return;
 
-        // Addition
-        foreach (var flightTicket in outboundFlightTickets) flightTicket.HolidayPackage = newPackage;
-        foreach (var flightTicket in inboundFlightTickets) flightTicket.HolidayPackage = newPackage;
+        var createdPackage = await PackageService.CreateAsync(newPackage);
+        
+
+        foreach (var flightTicket in outboundFlightTickets)
+            flightTicket.HolidayPackage = createdPackage;
+
+        foreach (var flightTicket in inboundFlightTickets)
+            flightTicket.HolidayPackage = createdPackage;
+
         await FlightService.PostFlightTicketsAsync(outboundFlightTickets);
         await FlightService.PostFlightTicketsAsync(inboundFlightTickets);
 
+        hotelBookingDto.HolidayPackageDto = createdPackage;
+        await HotelService.BookHotelAsync(hotelBookingDto);
+
         showSuccessMessage = true;
         newPackage = new HolidayPackageDto();
-
         outboundFlightTickets = new List<FlightTicketDto>();
         inboundFlightTickets = new List<FlightTicketDto>();
+        hotelBookingDto = new HotelBookingDto();
     }
 
     private void ShowFlights(string direction)
@@ -170,15 +214,27 @@
 
     private void HandleOutboundFlightTicketsConfirmed(List<FlightTicketDto> flightTickets)
     {
-        outboundFlightTickets = flightTickets.OrderBy(flightTicket => flightTicket.Flight.DepartureDate).ToList();
-        newPackage.CostPrice += (decimal)flightTickets.Sum(flightTicket => flightTicket.Price);
+        outboundFlightTickets = flightTickets.OrderBy(f => f.Flight.DepartureDate).ToList();
+        newPackage.CostPrice += (decimal)flightTickets.Sum(f => f.Price);
         showFlightsOutbound = false;
     }
 
     private void HandleInboundFlightTicketsConfirmed(List<FlightTicketDto> flightTickets)
     {
-        inboundFlightTickets = flightTickets.OrderBy(flightTicket => flightTicket.Flight.DepartureDate).ToList();
-        newPackage.CostPrice += (decimal)flightTickets.Sum(flightTicket => flightTicket.Price);
+        inboundFlightTickets = flightTickets.OrderBy(f => f.Flight.DepartureDate).ToList();
+        newPackage.CostPrice += (decimal)flightTickets.Sum(f => f.Price);
         showFlightsInbound = false;
+    }
+
+    private void ShowHotelList()
+    {
+        showHotels = true;
+    }
+
+    private void HandleHotelBookingConfirmed(HotelBookingDto hotelBooking)
+    {
+        hotelBookingDto = hotelBooking;
+        newPackage.CostPrice += (decimal)hotelBookingDto.HotelRoom.Price;
+        showHotels = false;
     }
 }

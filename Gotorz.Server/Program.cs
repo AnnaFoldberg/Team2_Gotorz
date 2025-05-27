@@ -2,13 +2,19 @@ using Gotorz.Server.Contexts;
 using Gotorz.Server.DataAccess;
 using Gotorz.Server.Services;
 using Gotorz.Server.Models;
-using Microsoft.EntityFrameworkCore;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add services to the container.
+
+// builder.Services.AddDbContext<GotorzDbContext>(options =>
+// {
+//     options.UseSqlServer(builder.Configuration.GetConnectionString("SayeConnection"));
+// });
 builder.Services.AddScoped<IRepository<Airport>, AirportRepository>();
 builder.Services.AddScoped<IFlightRepository, FlightRepository>();
 builder.Services.AddScoped<IRepository<FlightTicket>, FlightTicketRepository>();
@@ -17,15 +23,19 @@ builder.Services.AddScoped<IHolidayBookingRepository, HolidayBookingRepository>(
 builder.Services.AddScoped<IRepository<Traveller>, TravellerRepository>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IHolidayPackageRepository, HolidayPackageRepository>();
+builder.Services.AddScoped<IHotelRepository, HotelRepository>();
+builder.Services.AddScoped<IHotelRoomRepository, HotelRoomRepository>();
+builder.Services.AddScoped<IHotelBookingRepository, HotelBookingRepository>();
 
+builder.Services.AddScoped<IHotelService, HotelService>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
-
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connectionString = builder.Configuration.GetConnectionString("EskeConnection");
+
+var connectionString = builder.Configuration.GetConnectionString("SayeConnection");
 
 builder.Services.AddDbContext<GotorzDbContext>(options =>
 {
@@ -34,6 +44,9 @@ builder.Services.AddDbContext<GotorzDbContext>(options =>
 
 builder.Services.AddDbContext<AuthDbContext>(options =>
     options.UseSqlServer(connectionString));
+
+// builder.Services.AddDbContext<AuthDbContext>(options =>
+//     options.UseSqlServer(builder.Configuration.GetConnectionString("AuthConnection")));
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
@@ -59,6 +72,9 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddHttpClient<IFlightService, FlightService>();
+builder.Services.AddScoped<IHotelService, HotelService>(); 
+builder.Services.AddScoped<IHotelBookingService, HotelBookingService>();
+builder.Services.AddHttpClient<IHotelService, HotelService>();
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
@@ -128,8 +144,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-
-app.MapFallbackToFile("index.html"); // <-- Sørg for Blazor fallback virker
+app.MapFallbackToFile("index.html");
 
 app.Run();

@@ -1,0 +1,258 @@
+@page "/hotels"
+@using Gotorz.Shared.DTOs
+@using Gotorz.Client.Services
+@using System.ComponentModel.DataAnnotations
+@inject IHotelService HotelService
+@inject IUserService UserService
+@inject IJSRuntime JS
+
+<AuthorizeView>
+    <Authorized Context="auth">
+        @if (!isAuthorizedUser)
+        {
+            <p>Page not found.</p>
+        }
+        else
+        {
+            <EditForm Model="@searchForm" OnValidSubmit="Search">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="container">
+                    <div class="d-flex gap-2 align-items-end">
+                        <div class="form-group flex-grow-1">
+                            <label for="country" class="form-label">Country</label>
+                            <InputText class="form-control" id="country" @bind-Value="searchForm.Country" />
+                            <ValidationMessage For="@(() => searchForm.Country)" />
+                        </div>
+                        <div class="form-group flex-grow-1">
+                            <label for="city" class="form-label">City</label>
+                            <InputText class="form-control" id="city" @bind-Value="searchForm.City" />
+                            <ValidationMessage For="@(() => searchForm.City)" />
+                        </div>
+                        <div class="form-group flex-grow-1">
+                            <label for="arrivalDate" class="form-label">Arrival Date</label>
+                            <InputDate class="form-control" id="arrivalDate" @bind-Value="searchForm.ArrivalDate" />
+                        </div>
+                        <div class="form-group flex-grow-1">
+                            <label for="departureDate" class="form-label">Departure Date</label>
+                            <InputDate class="form-control" id="departureDate" @bind-Value="searchForm.DepartureDate" />
+                        </div>
+                        <div class="form-group flex-grow-1">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </EditForm>
+
+            <br />
+
+            @if (!searchPerformed)
+            {
+                <p class="text-muted">Start by entering a country and city, then click Search.</p>
+            }
+            else if (hotels == null)
+            {
+                <p>Loading...</p>
+            }
+            else if (hotels.Any())
+            {
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center text-white bg-dark">
+                        <span class="col">Hotel</span>
+                        <span class="col">City</span>
+                        <span class="col">Rating</span>
+                        <span class="col">Book</span>
+                        <span class="col">Map</span>
+                    </li>
+
+                    @foreach (var hotel in hotels)
+                    {
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="col">@hotel.Name</span>
+                                <span class="col">@hotel.Address</span>
+                                <span class="col">@hotel.Rating</span>
+                                <span class="col">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => ToggleDetails(hotel)">
+                                        @(expandedHotel == hotel ? "Hide details" : "Show details")
+                                    </button>
+                                </span>
+                                <span class="col">
+                                    <a href="@hotel.GoogleMapsUrl" target="_blank">📍 View</a>
+                                </span>
+                            </div>
+
+                            @if (expandedHotel == hotel)
+                            {
+                                <div class="bg-light p-3 rounded mt-2">
+                                    <h6>Available Rooms</h6>
+
+                                    @if (isLoadingRoomsDict.ContainsKey(hotel) && isLoadingRoomsDict[hotel])
+                                    {
+                                        <p class="text-muted">Loading rooms...</p>
+                                    }
+                                    else if (hotelRoomsDict.ContainsKey(hotel) && hotelRoomsDict[hotel].Any())
+                                    {
+                                        @foreach (var room in hotelRoomsDict[hotel])
+                                        {
+                                            <div class="mb-2 border-bottom pb-2">
+                                                <p><strong>Name:</strong> @room.Name</p>
+                                                <p><strong>Capacity:</strong> @room.Capacity</p>
+                                                <p><strong>Price:</strong> @room.Price.ToString("C")</p>
+                                                <p><strong>Meal Plan:</strong> @room.MealPlan</p>
+                                                <p><strong>Refundable:</strong> @(room.Refundable ? "Yes" : "No")</p>
+
+                                                <button type="button" class="btn btn-sm btn-success"
+                                                        @onclick="@(() => SubmitBooking(hotel, room))">
+                                                    Book Hotel
+                                                </button>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted">No rooms found for this hotel.</p>
+                                    }
+                                </div>
+                            }
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <h6>No hotels found.</h6>
+            }
+        }
+    </Authorized>
+    <NotAuthorized>
+        <div class="mt-5 standard-page-wrapper">
+            <Login />
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private HotelSearchForm searchForm = new();
+    private List<HotelDto>? hotels;
+    private bool searchPerformed = false;
+    private bool bookingSuccess = false;
+    private int lastBookedRoomId = -1;
+    private HotelDto? expandedHotel = null;
+    private bool isAuthorizedUser;
+
+    private Dictionary<HotelDto, List<HotelRoomDto>> hotelRoomsDict = new();
+    private Dictionary<HotelDto, bool> isLoadingRoomsDict = new();
+
+    [Parameter]
+    public EventCallback<HotelBookingDto> OnHotelBookingConfirmed { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        isAuthorizedUser = await UserService.IsUserInRoleAsync("sales");
+    }
+
+    private async Task Search()
+    {
+        try
+        {
+            searchPerformed = true;
+            hotels = null;
+
+            hotels = await HotelService.GetHotelsByCityName(
+                searchForm.City,
+                searchForm.Country,
+                searchForm.ArrivalDate,
+                searchForm.DepartureDate
+            );
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    private async Task ToggleDetails(HotelDto hotel)
+    {
+        if (expandedHotel == hotel)
+        {
+            expandedHotel = null;
+            return;
+        }
+
+        expandedHotel = hotel;
+
+        if (!hotelRoomsDict.ContainsKey(hotel))
+        {
+            isLoadingRoomsDict[expandedHotel] = true;
+            StateHasChanged();
+
+            if (hotel != null)
+            {
+                try
+                {
+                    var rooms = await HotelService.GetHotelRoomsByHotelId(
+                        
+                        hotel.ExternalHotelId,
+                        searchForm.ArrivalDate,
+                        searchForm.DepartureDate
+                    );
+
+                    hotelRoomsDict[hotel] = rooms ?? new List<HotelRoomDto>();
+                }
+                catch (Exception)
+                {
+                    hotelRoomsDict[hotel] = new List<HotelRoomDto>();
+                }
+            }
+
+            isLoadingRoomsDict[hotel] = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SubmitBooking(HotelDto hotel, HotelRoomDto room)
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("console.log", $"Booking confirmed: {room.ExternalRoomId}");
+            var booking = new HotelBookingDto
+            {
+                //Hotel = hotel,
+                HotelRoom = room,
+                CheckIn = searchForm.ArrivalDate,
+                CheckOut = searchForm.DepartureDate,
+            };
+
+            //lastBookedRoomId = room.HotelRoomId;
+            //await JS.InvokeVoidAsync("console.log", $"Booking confirmed: {hotel.Name}");
+
+            await OnHotelBookingConfirmed.InvokeAsync(booking);
+            //bookingSuccess = true;
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("console.error", $"Booking failed: {ex.Message}");
+            bookingSuccess = false;
+            //lastBookedRoomId = -1;
+        }
+
+        StateHasChanged();
+    }
+
+    public class HotelSearchForm
+    {
+        [Required(ErrorMessage = "Country is required.")]
+        public string Country { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "City is required.")]
+        public string City { get; set; } = string.Empty;
+
+        [Required]
+        public DateTime ArrivalDate { get; set; } = DateTime.Today;
+
+        [Required]
+        public DateTime DepartureDate { get; set; } = DateTime.Today.AddDays(1);
+    }
+}

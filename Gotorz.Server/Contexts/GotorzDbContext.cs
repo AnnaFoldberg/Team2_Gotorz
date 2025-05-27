@@ -1,12 +1,10 @@
-using Gotorz.Server.Configurations;
-using Gotorz.Server.Models;
+using Gotorz.Shared.Models;
 using Microsoft.EntityFrameworkCore;
+using Gotorz.Server.Models;
+using Gotorz.Server.Configurations;
 
 namespace Gotorz.Server.Contexts
 {
-    /// <summary>
-    /// Represents the Entity Framework Core database context for the Gotorz application.
-    /// </summary>
     public class GotorzDbContext : DbContext
     {
         /// <summary>
@@ -39,25 +37,30 @@ namespace Gotorz.Server.Contexts
         /// </summary>
         public DbSet<Traveller> Travellers { get; set; }
 
+        public DbSet<Hotel> Hotels { get; set; }
+        public DbSet<HotelBooking> HotelBookings { get; set; }
+        public DbSet<HotelRoom> HotelRooms { get; set; }
+        public DbSet<HotelSearchHistory> HotelSearchHistories { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GotorzDbContext"/> class.
         /// </summary>
         /// <param name="options">The options to configure the <see cref="GotorzDbContext"/> instance with.</param>
-        public GotorzDbContext(DbContextOptions<GotorzDbContext> options) : base(options) {}
+        public GotorzDbContext(DbContextOptions<GotorzDbContext> options) : base(options) { }
 
         /// <summary>
-        /// Applies all entity configurations that implement <see cref="IEntityTypeConfiguration{TEntity}"/>,
-        /// except the <see cref="ApplicationUserConfiguration"/>.
+        /// Applies all entity configurations that implement <see cref="IEntityTypeConfiguration{TEntity}"/>.
         /// </summary>
         /// <param name="modelBuilder">The <see cref="ModelBuilder"/> used to configure entity relationships.</param>
         /// <remarks>Based on suggestion from ChatGPT. Customized for this project.</remarks>
         protected override void OnModelCreating(ModelBuilder builder)
         {
-                builder.ApplyConfigurationsFromAssembly(
-                    typeof(GotorzDbContext).Assembly,
-                    type => type != typeof(ApplicationUserConfiguration)
-                );
-                builder.Ignore<ApplicationUser>();
+            builder.ApplyConfigurationsFromAssembly(
+                typeof(GotorzDbContext).Assembly,
+                type => type != typeof(ApplicationUserConfiguration)
+            );
+            builder.Ignore<ApplicationUser>();
         }
     }
+
 }
