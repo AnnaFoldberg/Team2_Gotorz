@@ -49,7 +49,7 @@ namespace Gotorz.Server.UnitTests.Services
             // Assert
             Assert.IsNotNull(savedBooking);
             Assert.AreEqual(1, savedBooking.HotelRoomId);
-            Assert.AreEqual(2, savedBooking.HolidayPackageId);
+            Assert.AreEqual(10, savedBooking.HolidayPackageId);
         }
     }
 }

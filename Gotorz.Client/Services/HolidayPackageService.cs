@@ -61,7 +61,7 @@ namespace Gotorz.Client.Services
         /// <returns>A task representing the asynchronous operation.</returns>
         public async Task<HolidayPackageDto> CreateAsync(HolidayPackageDto dto)
         {
-            var response = await _http.PostAsJsonAsync("http://localhost:5181/holidaypackage", dto);
+            var response = await _http.PostAsJsonAsync("http://localhost:5181/HolidayPackage", dto);
             return await response.Content.ReadFromJsonAsync<HolidayPackageDto>();
         }
 

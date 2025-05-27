@@ -35,8 +35,8 @@ namespace Gotorz.Server.UnitTests.Services
             hostSection.Setup(s => s.Value).Returns("fake-api.rapidapi.test");
 
             _mockConfig = new Mock<IConfiguration>();
-            _mockConfig.Setup(c => c.GetSection("RapidAPI:Key")).Returns(keySection.Object);
-            _mockConfig.Setup(c => c.GetSection("RapidAPI:Host")).Returns(hostSection.Object);
+            _mockConfig.Setup(c => c.GetSection("RapidAPI:Flights:Key")).Returns(keySection.Object);
+            _mockConfig.Setup(c => c.GetSection("RapidAPI:Flights:Host")).Returns(hostSection.Object);
         }
 
         // -------------------- GetAirportsAsync --------------------

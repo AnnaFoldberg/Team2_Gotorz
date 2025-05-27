@@ -7,6 +7,11 @@ using Gotorz.Shared.DTOs;
 using Gotorz.Client.Components;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
+using System.Security.Claims;
+using Bunit.TestDoubles;
+using System.Data;
 
 namespace Gotorz.Client.UnitTests.Components
 {
@@ -22,6 +27,24 @@ namespace Gotorz.Client.UnitTests.Components
             _mockHotelService = new Mock<IHotelService>();
             _mockUserService = new Mock<IUserService>();
 
+            Services.AddOptions();
+
+            Services.AddSingleton<IAuthorizationPolicyProvider, DefaultAuthorizationPolicyProvider>(sp =>
+            {
+                var options = sp.GetRequiredService<IOptions<AuthorizationOptions>>();
+                return new DefaultAuthorizationPolicyProvider(options);
+            });
+
+            var mockAuthService = new Mock<IAuthorizationService>();
+            mockAuthService
+                .Setup(x => x.AuthorizeAsync(
+                    It.IsAny<ClaimsPrincipal>(),
+                    It.IsAny<object>(),
+                    It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+                .ReturnsAsync(AuthorizationResult.Success());
+
+            Services.AddSingleton(mockAuthService.Object);
+
             Services.AddSingleton(_mockHotelService.Object);
             Services.AddSingleton(_mockUserService.Object);
             Services.AddSingleton(Mock.Of<IJSRuntime>());
@@ -31,6 +54,13 @@ namespace Gotorz.Client.UnitTests.Components
         public void Form_MissingCity_ShowsValidationMessage()
         {
             // Arrange
+            var authContext = this.AddTestAuthorization();
+
+            authContext.SetAuthorized("Test user");
+            authContext.SetClaims(
+            new Claim(ClaimTypes.Name, "Test user"),
+                new Claim(ClaimTypes.Role, "sales")
+            );
             _mockUserService.Setup(x => x.IsUserInRoleAsync("sales")).ReturnsAsync(true);
             var component = RenderComponent<HotelList>();
             component.Find("#country").Change("Denmark");
@@ -45,6 +75,13 @@ namespace Gotorz.Client.UnitTests.Components
         [TestMethod]
         public void Form_MissingCountry_ShowsValidationMessage()
         {
+            var authContext = this.AddTestAuthorization();
+
+            authContext.SetAuthorized("Test user");
+            authContext.SetClaims(
+            new Claim(ClaimTypes.Name, "Test user"),
+                new Claim(ClaimTypes.Role, "sales")
+            );
             _mockUserService.Setup(x => x.IsUserInRoleAsync("sales")).ReturnsAsync(true);
             var component = RenderComponent<HotelList>();
             component.Find("#city").Change("Copenhagen");
@@ -58,6 +95,13 @@ namespace Gotorz.Client.UnitTests.Components
         [TestMethod]
         public async Task Search_WithNoHotels_ShowsNoHotelsFoundMessage()
         {
+            var authContext = this.AddTestAuthorization();
+
+            authContext.SetAuthorized("Test user");
+            authContext.SetClaims(
+            new Claim(ClaimTypes.Name, "Test user"),
+                new Claim(ClaimTypes.Role, "sales")
+            );
             _mockUserService.Setup(x => x.IsUserInRoleAsync("sales")).ReturnsAsync(true);
             _mockHotelService.Setup(s => s.GetHotelsByCityName(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(new List<HotelDto>());
@@ -75,6 +119,13 @@ namespace Gotorz.Client.UnitTests.Components
         public async Task SubmitBooking_InvokesEventCallback()
         {
             // Arrange
+            var authContext = this.AddTestAuthorization();
+
+            authContext.SetAuthorized("Test user");
+            authContext.SetClaims(
+            new Claim(ClaimTypes.Name, "Test user"),
+                new Claim(ClaimTypes.Role, "sales")
+            );
             var hotel = new HotelDto { Name = "Hotel Test", ExternalHotelId = "EXT123" };
             var room = new HotelRoomDto
             {

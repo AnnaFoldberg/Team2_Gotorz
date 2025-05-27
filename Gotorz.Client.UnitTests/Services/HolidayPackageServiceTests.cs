@@ -43,7 +43,8 @@ namespace Gotorz.Client.UnitTests.Services
                     ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(new HttpResponseMessage
                 {
-                    StatusCode = HttpStatusCode.OK
+                    StatusCode = HttpStatusCode.OK,
+                    Content = JsonContent.Create(new HolidayPackageDto())
                 })
                 .Verifiable();
 

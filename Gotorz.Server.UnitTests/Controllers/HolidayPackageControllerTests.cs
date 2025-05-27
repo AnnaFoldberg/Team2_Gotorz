@@ -37,9 +37,12 @@ namespace Gotorz.Server.UnitTests.Controllers
             // Arrange
             var dto = new HolidayPackageDto(); 
             var mappedPackage = new HolidayPackage();
+            var mappedPackageDto = new HolidayPackageDto();
 
             _mockMapper.Setup(m => m.Map<HolidayPackage>(dto)).Returns(mappedPackage);
             _mockRepository.Setup(r => r.AddAsync(mappedPackage)).Returns(Task.CompletedTask);
+            _mockMapper.Setup(m => m.Map<HolidayPackageDto>(mappedPackage)).Returns(mappedPackageDto);
+
 
             // Act
             var result = await _controller.Create(dto);
@@ -47,10 +50,9 @@ namespace Gotorz.Server.UnitTests.Controllers
             // Assert
             Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
 
-            var okResult = result.Result as OkObjectResult;
-            Assert.AreEqual("Succesfully created package", okResult?.Value);
-            Assert.IsInstanceOfType(result.Value, typeof(HolidayPackageDto));
+            Assert.AreEqual(mappedPackageDto, (result.Result as OkObjectResult)?.Value);
             _mockMapper.Verify(m => m.Map<HolidayPackage>(dto), Times.Once);
+            _mockMapper.Verify(m => m.Map<HolidayPackageDto>(mappedPackage), Times.Once);
             _mockRepository.Verify(r => r.AddAsync(mappedPackage), Times.Once);
         }
 
