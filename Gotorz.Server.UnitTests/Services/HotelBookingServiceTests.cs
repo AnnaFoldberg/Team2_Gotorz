@@ -38,10 +38,7 @@ namespace Gotorz.Server.UnitTests.Services
             {
                 CheckIn = DateTime.Today,
                 CheckOut = DateTime.Today.AddDays(2),
-                HotelId = 1,
                 HotelRoomId = 1,
-                Price = 500.00m,
-                RoomCapacity = 2,
                 HolidayPackageId = 10
             };
 
@@ -51,8 +48,8 @@ namespace Gotorz.Server.UnitTests.Services
 
             // Assert
             Assert.IsNotNull(savedBooking);
-            Assert.AreEqual(1, savedBooking.HotelId);
-            Assert.AreEqual(2, savedBooking.RoomCapacity);
+            Assert.AreEqual(1, savedBooking.HotelRoomId);
+            Assert.AreEqual(2, savedBooking.HolidayPackageId);
         }
     }
 }
