@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Gotorz.Server.Models;
 using Gotorz.Server.Services;
 using Gotorz.Server.DataAccess;
@@ -24,7 +24,7 @@ public class FlightController : ControllerBase
     private readonly IRepository<Airport> _airportRepository;
     private readonly IFlightRepository _flightRepository;
     private readonly IRepository<FlightTicket> _flightTicketRepository;
-    private readonly IRepository<HolidayPackage> _holidayPackageRepository;
+    private readonly IHolidayPackageRepository _holidayPackageRepository;
     
     /// <summary>
     /// Initializes a new instance of the <see cref="FlightController"/> class.
@@ -39,7 +39,7 @@ public class FlightController : ControllerBase
     /// <see cref="FlightTicket"/> data in the database.</param>
     public FlightController(IMapper mapper, IFlightService flightService,
         IRepository<Airport> airportRepository, IFlightRepository flightRepository,
-        IRepository<FlightTicket> flightTicketRepository, IRepository<HolidayPackage> holidayPackageRepository)
+        IRepository<FlightTicket> flightTicketRepository, IHolidayPackageRepository holidayPackageRepository)
     {
         _flightService = flightService;
         _mapper = mapper;
@@ -176,12 +176,13 @@ public class FlightController : ControllerBase
             }
 
             // Ensure holiday package exists in database. If not, return bad request.
-            var holidayPackages = await _holidayPackageRepository.GetAllAsync();
-            var holidayPackage = holidayPackages
-                .FirstOrDefault(p => p.Title == flightTicket.HolidayPackage.Title &&
-                p.Description == flightTicket.HolidayPackage.Description);
+            var holidayPackage = await _holidayPackageRepository.GetByUrlAsync(flightTicket.HolidayPackage.URL);
+            // var holidayPackages = await _holidayPackageRepository.GetAllAsync();
+            // var holidayPackage = holidayPackages
+            //     .FirstOrDefault(p => p.Title == flightTicket.HolidayPackage.Title &&
+            //     p.Description == flightTicket.HolidayPackage.Description);
 
-            if (holidayPackage == null )
+            if (holidayPackage == null)
             {
                 return BadRequest("Holiday package linked to flight ticket does not exist");
             }

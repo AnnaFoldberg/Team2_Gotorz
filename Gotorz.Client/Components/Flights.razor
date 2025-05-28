@@ -1,4 +1,4 @@
-@page "/flights"
+﻿@page "/flights"
 @using Gotorz.Shared.DTOs
 @using System.ComponentModel.DataAnnotations
 @using System.Text.Json
@@ -127,7 +127,7 @@
 @code {
     private bool isAuthorizedUser;
     private bool searchPerformed = false;
-    private SearchForm searchForm = new SearchForm();
+    private FlightSearchForm searchForm = new FlightSearchForm();
     private IEnumerable<AirportDto> airports = Enumerable.Empty<AirportDto>();
     private List<FlightDto> flights = new List<FlightDto>();
     private List<FlightTicketDto> flightTickets = new List<FlightTicketDto>();

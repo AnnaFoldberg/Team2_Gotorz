@@ -22,7 +22,7 @@ namespace Gotorz.Server.UnitTests.Controllers
         private BookingController _bookingController;
         private Mock<IMapper> _mockMapper;
         private Mock<IBookingService> _mockBookingService;
-        private Mock<IRepository<HolidayPackage>> _mockHolidayPackageRepository;
+        private Mock<IHolidayPackageRepository> _mockHolidayPackageRepository;
         private Mock<IHolidayBookingRepository> _mockHolidayBookingRepository;
         private Mock<IRepository<Traveller>> _mockTravellerRepository;
         private Mock<IUserRepository> _mockUserRepository;
@@ -32,7 +32,7 @@ namespace Gotorz.Server.UnitTests.Controllers
         {
             _mockMapper = new Mock<IMapper>();
             _mockBookingService = new Mock<IBookingService>();
-            _mockHolidayPackageRepository = new Mock<IRepository<HolidayPackage>>();
+            _mockHolidayPackageRepository = new Mock<IHolidayPackageRepository>();
             _mockHolidayBookingRepository = new Mock<IHolidayBookingRepository>();
             _mockTravellerRepository = new Mock<IRepository<Traveller>>();
             _mockUserRepository = new Mock<IUserRepository>();
@@ -717,7 +717,8 @@ namespace Gotorz.Server.UnitTests.Controllers
             {
                 HolidayPackageId = mockHolidayPackage.HolidayPackageId,
                 Title = "Rome",
-                MaxCapacity = 2
+                MaxCapacity = 2,
+                URL = "Rome"
             };
 
             var mockHolidayBooking = new HolidayBooking
@@ -739,7 +740,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             };
 
             _mockMapper.Setup(m => m.Map<HolidayBooking>(mockHolidayBookingDto)).Returns(mockHolidayBooking);
-            _mockHolidayPackageRepository.Setup(r => r.GetAllAsync()).ReturnsAsync(new List<HolidayPackage> { mockHolidayPackage });
+            _mockHolidayPackageRepository.Setup(r => r.GetByUrlAsync(mockHolidayBookingDto.HolidayPackage.URL)).ReturnsAsync(mockHolidayPackage);
             _mockUserRepository.Setup(r => r.GetUserByIdAsync(mockCustomerDto.UserId)).ReturnsAsync(mockCustomer);
             _mockHolidayBookingRepository.Setup(r => r.GetByBookingReferenceAsync(bookingReference)).ReturnsAsync((HolidayBooking)null);
             _mockHolidayBookingRepository.Setup(r => r.AddAsync(mockHolidayBooking)).Returns(Task.CompletedTask);
@@ -852,7 +853,8 @@ namespace Gotorz.Server.UnitTests.Controllers
                 HolidayPackageId = 2,
                 Title = "Rome",
                 Description = "Trip",
-                MaxCapacity = 2
+                MaxCapacity = 2,
+                URL = "Rome"
             };
 
             var mockHolidayBooking = new HolidayBooking
@@ -874,7 +876,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             };
 
             _mockMapper.Setup(m => m.Map<HolidayBooking>(mockHolidayBookingDto)).Returns(mockHolidayBooking);
-            _mockHolidayPackageRepository.Setup(r => r.GetAllAsync()).ReturnsAsync(new List<HolidayPackage> { mockHolidayPackage });
+            _mockHolidayPackageRepository.Setup(r => r.GetByUrlAsync(mockHolidayBookingDto.HolidayPackage.URL)).ReturnsAsync((HolidayPackage)null);
             _mockHolidayBookingRepository.Setup(r => r.GetByBookingReferenceAsync(bookingReference)).ReturnsAsync((HolidayBooking)null);
 
             // Act
@@ -885,7 +887,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             var badRequestResult = result as BadRequestObjectResult;
             Assert.IsNotNull(badRequestResult);
             Assert.AreEqual($"Holiday package linked to booking does not exist", badRequestResult.Value);
-            _mockHolidayPackageRepository.Verify(r => r.GetAllAsync(), Times.Once);
+            _mockHolidayPackageRepository.Verify(r => r.GetByUrlAsync(mockHolidayBookingDto.HolidayPackage.URL), Times.Once);
             _mockHolidayBookingRepository.Verify(s => s.GetByBookingReferenceAsync(bookingReference), Times.Once);
             _mockHolidayBookingRepository.Verify(s => s.AddAsync(mockHolidayBooking), Times.Never);
         }
@@ -917,7 +919,8 @@ namespace Gotorz.Server.UnitTests.Controllers
             {
                 HolidayPackageId = 1,
                 Title = "Venice",
-                MaxCapacity = 2
+                MaxCapacity = 2,
+                URL = "Venice"
             };
 
             var mockHolidayBooking = new HolidayBooking
@@ -940,7 +943,8 @@ namespace Gotorz.Server.UnitTests.Controllers
 
             _mockMapper.Setup(m => m.Map<HolidayBooking>(mockHolidayBookingDto)).Returns(mockHolidayBooking);
             _mockUserRepository.Setup(r => r.GetUserByIdAsync(mockCustomerDto.UserId)).ReturnsAsync((ApplicationUser)null);
-            _mockHolidayPackageRepository.Setup(r => r.GetAllAsync()).ReturnsAsync(new List<HolidayPackage> { mockHolidayPackage });
+            _mockHolidayPackageRepository.Setup(r => r.GetByUrlAsync(mockHolidayBookingDto.HolidayPackage.URL)).ReturnsAsync(mockHolidayPackage);
+
             _mockHolidayBookingRepository.Setup(r => r.GetByBookingReferenceAsync(bookingReference)).ReturnsAsync((HolidayBooking)null);
 
             // Act
@@ -951,7 +955,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             var badRequestResult = result as BadRequestObjectResult;
             Assert.IsNotNull(badRequestResult);
             Assert.AreEqual($"Customer linked to booking does not exist", badRequestResult.Value);
-            _mockHolidayPackageRepository.Verify(r => r.GetAllAsync(), Times.Once);
+            _mockHolidayPackageRepository.Verify(r => r.GetByUrlAsync(mockHolidayBookingDto.HolidayPackage.URL), Times.Once);
             _mockUserRepository.Verify(s => s.GetUserByIdAsync(mockCustomerDto.UserId), Times.Once);
             _mockHolidayBookingRepository.Verify(s => s.GetByBookingReferenceAsync(bookingReference), Times.Once);
             _mockHolidayBookingRepository.Verify(s => s.AddAsync(mockHolidayBooking), Times.Never);

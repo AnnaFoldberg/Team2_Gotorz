@@ -6,7 +6,7 @@ namespace Gotorz.Client.ViewModels
     /// Represents the search form used in the flight search UI.
     /// </summary>
     /// <author>Anna</author>
-    public class SearchForm
+    public class FlightSearchForm
     {
         [DateFormat("dd-MM-yyyy")]
         public string? Date { get; set; }

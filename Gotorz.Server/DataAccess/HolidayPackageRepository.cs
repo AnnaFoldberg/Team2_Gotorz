@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Gotorz.Server.DataAccess
 {
-    public class HolidayPackageRepository : IRepository<HolidayPackage>, IHolidayPackageRepository
+    public class HolidayPackageRepository : IHolidayPackageRepository
     {
         private readonly GotorzDbContext _context;
 

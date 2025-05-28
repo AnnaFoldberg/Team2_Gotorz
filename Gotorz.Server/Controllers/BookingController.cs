@@ -18,7 +18,7 @@ public class BookingController : ControllerBase
 {
     private readonly IMapper _mapper;
     private readonly IBookingService _bookingService;
-    private readonly IRepository<HolidayPackage> _holidayPackageRepository;
+    private readonly IHolidayPackageRepository _holidayPackageRepository;
     private readonly IHolidayBookingRepository _holidayBookingRepository;
     private readonly IRepository<Traveller> _travellerRepository;
     private readonly IUserRepository _userRepository;
@@ -27,7 +27,7 @@ public class BookingController : ControllerBase
     /// Initializes a new instance of the <see cref="BookingController"/> class.
     /// </summary>
     /// <param name="mapper">The <see cref="IMapper"/> used for mapping DTOs to Models.</param>
-    /// <param name="holidayPackageRepository">The <see cref="IRepository<HolidayPackage>"/> used to access
+    /// <param name="holidayPackageRepository">The <see cref="IHolidayPackageRepository<HolidayPackage>"/> used to access
     /// <see cref="HolidayPackage"/> data in the database.</param>
     /// <param name="holidayBookingRepository">The <see cref="IHolidayBookingRepository"/> used to access
     /// <see cref="HolidayBooking"/> data in the database.</param>
@@ -36,7 +36,7 @@ public class BookingController : ControllerBase
     /// <param name="userRepository">The <see cref="IUserRepository"/> used to access
     /// <see cref="ApplicationUser"/> data in the database.</param>
     public BookingController(IMapper mapper, IBookingService bookingService,
-        IRepository<HolidayPackage> holidayPackageRepository, IHolidayBookingRepository holidayBookingRepository,
+        IHolidayPackageRepository holidayPackageRepository, IHolidayBookingRepository holidayBookingRepository,
         IRepository<Traveller> travellerRepository, IUserRepository userRepository)
     {
         _mapper = mapper;
@@ -177,12 +177,9 @@ public class BookingController : ControllerBase
         var holidayBooking = _mapper.Map<HolidayBooking>(holidayBookingDto);
 
         // Ensure holiday booking contains the correct HolidayPackageId 
-        var holidayPackages = await _holidayPackageRepository.GetAllAsync();
-        var holidayPackage = holidayPackages
-            .FirstOrDefault(p => p.Title == holidayBookingDto.HolidayPackage.Title &&
-            p.Description == holidayBookingDto.HolidayPackage.Description);
+        var holidayPackage = await _holidayPackageRepository.GetByUrlAsync(holidayBookingDto.HolidayPackage.URL);
 
-        if (holidayPackage == null )
+        if (holidayPackage == null)
         {
             return BadRequest("Holiday package linked to booking does not exist");
         }

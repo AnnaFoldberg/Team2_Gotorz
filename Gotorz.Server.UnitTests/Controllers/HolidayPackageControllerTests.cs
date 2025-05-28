@@ -12,19 +12,16 @@ namespace Gotorz.Server.UnitTests.Controllers
     public class HolidayPackageControllerTests
     {
         private HolidayPackageController _controller;
-        private Mock<IRepository<HolidayPackage>> _mockRepository;
         private Mock<IMapper> _mockMapper;
         private Mock<IHolidayPackageRepository> _mockHolidayPackageRepository;
 
         [TestInitialize]
         public void TestInitialize()
         {
-            _mockRepository = new Mock<IRepository<HolidayPackage>>();
             _mockMapper = new Mock<IMapper>();
             _mockHolidayPackageRepository = new Mock<IHolidayPackageRepository>();
 
             _controller = new HolidayPackageController(
-                _mockRepository.Object,
                 _mockHolidayPackageRepository.Object,
                 _mockMapper.Object);
         }
@@ -40,9 +37,8 @@ namespace Gotorz.Server.UnitTests.Controllers
             var mappedPackageDto = new HolidayPackageDto();
 
             _mockMapper.Setup(m => m.Map<HolidayPackage>(dto)).Returns(mappedPackage);
-            _mockRepository.Setup(r => r.AddAsync(mappedPackage)).Returns(Task.CompletedTask);
+            _mockHolidayPackageRepository.Setup(r => r.AddAsync(mappedPackage)).Returns(Task.CompletedTask);
             _mockMapper.Setup(m => m.Map<HolidayPackageDto>(mappedPackage)).Returns(mappedPackageDto);
-
 
             // Act
             var result = await _controller.Create(dto);
@@ -53,7 +49,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             Assert.AreEqual(mappedPackageDto, (result.Result as OkObjectResult)?.Value);
             _mockMapper.Verify(m => m.Map<HolidayPackage>(dto), Times.Once);
             _mockMapper.Verify(m => m.Map<HolidayPackageDto>(mappedPackage), Times.Once);
-            _mockRepository.Verify(r => r.AddAsync(mappedPackage), Times.Once);
+            _mockHolidayPackageRepository.Verify(r => r.AddAsync(mappedPackage), Times.Once);
         }
 
         // -------------------- GetAll --------------------
@@ -73,7 +69,7 @@ namespace Gotorz.Server.UnitTests.Controllers
                 new HolidayPackageDto { HolidayPackageId = 2, Title = "Test Package 2" }
             };
 
-            _mockRepository.Setup(repo => repo.GetAllAsync())
+            _mockHolidayPackageRepository.Setup(repo => repo.GetAllAsync())
                            .ReturnsAsync(holidayPackages);
 
             _mockMapper.Setup(mapper => mapper.Map<IEnumerable<HolidayPackageDto>>(holidayPackages))
@@ -93,7 +89,7 @@ namespace Gotorz.Server.UnitTests.Controllers
             Assert.AreEqual(expectedDtos.Count, actualDtos.Count());
 
             // Verify mocks were called
-            _mockRepository.Verify(r => r.GetAllAsync(), Times.Once);
+            _mockHolidayPackageRepository.Verify(r => r.GetAllAsync(), Times.Once);
             _mockMapper.Verify(m => m.Map<IEnumerable<HolidayPackageDto>>(holidayPackages), Times.Once);
         }
 

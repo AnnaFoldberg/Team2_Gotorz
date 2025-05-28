@@ -10,7 +10,6 @@ namespace Gotorz.Server.Controllers
     [ApiController]
     public class HolidayPackageController : ControllerBase
     {
-        private readonly IRepository<HolidayPackage>? _repository;
         private readonly IHolidayPackageRepository _holidayRepository;
         private IMapper _mapper;
 
@@ -18,11 +17,10 @@ namespace Gotorz.Server.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="HolidayPackageController"/> class.
         /// </summary>
-        /// <param name="repository">The repository for managing holiday package entities.</param>
+        /// <param name="holidayRepository">The repository for managing holiday package entities.</param>
         /// <param name="mapper">The mapper for converting between DTOs and domain models.</param>
-        public HolidayPackageController(IRepository<HolidayPackage> repository, IHolidayPackageRepository holidayRepository, IMapper mapper)
+        public HolidayPackageController(IHolidayPackageRepository holidayRepository, IMapper mapper)
         {
-            _repository = repository;
             _holidayRepository = holidayRepository;
             _mapper = mapper;
         }
@@ -36,7 +34,7 @@ namespace Gotorz.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<HolidayPackageDto>>> GetAllAsync()
         {
-            var all = await _repository.GetAllAsync();
+            var all = await _holidayRepository.GetAllAsync();
             var result = _mapper.Map<IEnumerable<HolidayPackageDto>>(all);
 
             return Ok(result);
@@ -52,7 +50,7 @@ namespace Gotorz.Server.Controllers
         public async Task<ActionResult<HolidayPackageDto>> Create(HolidayPackageDto dto)
         {
             var package = _mapper.Map<HolidayPackage>(dto);
-            await _repository.AddAsync(package);
+            await _holidayRepository.AddAsync(package);
             var packageDto = _mapper.Map<HolidayPackageDto>(package);
 
             return Ok(packageDto);

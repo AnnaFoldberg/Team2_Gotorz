@@ -12,7 +12,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IRepository<Airport>, AirportRepository>();
 builder.Services.AddScoped<IFlightRepository, FlightRepository>();
 builder.Services.AddScoped<IRepository<FlightTicket>, FlightTicketRepository>();
-builder.Services.AddScoped<IRepository<HolidayPackage>, HolidayPackageRepository>();
 builder.Services.AddScoped<IHolidayBookingRepository, HolidayBookingRepository>();
 builder.Services.AddScoped<IRepository<Traveller>, TravellerRepository>();
 builder.Services.AddScoped<IBookingService, BookingService>();
@@ -29,7 +28,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
-var connectionString = builder.Configuration.GetConnectionString("EskeConnection");
+var connectionString = builder.Configuration.GetConnectionString("AnnaConnection");
 
 builder.Services.AddDbContext<GotorzDbContext>(options =>
 {
