@@ -10,16 +10,16 @@ namespace Gotorz.Server.Services
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
-        private readonly IHotelRepository _hotelRepository;
+        private readonly IRepository<Hotel> _hotelRepository;
         private readonly IHotelRoomRepository _hotelRoomRepository;
-        private readonly IHotelBookingRepository _hotelBookingRepository;
+        private readonly IRepository<HotelBooking> _hotelBookingRepository;
 
         public HotelService(
             HttpClient httpClient,
             IConfiguration config,
-            IHotelRepository hotelRepository,
+            IRepository<Hotel> hotelRepository,
             IHotelRoomRepository hotelRoomRepository,
-            IHotelBookingRepository hotelBookingRepository)
+            IRepository<HotelBooking> hotelBookingRepository)
         {
             _httpClient = httpClient;
             _config = config;

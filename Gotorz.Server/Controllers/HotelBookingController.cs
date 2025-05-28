@@ -15,14 +15,14 @@ public class HotelBookingController : ControllerBase
 {
     private readonly IHotelBookingService _service;
     private readonly IHolidayPackageRepository _holidayPackageRepository;
-    private readonly IHotelBookingRepository _hotelBookingRepository;
-    private readonly IHotelRepository _hotelRepository;
+    private readonly IRepository<HotelBooking> _hotelBookingRepository;
+    private readonly IRepository<Hotel> _hotelRepository;
     private readonly IHotelRoomRepository _hotelRoomRepository;
 
     private readonly IMapper _mapper;
 
     // Constructor injecting the hotel booking service
-    public HotelBookingController(IHotelBookingService service, IHolidayPackageRepository holidayPackageRepository, IHotelBookingRepository hotelBookingRepository, IHotelRepository hotelRepository, IHotelRoomRepository hotelRoomRepository, IMapper mapper)
+    public HotelBookingController(IHotelBookingService service, IHolidayPackageRepository holidayPackageRepository, IRepository<HotelBooking> hotelBookingRepository, IRepository<Hotel> hotelRepository, IHotelRoomRepository hotelRoomRepository, IMapper mapper)
     {
         _service = service;
         _holidayPackageRepository = holidayPackageRepository;

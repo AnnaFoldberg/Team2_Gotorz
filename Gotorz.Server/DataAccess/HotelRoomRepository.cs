@@ -31,9 +31,9 @@ namespace Gotorz.Server.DataAccess
                 .ToListAsync();
         }
 
-        public async Task<HotelRoom?> GetByIdAsync(int id)
+        public async Task<HotelRoom?> GetByKeyAsync(int key)
         {
-            return await _context.HotelRooms.FindAsync(id);
+            return await _context.HotelRooms.FindAsync(key);
         }
 
         public async Task AddAsync(HotelRoom room)
@@ -48,9 +48,9 @@ namespace Gotorz.Server.DataAccess
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(int key)
         {
-            var room = await GetByIdAsync(id);
+            var room = await GetByKeyAsync(key);
             if (room != null)
             {
                 _context.HotelRooms.Remove(room);

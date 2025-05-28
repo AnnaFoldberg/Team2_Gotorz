@@ -11,7 +11,7 @@ namespace Gotorz.Server.DataAccess
     /// </summary>
     /// <remarks>Created by ChatGPT — tailored for Gotorz project structure.</remarks>
     /// <author>Sayeh</author>
-    public class HotelBookingRepository : IHotelBookingRepository
+    public class HotelBookingRepository : IRepository<HotelBooking>
     {
         private readonly GotorzDbContext _context;
 
@@ -28,12 +28,12 @@ namespace Gotorz.Server.DataAccess
                 .ToListAsync();
         }
 
-        public async Task<HotelBooking?> GetByIdAsync(int id)
+        public async Task<HotelBooking?> GetByKeyAsync(int key)
         {
             return await _context.HotelBookings
                 .Include(b => b.HotelRoom)
                 .Include(b => b.HolidayPackage)
-                .FirstOrDefaultAsync(b => b.HotelBookingId == id);
+                .FirstOrDefaultAsync(b => b.HotelBookingId == key);
         }
 
         public async Task AddAsync(HotelBooking booking)
@@ -48,9 +48,9 @@ namespace Gotorz.Server.DataAccess
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(int key)
         {
-            var booking = await GetByIdAsync(id);
+            var booking = await GetByKeyAsync(key);
             if (booking != null)
             {
                 _context.HotelBookings.Remove(booking);

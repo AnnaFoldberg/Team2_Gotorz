@@ -18,8 +18,8 @@ public class HotelBookingControllerTests
     private Mock<IHotelBookingService> _mockService = null!;
     private Mock<IHolidayPackageRepository> _mockHolidayRepo = null!;
     private Mock<IHotelRoomRepository> _mockRoomRepo = null!;
-    private Mock<IHotelBookingRepository> _mockBookingRepo = null!;
-    private Mock<IHotelRepository> _mockHotelRepo = null!;
+    private Mock<IRepository<HotelBooking>> _mockBookingRepo = null!;
+    private Mock<IRepository<Hotel>> _mockHotelRepo = null!;
     private Mock<IMapper> _mockMapper = null!;
     private HotelBookingController _controller = null!;
 
@@ -29,8 +29,8 @@ public class HotelBookingControllerTests
         _mockService = new Mock<IHotelBookingService>();
         _mockHolidayRepo = new Mock<IHolidayPackageRepository>();
         _mockRoomRepo = new Mock<IHotelRoomRepository>();
-        _mockBookingRepo = new Mock<IHotelBookingRepository>();
-        _mockHotelRepo = new Mock<IHotelRepository>();
+        _mockBookingRepo = new Mock<IRepository<HotelBooking>>();
+        _mockHotelRepo = new Mock<IRepository<Hotel>>();
         _mockMapper = new Mock<IMapper>();
 
         _controller = new HotelBookingController(

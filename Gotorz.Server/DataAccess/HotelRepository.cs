@@ -8,7 +8,7 @@ namespace Gotorz.Server.DataAccess
     /// A repository class for managing <see cref="Hotel"/> entities using Entity Framework Core.
     /// </summary>
     /// <remarks>Provides basic CRUD operations for Hotel data.</remarks>
-    public class HotelRepository : IHotelRepository
+    public class HotelRepository : IRepository<Hotel>
     {
         private readonly GotorzDbContext _context;
 
@@ -32,9 +32,9 @@ namespace Gotorz.Server.DataAccess
         /// <summary>
         /// Gets a hotel by its ID.
         /// </summary>
-        public async Task<Hotel?> GetByIdAsync(int id)
+        public async Task<Hotel?> GetByKeyAsync(int key)
         {
-            return await _context.Hotels.FindAsync(id);
+            return await _context.Hotels.FindAsync(key);
         }
 
         /// <summary>
@@ -58,9 +58,9 @@ namespace Gotorz.Server.DataAccess
         /// <summary>
         /// Deletes a hotel from the database by ID.
         /// </summary>
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(int key)
         {
-            var hotel = await GetByIdAsync(id);
+            var hotel = await GetByKeyAsync(key);
             if (hotel != null)
             {
                 _context.Hotels.Remove(hotel);

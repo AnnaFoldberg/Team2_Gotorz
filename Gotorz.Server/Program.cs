@@ -17,9 +17,9 @@ builder.Services.AddScoped<IHolidayBookingRepository, HolidayBookingRepository>(
 builder.Services.AddScoped<IRepository<Traveller>, TravellerRepository>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IHolidayPackageRepository, HolidayPackageRepository>();
-builder.Services.AddScoped<IHotelRepository, HotelRepository>();
+builder.Services.AddScoped<IRepository<Hotel>, HotelRepository>();
 builder.Services.AddScoped<IHotelRoomRepository, HotelRoomRepository>();
-builder.Services.AddScoped<IHotelBookingRepository, HotelBookingRepository>();
+builder.Services.AddScoped<IRepository<HotelBooking>, HotelBookingRepository>();
 
 builder.Services.AddScoped<IHotelService, HotelService>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
