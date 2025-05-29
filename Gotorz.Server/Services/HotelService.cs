@@ -1,7 +1,6 @@
 using System.Text.Json.Nodes;
 using Gotorz.Server.Models;
 using Gotorz.Server.DataAccess;
-using Gotorz.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gotorz.Server.Services
@@ -174,11 +173,6 @@ namespace Gotorz.Server.Services
         public async Task BookHotelAsync(HotelBooking booking)
         {
             await _hotelBookingRepository.AddAsync(booking);
-        }
-
-        public async Task<List<HotelSearchHistory>> GetSearchHistory()
-        {
-            throw new NotImplementedException("HotelSearchHistory repository not yet implemented.");
         }
     }
 }

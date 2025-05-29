@@ -47,12 +47,5 @@ namespace Gotorz.Server.Controllers
             var roomDtos = _mapper.Map<List<HotelRoomDto>>(rooms);
             return Ok(roomDtos);
         }
-
-        [HttpGet("history")]
-        public async Task<IActionResult> GetSearchHistory()
-        {
-            var history = await _hotelService.GetSearchHistory();
-            return Ok(history);
-        }
     }
 }

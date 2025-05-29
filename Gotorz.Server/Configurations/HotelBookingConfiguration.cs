@@ -17,7 +17,7 @@ namespace Gotorz.Server.Configurations
 
                 // Define relationship with HolidayPackage (each booking belongs to one holiday package)
                 builder.HasOne(b => b.HolidayPackage)
-                    .WithMany(p => p.HotelBookings)
+                    .WithMany()
                     .HasForeignKey(b => b.HolidayPackageId)
                     .OnDelete(DeleteBehavior.Cascade);
         }

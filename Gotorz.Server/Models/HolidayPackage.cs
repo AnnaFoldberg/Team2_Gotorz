@@ -11,8 +11,6 @@ namespace Gotorz.Server.Models
         public int MaxCapacity { get; set; }
         public decimal CostPrice { get; set; }
         public decimal MarkupPercentage { get; set; }
-        public List<HotelBooking> HotelBookings { get; set; } = new();        
-
     }
 }
 

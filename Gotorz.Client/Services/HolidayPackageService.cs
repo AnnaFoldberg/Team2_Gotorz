@@ -27,7 +27,7 @@ namespace Gotorz.Client.Services
         {
             try
             {
-                var result = await _http.GetFromJsonAsync<List<HolidayPackageDto>>("HolidayPackage");
+                var result = await _http.GetFromJsonAsync<List<HolidayPackageDto>>("/HolidayPackage");
                 return result ?? new List<HolidayPackageDto>();
             }
             catch (Exception ex)
@@ -44,7 +44,7 @@ namespace Gotorz.Client.Services
         /// <returns>
         public async Task<HolidayPackageDto?> GetByUrlAsync(string url)
         {
-            return await _http.GetFromJsonAsync<HolidayPackageDto>($"HolidayPackage/{url}");
+            return await _http.GetFromJsonAsync<HolidayPackageDto>($"/HolidayPackage/{url}");
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace Gotorz.Client.Services
         /// <returns>A task representing the asynchronous operation.</returns>
         public async Task<HolidayPackageDto> CreateAsync(HolidayPackageDto dto)
         {
-            var response = await _http.PostAsJsonAsync("http://localhost:5181/HolidayPackage", dto);
+            var response = await _http.PostAsJsonAsync("/HolidayPackage", dto);
             return await response.Content.ReadFromJsonAsync<HolidayPackageDto>();
         }
     }

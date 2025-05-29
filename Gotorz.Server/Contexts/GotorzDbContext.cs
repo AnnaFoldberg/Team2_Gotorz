@@ -1,4 +1,3 @@
-using Gotorz.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 using Gotorz.Server.Models;
 using Gotorz.Server.Configurations;
@@ -40,7 +39,6 @@ namespace Gotorz.Server.Contexts
         public DbSet<Hotel> Hotels { get; set; }
         public DbSet<HotelBooking> HotelBookings { get; set; }
         public DbSet<HotelRoom> HotelRooms { get; set; }
-        public DbSet<HotelSearchHistory> HotelSearchHistories { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GotorzDbContext"/> class.

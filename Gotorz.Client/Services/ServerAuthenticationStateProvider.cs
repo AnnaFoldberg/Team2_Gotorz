@@ -41,9 +41,9 @@ public class ServerAuthenticationStateProvider : AuthenticationStateProvider
             if (user is { IsAuthenticated: true, Email: not null })
             {
                 var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Email, user.Email)
-            };
+                {
+                    new Claim(ClaimTypes.Email, user.Email)
+                };
 
                 foreach (var claim in user.Claims)
                 {

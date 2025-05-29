@@ -1,5 +1,4 @@
 using Gotorz.Shared.DTOs;
-using Gotorz.Shared.Models;
 
 namespace Gotorz.Client.Services
 {
@@ -7,11 +6,8 @@ namespace Gotorz.Client.Services
     {
         Task<List<HotelDto>> GetHotelsAsync();
         Task AddHotelAsync(HotelDto hotel);
-
-Task<List<HotelDto>> GetHotelsByCityName(string city, string country, DateTime arrival, DateTime departure);  
-Task<List<HotelSearchHistory>> GetSearchHistory(); 
-Task<List<HotelRoomDto>> GetHotelRoomsByHotelId(string externalHotelId, DateTime arrival, DateTime departure);
-Task BookHotelAsync(HotelBookingDto booking);
- 
-}
+        Task<List<HotelDto>> GetHotelsByCityName(string city, string country, DateTime arrival, DateTime departure);  
+        Task<List<HotelRoomDto>> GetHotelRoomsByHotelId(string externalHotelId, DateTime arrival, DateTime departure);
+        Task BookHotelAsync(HotelBookingDto booking);
+    }
 }
