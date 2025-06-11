@@ -2,6 +2,7 @@ using Gotorz.Shared.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Gotorz.Server.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Gotorz.Server.Controllers
 {
@@ -20,6 +21,7 @@ namespace Gotorz.Server.Controllers
         }
 
         [HttpGet("search")]
+        [Authorize(Roles = "sales")]
         public async Task<IActionResult> GetHotelsByCity(
             [FromQuery] string city,
             [FromQuery] string country,
@@ -31,6 +33,7 @@ namespace Gotorz.Server.Controllers
         }
 
         [HttpGet("rooms")]
+        [Authorize(Roles = "sales")]
         public async Task<IActionResult> GetHotelRooms(
             [FromQuery] string externalHotelId,
             [FromQuery] DateTime arrival,

@@ -4,6 +4,7 @@ using Gotorz.Server.Services;
 using Gotorz.Server.DataAccess;
 using Gotorz.Shared.DTOs;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Gotorz.Server.Controllers;
 
@@ -55,6 +56,7 @@ public class FlightController : ControllerBase
     /// </summary>
     /// <returns>A collection of <see cref="AirportDto"/> entities.</returns>
     [HttpGet("airports")]
+    [Authorize(Roles = "sales")]
     public async Task<IEnumerable<AirportDto>?> GetAllAirportsAsync()
     {
         var airports = await _airportRepository.GetAllAsync();
@@ -69,13 +71,14 @@ public class FlightController : ControllerBase
     /// <param name="airport">The search term to match airport names against in <see cref="FlightService.GetAirportAsync(string)"/>.</param>
     /// <returns>An <see cref="IActionResult"/> that contains <c>Ok</c> if exactly one airport was found, otherwise <c>BadRequest</c>.</returns>
     [HttpGet("airport")]
+    [Authorize(Roles = "sales")]
     public async Task<IActionResult> GetAirportAsync(string airportName)
     {
         var airports = await _flightService.GetAirportsAsync(airportName);
 
         if (airports == null) return BadRequest("Something went wrong");
-        else if ( airports.Count == 0 ) return BadRequest("No airports were found");
-        else if ( airports.Count > 1 ) return BadRequest("More than one airport was found");
+        else if (airports.Count == 0) return BadRequest("No airports were found");
+        else if (airports.Count > 1) return BadRequest("More than one airport was found");
         else
         {
             Airport airport = _mapper.Map<Airport>(airports[0]);
@@ -93,6 +96,7 @@ public class FlightController : ControllerBase
     /// <param name="arrivalAirport">The arrival airport to match the flight against in <see cref="FlightService.GetFlightsAsync(string, string, string)"/>.</param>
     /// <returns>A list of <see cref="FlightDto"/> entities matching the specified parameters.</returns>
     [HttpGet("flights")]
+    [Authorize(Roles = "sales")]
     public async Task<List<FlightDto>> GetFlightsAsync([FromQuery] string? date, [FromQuery] string departureAirport, [FromQuery] string arrivalAirport)
     {
         // Get all airports from database
@@ -132,9 +136,9 @@ public class FlightController : ControllerBase
         AirportDto _departureAirportDto = _mapper.Map<AirportDto>(_departureAirport);
         AirportDto _arrivalAirportDto = _mapper.Map<AirportDto>(_arrivalAirport);
         List<FlightDto> flights = await _flightService.GetFlightsAsync(_date, _departureAirportDto, _arrivalAirportDto);
-        
+
         if (flights == null) return new List<FlightDto>();
-        else if ( flights.Count == 0 ) return new List<FlightDto>();
+        else if (flights.Count == 0) return new List<FlightDto>();
         else return flights;
     }
 
@@ -145,6 +149,7 @@ public class FlightController : ControllerBase
     /// <returns>An <see cref="IActionResult"/> that contains <c>Ok</c> if the <see cref="FlightTicket"/> entities were
     /// added to the database successfully, otherwise <c>BadRequest</c>.</returns>
     [HttpPost("flight-tickets")]
+    [Authorize(Roles = "sales")]
     public async Task<IActionResult> PostFlightTicketsAsync(List<FlightTicketDto> flightTickets)
     {
         if (flightTickets == null || flightTickets.Count == 0)

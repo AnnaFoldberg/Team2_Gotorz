@@ -4,8 +4,7 @@ using Gotorz.Server.Services;
 using Gotorz.Shared.DTOs;
 using Gotorz.Server.DataAccess;
 using AutoMapper;
-
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace Gotorz.Server.Controllers;
 
@@ -41,18 +40,19 @@ public class HotelBookingController : ControllerBase
     /// </remarks>
     /// <author>Sayeh</author>
     [HttpPost]
+    [Authorize(Roles = "sales")]
     public async Task<IActionResult> AddBooking([FromBody] HotelBookingDto bookingDto)
     {
         // Validate input: booking must exist and HolidayPackage must be set
         if (bookingDto == null || bookingDto.HolidayPackageDto == null || bookingDto.HotelRoom == null)
-    {
-        return BadRequest("Booking data mangler.");
-    }
+        {
+            return BadRequest("Booking data mangler.");
+        }
 
         var booking = _mapper.Map<HotelBooking>(bookingDto);
 
         var hotelRoom = (await _hotelRoomRepository.GetAllAsync()).FirstOrDefault(r => r.ExternalRoomId == bookingDto.HotelRoom.ExternalRoomId);
-        
+
         if (hotelRoom == null)
         {
             return BadRequest();

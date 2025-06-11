@@ -4,6 +4,7 @@ using Gotorz.Server.Services;
 using Gotorz.Server.DataAccess;
 using Gotorz.Shared.DTOs;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Gotorz.Server.Controllers;
 
@@ -53,6 +54,7 @@ public class BookingController : ControllerBase
     /// </summary>
     /// <returns>A <c>string</c> representing the next available booking reference.</returns>
     [HttpGet("booking-reference")]
+    [Authorize(Roles = "sales")]
     public async Task<string> GetNextBookingReferenceAsync()
     {
         var bookingReference = await _bookingService.GenerateNextBookingReferenceAsync();
@@ -65,6 +67,7 @@ public class BookingController : ControllerBase
     /// </summary>
     /// <returns>A collection of <see cref="HolidayBookingDto"/> entities.</returns>
     [HttpGet("holiday-bookings")]
+    [Authorize(Roles = "admin, sales")]
     public async Task<IEnumerable<HolidayBookingDto>?> GetAllHolidayBookingsAsync()
     {
         var holidayBookings = await _holidayBookingRepository.GetAllAsync();
@@ -78,7 +81,7 @@ public class BookingController : ControllerBase
             if (customer == null) return null;
             holidayBooking.Customer = customer;
         }
- 
+
         var holidayBookingDtos = _mapper.Map<List<HolidayBookingDto>>(holidayBookings);
         return holidayBookingDtos;
     }
@@ -90,6 +93,7 @@ public class BookingController : ControllerBase
     /// <param name="userId">The <c>UserId</c> to match holiday bookings against.</param>
     /// <returns>A collection of <see cref="HolidayBookingDto"/> entities matching the specified <paramref name="userId"</>.</returns>
     [HttpGet("customer-holiday-bookings")]
+    [Authorize(Roles = "admin, customer")]
     public async Task<IEnumerable<HolidayBookingDto>?> GetCustomerHolidayBookingsAsync(string userId)
     {
         var customer = await _userRepository.GetUserByIdAsync(userId);
@@ -112,6 +116,7 @@ public class BookingController : ControllerBase
     /// <param name="bookingReference">The <c>BookingReference</c> to match holiday bookings against.</param>
     /// <returns>The <see cref="HolidayBookingDto"/> entity matching the specified <paramref name="BookingReference"</>.</returns>
     [HttpGet("holiday-booking")]
+    [Authorize(Roles = "admin, sales, customer")]
     public async Task<HolidayBookingDto?> GetHolidayBookingAsync(string bookingReference)
     {
         var holidayBooking = await _holidayBookingRepository.GetByBookingReferenceAsync(bookingReference);
@@ -133,6 +138,7 @@ public class BookingController : ControllerBase
     /// <returns>An <see cref="IActionResult"/> that contains <c>Ok</c> if the <see cref="HolidayBooking"/> entity was
     /// updated in the database successfully, otherwise <c>BadRequest</c>.</returns>
     [HttpPatch("holiday-booking")]
+    [Authorize(Roles = "sales")]
     public async Task<IActionResult> PatchHolidayBookingStatusAsync(HolidayBookingDto holidayBookingPatch)
     {
         if (holidayBookingPatch == null)
@@ -160,6 +166,7 @@ public class BookingController : ControllerBase
     /// <returns>An <see cref="IActionResult"/> that contains <c>Ok</c> if the <see cref="HolidayBooking"/> entity was
     /// added to the database successfully, otherwise <c>BadRequest</c>.</returns>
     [HttpPost("holiday-booking")]
+    [Authorize(Roles = "customer")]
     public async Task<IActionResult> PostHolidayBookingAsync(HolidayBookingDto holidayBookingDto)
     {
         if (holidayBookingDto == null)
@@ -207,6 +214,7 @@ public class BookingController : ControllerBase
     /// <param name="bookingReference">The <c>BookingReference</c> to match travellers against.</param>
     /// <returns>The <see cref="TravellerDto"/> entities matching the specified <paramref name="BookingReference"</>.</returns>
     [HttpGet("travellers")]
+    [Authorize(Roles = "admin, sales, customer")]
     public async Task<IEnumerable<TravellerDto>?> GetTravellersAsync(string bookingReference)
     {
         var holidayBooking = await _holidayBookingRepository.GetByBookingReferenceAsync(bookingReference);
@@ -224,6 +232,7 @@ public class BookingController : ControllerBase
     /// <returns>An <see cref="IActionResult"/> that contains <c>Ok</c> if the <see cref="Traveller"/> entities were
     /// added to the database successfully, otherwise <c>BadRequest</c>.</returns>
     [HttpPost("travellers")]
+    [Authorize(Roles = "customer")]
     public async Task<IActionResult> PostTravellersAsync(List<TravellerDto> travellers)
     {
         if (travellers == null || travellers.Count == 0)
